@@ -125,7 +125,7 @@ nixpkgs.config = {
   allowUnfree = true;
 };
 
-# Fonts
+#-> Fonts
 fonts.packages = with pkgs; [
   fira-code
   dina-font
@@ -202,11 +202,10 @@ environment.systemPackages = with pkgs; [
   mesa
   heroic
   lutris
-  protonup-qt
   winetricks
+  protonup-qt
   wineWowPackages.fonts
   wineWowPackages.stableFull
-
 
   #Games
   mindustry-wayland
@@ -319,7 +318,7 @@ services.tlp = {
 #--> KDE connect Specific
   programs.kdeconnect.enable = true;
 
-#-->NoiseTorch
+#--> NoiseTorch
   programs.noisetorch.enable = true;
 
 #--> mlocate // "updatedb & locate"
