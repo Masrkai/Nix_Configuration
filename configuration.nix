@@ -41,6 +41,8 @@ in{
     enable = true;
     xkb.layout = "us";
     xkb.variant = "";
+
+    videoDrivers = [ "intel" "amdgpu" ];
   };
 
   # Enable CUPS to print documents.
@@ -87,13 +89,23 @@ in{
 #AMD-Legacy-Graphics:
 #####################
 
-  # AMD-Opencl
+  # GPU drivers and Vulkan support
   hardware.opengl = {
-  enable = true;
-  extraPackages = [ pkgs.amdvlk ]; };
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
 
-  environment.variables.AMD_VULKAN_ICD = "RADV"; #MASRKAI
-#########################################################
+    extraPackages = [
+      pkgs.mesa
+      pkgs.vaapiIntel
+      pkgs.vulkan-loader
+      pkgs.vulkan-tools
+      pkgs.libva ]; };
+
+  # Add Vulkan ICDs
+  environment.variables.AMD_VULKAN_ICD = "RADV";
+  environment.variables.VULKAN_ICD_FILENAMES = "${pkgs.vulkan-loader}/share/vulkan/icd.d/radeon_icd.x86_64.json:${pkgs.vulkan-loader}/share/vulkan/icd.d/intel_icd.x86_64.json"; #MASRKAI
+#########################################################################################################################################################################################
 
 
 
@@ -181,16 +193,20 @@ environment.systemPackages = with pkgs; [
   libsForQt5.kdeconnect-kde
 
   #Productivity
-  libreoffice-qt
   anytype
+  libreoffice-qt
   gimp-with-plugins
 
   #Gaming
-  wine
   dxvk
   mesa
   heroic
   lutris
+  protonup-qt
+  winetricks
+  wineWowPackages.fonts
+  wineWowPackages.stableFull
+
 
   #Games
   mindustry-wayland
