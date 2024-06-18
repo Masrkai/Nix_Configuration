@@ -169,6 +169,10 @@ environment.systemPackages = with pkgs; [
   gnumake
   clang-tools
 
+  #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it 
+  rustup
+
+
   #-> MicroChips
   esptool
   usbutils
@@ -204,8 +208,7 @@ environment.systemPackages = with pkgs; [
   lutris
   winetricks
   protonup-qt
-  wineWowPackages.fonts
-  wineWowPackages.stableFull
+  wineWowPackages.full
 
   #Games
   mindustry-wayland
@@ -231,7 +234,6 @@ environment.systemPackages = with pkgs; [
   john
   bully
   tshark
-  dhcpcd
   crunch
   asleap
   openssl
