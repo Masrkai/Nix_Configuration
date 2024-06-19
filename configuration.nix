@@ -78,8 +78,6 @@ in{
   networking.firewall.allowedUDPPorts = [ 443 22000 21027 /*#Syncthing */ ];
 
 
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
   # Configure network proxy if necessary
   #networking.proxy.default = "https://88.198.212.86:3128/";
   #networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
@@ -143,17 +141,23 @@ environment.systemPackages = with pkgs; [
 #############
 #Development:
 #############
+  #->General
   git
-  kate
+  file
+  gnumake
   vscodium
+  gnu-config
+  swiftPackages.stdenv
+  updateAutotoolsGnuConfigScriptsHook
 
   #->Phone
   scrcpy
   android-tools
 
   #-> Python
-  pipx
-  python3
+  python311Full
+  python311Packages.pip
+  python311Packages.pipx
   python311Packages.tqdm
   python311Packages.scapy
   python311Packages.netaddr
@@ -166,10 +170,9 @@ environment.systemPackages = with pkgs; [
   gcc
   cmake
   clang
-  gnumake
   clang-tools
 
-  #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it 
+  #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it
   rustup
 
 
