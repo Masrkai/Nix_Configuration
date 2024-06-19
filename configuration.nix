@@ -154,6 +154,7 @@ environment.systemPackages = with pkgs; [
   scrcpy
   android-tools
 
+
   #-> Python
   python311Full
   python311Packages.pip
