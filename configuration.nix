@@ -38,7 +38,7 @@ in{
 
   # Configure keymap in X11
   services.xserver = {
-    enable = true;
+    enable = false;
     xkb.layout = "us";
     xkb.variant = "";
 
@@ -93,12 +93,16 @@ in{
     driSupport = true;
     driSupport32Bit = true;
 
-    extraPackages = [
-      pkgs.mesa
-      pkgs.vaapiIntel
-      pkgs.vulkan-loader
-      pkgs.vulkan-tools
-      pkgs.libva ]; };
+  extraPackages  = with pkgs; [
+    mesa
+    libva
+    amdvlk
+    vaapiIntel
+    vulkan-tools
+    vulkan-loader
+    intel-media-driver
+    ];
+};
 
   # Add Vulkan ICDs
   environment.variables.AMD_VULKAN_ICD = "RADV";
@@ -147,13 +151,13 @@ environment.systemPackages = with pkgs; [
   gnumake
   vscodium
   gnu-config
+  nixos-generators
   swiftPackages.stdenv
   updateAutotoolsGnuConfigScriptsHook
 
   #->Phone
   scrcpy
   android-tools
-
 
   #-> Python
   python311Full
@@ -166,6 +170,7 @@ environment.systemPackages = with pkgs; [
   python311Packages.netifaces
   python311Packages.setuptools
   python311Packages.terminaltables
+  python311Packages.pyinstaller-versionfile
 
   #-> C++
   gcc
@@ -206,12 +211,12 @@ environment.systemPackages = with pkgs; [
   gimp-with-plugins
 
   #Gaming
-  dxvk
   mesa
+  vkd3d
   heroic
-  lutris
+  dxvk_2
+  bottles
   winetricks
-  protonup-qt
   wineWowPackages.full
 
   #Games

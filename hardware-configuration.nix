@@ -8,8 +8,7 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-intel" "radeon.si_support=1" "amdgpu.si_support=0" ];
-  boot.extraModulePackages = [ ];
-
+  boot.extraModulePackages = [config.boot.kernelPackages.rtl8188eus-aircrack ];
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/c2973410-4dd5-4c19-a859-e2e1db7ec9b2";
