@@ -1,12 +1,16 @@
 { config, pkgs, ... }:
 
 let
-  unstable = import <unstable> {config.allowUnfree = true;};
-in{
+  #unstable = import <unstable> {config.allowUnfree = true;};
+  x = 4;
+in {
     imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+
+  #Experimental Features
+  nix.settings.experimental-features = [ "nix-command" ];
 
   # Bootloader.
   boot.supportedFilesystems = [ "ntfs" ];
@@ -121,7 +125,7 @@ in{
 };
 
 # Allow unfree packages & Flatpak
-services.flatpak.enable = true;
+services.flatpak.enable = false;
 
 nixpkgs.config = {
   allowUnfree = true;
@@ -146,12 +150,15 @@ environment.systemPackages = with pkgs; [
 #Development:
 #############
   #->General
+  nh
   git
   file
+  xterm
   gnumake
   vscodium
   gnu-config
   nixos-generators
+  nix-output-monitor
   swiftPackages.stdenv
   updateAutotoolsGnuConfigScriptsHook
 
@@ -160,17 +167,23 @@ environment.systemPackages = with pkgs; [
   android-tools
 
   #-> Python
-  python311Full
-  python311Packages.pip
-  python311Packages.pipx
-  python311Packages.tqdm
-  python311Packages.scapy
-  python311Packages.netaddr
-  python311Packages.colorama
-  python311Packages.netifaces
-  python311Packages.setuptools
-  python311Packages.terminaltables
-  python311Packages.pyinstaller-versionfile
+    (python311.withPackages (pk: with pk; [
+      pip
+      nltk
+      tqdm
+      scapy
+      pandas
+      netaddr
+      requests
+      colorama
+      netifaces
+      setuptools
+      python-dotenv
+      terminaltables
+      pyinstaller-versionfile
+      ]
+    )
+  )
 
   #-> C++
   gcc
@@ -189,20 +202,33 @@ environment.systemPackages = with pkgs; [
   arduino-ide
   arduino-core
 
+  (vscode-with-extensions.override {
+    vscode = vscodium;
+    vscodeExtensions = with vscode-extensions; [
+                            bbenoist.nix
+                            ms-vscode-remote.remote-ssh
+      ]
+      ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      {name = "remote-ssh-edit";
+        publisher = "ms-vscode-remote";
+        version = "0.47.2";
+        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g"; } ];
+  })
+
+
 ############
 #User-Daily:
 ############
   btop
   brave
   haruna
+  ani-cli
   fastfetch
   syncthing
   noisetorch
   betterbird
   qbittorrent
   signal-desktop
-  telegram-desktop
-  unstable.ani-cli
   libsForQt5.kdeconnect-kde
 
   #Productivity
@@ -226,14 +252,17 @@ environment.systemPackages = with pkgs; [
   tlp
   mlocate
   pciutils
+  authenticator
+  translate-shell
   libsForQt5.spectacle
   libsForQt5.plasma-integration
 
   #Spell_check
   aspell
   aspellDicts.en
-  aspellDicts.en-computers
   aspellDicts.en-science
+  aspellDicts.en-computers
+
 
 ####################
 #Pentration-Testing:
@@ -269,17 +298,9 @@ environment.systemPackages = with pkgs; [
   qemu-utils
   virt-manager
 
-  (vscode-with-extensions.override {
-    vscode = vscodium;
-    vscodeExtensions = with vscode-extensions; [
-      bbenoist.nix
-      ms-vscode-remote.remote-ssh]
-      ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {name = "remote-ssh-edit";
-        publisher = "ms-vscode-remote";
-        version = "0.47.2";
-        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g"; } ];
-  }) ];
+
+];
+
 
 ##################
 #Listing services:
@@ -305,8 +326,8 @@ services.tlp = {
   CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
   CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
-  CPU_MIN_PERF_ON_AC = 0;
-  CPU_MAX_PERF_ON_AC = 75;
+  CPU_MIN_PERF_ON_AC = 5;
+  CPU_MAX_PERF_ON_AC = 100;
 
   CPU_MIN_PERF_ON_BAT = 0;
   CPU_MAX_PERF_ON_BAT = 75;
@@ -318,8 +339,8 @@ services.tlp = {
   CPU_HWP_DYN_BOOST_ON_BAT=0;
 
   #Optional helps save long term battery health
-  START_CHARGE_THRESH_BAT0 = 95; # 95 and bellow it starts to charge
-  STOP_CHARGE_THRESH_BAT0 = 100; # 100 and above it stops charging
+  START_CHARGE_THRESH_BAT0 = 95;
+  STOP_CHARGE_THRESH_BAT0 = 100;
   };
 };
 
@@ -328,6 +349,9 @@ services.tlp = {
 
 #--> KDE connect Specific
   programs.kdeconnect.enable = true;
+
+#--> For nh
+  programs.nh.enable= true;
 
 #--> NoiseTorch
   programs.noisetorch.enable = true;
