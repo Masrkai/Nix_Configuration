@@ -1,8 +1,7 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   #unstable = import <unstable> {config.allowUnfree = true;};
-  x = 4;
 in {
     imports =
     [ # Include the results of the hardware scan.
@@ -106,7 +105,7 @@ in {
     vulkan-loader
     intel-media-driver
     ];
-};
+  };
 
   # Add Vulkan ICDs
   environment.variables.AMD_VULKAN_ICD = "RADV";
@@ -120,28 +119,25 @@ in {
     isNormalUser = true;
     description = "Masrkai";
     extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
-    packages = with pkgs; [
-  ];
-};
+  };
 
-# Allow unfree packages & Flatpak
-services.flatpak.enable = false;
-
+# Managing unfree packages & Flatpak
 nixpkgs.config = {
   allowUnfree = true;
 };
+services.flatpak.enable = false;
+
 
 #-> Fonts
 fonts.packages = with pkgs; [
-  fira-code
-  dina-font
+  #!First Class
+  nerdfonts
+  iosevka-bin
+
+  #>Second Class
   noto-fonts
-  proggyfonts
-  liberation_ttf
   noto-fonts-cjk
-  noto-fonts-emoji
-  fira-code-symbols
-  mplus-outline-fonts.githubRelease
+  liberation_ttf
 ];
 
 
@@ -150,17 +146,14 @@ environment.systemPackages = with pkgs; [
 #Development:
 #############
   #->General
-  nh
+  bat
+  eza
   git
   file
   xterm
+  git-lfs
   gnumake
   vscodium
-  gnu-config
-  nixos-generators
-  nix-output-monitor
-  swiftPackages.stdenv
-  updateAutotoolsGnuConfigScriptsHook
 
   #->Phone
   scrcpy
@@ -180,6 +173,7 @@ environment.systemPackages = with pkgs; [
       setuptools
       python-dotenv
       terminaltables
+      huggingface-hub
       pyinstaller-versionfile
       ]
     )
@@ -205,14 +199,25 @@ environment.systemPackages = with pkgs; [
   (vscode-with-extensions.override {
     vscode = vscodium;
     vscodeExtensions = with vscode-extensions; [
-                            bbenoist.nix
+
+                            #* Python
+                            ms-python.python
+                            ms-python.debugpy
+
+                            #* Nix
+                            jnoortheen.nix-ide
+
+                            #* General
+                            formulahendry.code-runner
+                            shardulm94.trailing-spaces
+
+                            #* VS-Codium Specific
                             ms-vscode-remote.remote-ssh
-      ]
-      ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {name = "remote-ssh-edit";
-        publisher = "ms-vscode-remote";
-        version = "0.47.2";
-        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g"; } ];
+    ]
+++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [ {  name = "remote-ssh-edit";
+                                                          publisher = "ms-vscode-remote";
+                                                          version = "0.47.2";
+                                                          sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g"; } ];
   })
 
 
@@ -220,8 +225,10 @@ environment.systemPackages = with pkgs; [
 #User-Daily:
 ############
   btop
+  kooha
   brave
   haruna
+  jackett
   ani-cli
   fastfetch
   syncthing
@@ -269,8 +276,6 @@ environment.systemPackages = with pkgs; [
 ####################
   iw
   mdk4
-  john
-  bully
   tshark
   crunch
   asleap
@@ -278,17 +283,11 @@ environment.systemPackages = with pkgs; [
   linssid
   dnsmasq
   tcpdump
-  hashcat
-  hcxtools
   lighttpd
-  pixiewps
   ettercap
   bettercap
   wireshark
-  hcxdumptool
   aircrack-ng
-  hashcat-utils
-  reaverwps-t6x
   linux-wifi-hotspot
 
 ################
@@ -297,8 +296,6 @@ environment.systemPackages = with pkgs; [
   qemu
   qemu-utils
   virt-manager
-
-
 ];
 
 
@@ -350,9 +347,6 @@ services.tlp = {
 #--> KDE connect Specific
   programs.kdeconnect.enable = true;
 
-#--> For nh
-  programs.nh.enable= true;
-
 #--> NoiseTorch
   programs.noisetorch.enable = true;
 
@@ -375,8 +369,12 @@ services.tlp = {
   };
 };
 
-#--> Enabling Dconf
-programs.dconf.enable = true;
+#---> Qbit_torrent x Jackett
+    services.jackett = {
+    dataDir = "/var/lib/jackett";
+    enable = true;
+    openFirewall = false; # Optional, if you want to open firewall ports for Jackett
+  };
 
 #--> $PATH
 environment.localBinInPath = true;
