@@ -151,9 +151,10 @@ environment.systemPackages = with pkgs; [
   git
   file
   xterm
-  git-lfs
   gnumake
+  git-lfs
   vscodium
+  rustdesk-flutter
 
   #->Phone
   scrcpy
@@ -323,8 +324,8 @@ services.tlp = {
   CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
   CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
-  CPU_MIN_PERF_ON_AC = 5;
-  CPU_MAX_PERF_ON_AC = 100;
+  CPU_MIN_PERF_ON_AC = 0;
+  CPU_MAX_PERF_ON_AC = 55;
 
   CPU_MIN_PERF_ON_BAT = 0;
   CPU_MAX_PERF_ON_BAT = 75;
@@ -370,7 +371,7 @@ services.tlp = {
 };
 
 #---> Qbit_torrent x Jackett
-    services.jackett = {
+  services.jackett = {
     dataDir = "/var/lib/jackett";
     enable = true;
     openFirewall = false; # Optional, if you want to open firewall ports for Jackett
