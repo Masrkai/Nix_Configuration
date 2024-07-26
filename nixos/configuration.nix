@@ -93,6 +93,7 @@ in {
   # GPU drivers and Vulkan support
   hardware.opengl = {
     enable = true;
+
     driSupport = true;
     driSupport32Bit = true;
 
@@ -154,6 +155,7 @@ environment.systemPackages = with pkgs; [
   xterm
   gnumake
   git-lfs
+  thermald
   vscodium
   rustdesk-flutter
 
@@ -313,12 +315,13 @@ services.tlp = {
   WIFI_PWR_ON_BAT=false;
 
   USB_AUTOSUSPEND=1;
+
   USB_EXCLUDE_WWAN=0;
   USB_EXCLUDE_AUDIO=1;
   USB_EXCLUDE_PHONE=1;
   USB_EXCLUDE_PRINTER=1;
 
-  CPU_SCALING_GOVERNOR_ON_AC = "balanced";
+  CPU_SCALING_GOVERNOR_ON_AC = "performance";
   CPU_SCALING_GOVERNOR_ON_BAT = "balanced";
 
   CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
@@ -342,8 +345,26 @@ services.tlp = {
   };
 };
 
+
+#!#################
+#! POWER services:
+#!#################
+
 #--> Disabled Power-Profiles for TLP to take action.
   services.power-profiles-daemon.enable = false;
+
+#--> Enable powertop
+  powerManagement.powertop.enable = true;
+
+#--> Enable thermald (only necessary if on Intel CPUs)
+  services.thermald.enable = true;
+
+#--> Better scheduling for CPU cycles
+  services.system76-scheduler.settings.cfsProfiles.enable = true;
+
+#?########################
+#? Applications services:
+#?########################
 
 #--> KDE connect Specific
   programs.kdeconnect.enable = true;
@@ -377,11 +398,14 @@ services.tlp = {
     openFirewall = false; # Optional, if you want to open firewall ports for Jackett
   };
 
+#*#########
+#* System:
+#*#########
+
 #--> $PATH
 environment.localBinInPath = true;
 
-################
-# NixOS Version:
-################
+
+#! NixOS Version:
   system.stateVersion = "24.05";
 }
