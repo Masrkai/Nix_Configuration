@@ -69,9 +69,11 @@ in {
   # Enable touchpad support
   services.libinput.enable = true;
 
-#########################
-#Networking-Configration:
-#########################
+
+#*#########################
+#* Networking-Configration:
+#*#########################
+
   networking.hostName = "NixOS"; # Defining hostname.
   networking.networkmanager.enable = true;
   networking.usePredictableInterfaceNames = false ;
@@ -86,9 +88,9 @@ in {
   #networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
 
-#####################
-#AMD-Legacy-Graphics:
-#####################
+#!###############
+#! AMD-Graphics:
+#!###############
 
   # GPU drivers and Vulkan support
   hardware.opengl = {
@@ -327,17 +329,17 @@ services.tlp = {
   CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
   CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
-  CPU_MIN_PERF_ON_AC = 10;
-  CPU_MAX_PERF_ON_AC = 65;
+  #CPU_MIN_PERF_ON_AC = 10;
+  #CPU_MAX_PERF_ON_AC = 65;
 
-  CPU_MIN_PERF_ON_BAT = 0;
-  CPU_MAX_PERF_ON_BAT = 75;
+  #CPU_MIN_PERF_ON_BAT = 0;
+  #CPU_MAX_PERF_ON_BAT = 75;
 
   CPU_BOOST_ON_AC=1;
   CPU_BOOST_ON_BAT=0;
 
-  CPU_HWP_DYN_BOOST_ON_AC=1;
-  CPU_HWP_DYN_BOOST_ON_BAT=0;
+  #CPU_HWP_DYN_BOOST_ON_AC=1;
+  #CPU_HWP_DYN_BOOST_ON_BAT=0;
 
   #Optional helps save long term battery health
   START_CHARGE_THRESH_BAT0 = 95;
