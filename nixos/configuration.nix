@@ -176,6 +176,7 @@ environment.systemPackages = with pkgs; [
       requests
       colorama
       netifaces
+      ipykernel
       setuptools
       python-dotenv
       terminaltables
