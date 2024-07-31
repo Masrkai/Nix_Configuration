@@ -155,7 +155,7 @@ environment.systemPackages = with pkgs; [
   git
   file
   xterm
-  gnumake
+  searxng
   git-lfs
   thermald
   vscodium
@@ -190,6 +190,7 @@ environment.systemPackages = with pkgs; [
   gcc
   cmake
   clang
+  gnumake
   clang-tools
 
   #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it
@@ -277,9 +278,9 @@ environment.systemPackages = with pkgs; [
   aspellDicts.en-computers
 
 
-####################
-#Pentration-Testing:
-####################
+#!###################
+#! Pentration-Testing:
+#!###################
   iw
   mdk4
   tshark
@@ -296,9 +297,10 @@ environment.systemPackages = with pkgs; [
   aircrack-ng
   linux-wifi-hotspot
 
-################
-#Virtualization:
-################
+
+#>###############
+#* Virtualization:
+#>###############
   qemu
   qemu-utils
   virt-manager
@@ -393,6 +395,18 @@ services.tlp = {
      configDir = "/home/masrkai/Documents/.config/syncthing";
   };
 };
+
+#---> SearXNG
+  services.searx = {
+      enable = true;
+      settings = {
+        server = {
+          port = 8888;
+          bind_address = "127.0.0.1";
+          secret_key = "secret key";
+        };
+      };
+    };
 
 #---> Qbit_torrent x Jackett
   services.jackett = {
