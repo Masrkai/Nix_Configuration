@@ -203,6 +203,10 @@ environment.systemPackages = with pkgs; [
   arduino-ide
   arduino-core
 
+
+#*#########################
+#* Vscodium Configuration:
+#*#########################
   (vscode-with-extensions.override {
     vscode = vscodium;
     vscodeExtensions = with vscode-extensions; [
@@ -228,9 +232,9 @@ environment.systemPackages = with pkgs; [
   })
 
 
-############
-#User-Daily:
-############
+#?#############
+#? User-Daily:
+#?#############
   btop
   kooha
   brave
@@ -278,9 +282,9 @@ environment.systemPackages = with pkgs; [
   aspellDicts.en-computers
 
 
-#!###################
+#!####################
 #! Pentration-Testing:
-#!###################
+#!####################
   iw
   mdk4
   tshark
@@ -298,9 +302,9 @@ environment.systemPackages = with pkgs; [
   linux-wifi-hotspot
 
 
-#>###############
-#* Virtualization:
-#>###############
+#>################
+#> Virtualization:
+#>################
   qemu
   qemu-utils
   virt-manager
@@ -422,7 +426,8 @@ services.tlp = {
 #--> $PATH
 environment.localBinInPath = true;
 
-
+#!###############
 #! NixOS Version:
+#!###############
   system.stateVersion = "24.05";
 }
