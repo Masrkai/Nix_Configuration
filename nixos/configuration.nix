@@ -2,6 +2,7 @@
 
 let
   #unstable = import <unstable> {config.allowUnfree = true;};
+  secrets = import ./secrets.nix;
 in {
     imports =
     [ # Include the results of the hardware scan.
@@ -79,7 +80,7 @@ in {
   networking.usePredictableInterfaceNames = false ;
 
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 443 8384  22000 18081 /*#Syncthing */  ];
+  networking.firewall.allowedTCPPorts = [ 443 8888  8384  22000 18081 /*#Syncthing */  ];
   networking.firewall.allowedUDPPorts = [ 443 22000 21027 18081 /*#Syncthing */ ];
 
 
@@ -400,17 +401,52 @@ services.tlp = {
   };
 };
 
+#--->Nginx
+# services.nginx = {
+#   enable = true;
+#   virtualHosts."localhost" = {
+#     listen = [{ addr = "127.0.0.1"; port = 443; ssl = true; }];
+#     sslCertificate = secrets.Nginx-ssl-Certificate;
+#     sslCertificateKey = secrets.Nginx-ssl-Certificate-Key;
+#     locations."/" = {
+#       proxyPass = "http://127.0.0.1:8888";
+#     };
+#   };
+# };
+
 #---> SearXNG
   services.searx = {
-      enable = true;
-      settings = {
-        server = {
-          port = 8888;
-          bind_address = "127.0.0.1";
-          secret_key = "secret key";
-        };
+    enable = true;
+    settings = {
+      server = {
+        port = 8888;
+        bind_address = "127.0.0.1";
+        secret_key   = secrets.searx-secret-key;
+        base_url     = "https://localhost/";
+      };
+      ui = {
+        default_theme  = "simple";
+        default_locale = "en";
+      };
+      search = {
+        safe_search = 0;  # 0: None, 1: Moderate, 2: Strict
+        autocomplete = "duckduckgo";
+        default_lang = "en";
+      };
+      engines = [
+        { name = "google"; engine = "google"; disabled = false; }
+        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
+        { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
+      ];
+      outgoing = {
+        request_timeout = 6.0;
+        max_request_timeout = 15.0;
+      };
+      cache = {
+        cache_dir = "/var/cache/searx";
       };
     };
+  };
 
 #---> Qbit_torrent x Jackett
   services.jackett = {
@@ -422,7 +458,6 @@ services.tlp = {
 #*#########
 #* System:
 #*#########
-
 #--> $PATH
 environment.localBinInPath = true;
 
