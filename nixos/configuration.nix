@@ -38,11 +38,11 @@ in {
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
+  services.xserver.enable = true;  # Set to true for Plasma
   services.xserver.desktopManager.plasma5.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
-    enable = false;
     xkb.layout = "us";
     xkb.variant = "";
 
@@ -160,7 +160,6 @@ environment.systemPackages = with pkgs; [
   searxng
   git-lfs
   thermald
-  vscodium
   rustdesk-flutter
 
   #->Phone
@@ -193,11 +192,11 @@ environment.systemPackages = with pkgs; [
   )
 
   #-> C++
-  gcc
+  (hiPrio gcc)
   cmake
-  clang
   gnumake
   clang-tools
+  (lowPrio clang)
 
   #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it
   rustup
@@ -273,7 +272,6 @@ environment.systemPackages = with pkgs; [
   mindustry-wayland
 
   #System
-  tlp
   mlocate
   pciutils
   authenticator
@@ -293,7 +291,6 @@ environment.systemPackages = with pkgs; [
 #!####################
   iw
   mdk4
-  tshark
   crunch
   asleap
   openssl
@@ -312,7 +309,6 @@ environment.systemPackages = with pkgs; [
 #> Virtualization:
 #>################
   qemu
-  qemu-utils
   virt-manager
 ];
 
@@ -325,16 +321,7 @@ services.tlp = {
   enable = true;
   settings = {
 
-  WOL_DISABLE=true;
-  WIFI_PWR_ON_AC=false;
-  WIFI_PWR_ON_BAT=false;
-
-  USB_AUTOSUSPEND=1;
-
-  USB_EXCLUDE_WWAN=0;
-  USB_EXCLUDE_AUDIO=1;
-  USB_EXCLUDE_PHONE=1;
-  USB_EXCLUDE_PRINTER=1;
+  USB_AUTOSUSPEND=0;
 
   CPU_SCALING_GOVERNOR_ON_AC = "performance";
   CPU_SCALING_GOVERNOR_ON_BAT = "balanced";
@@ -347,12 +334,6 @@ services.tlp = {
 
   #CPU_MIN_PERF_ON_BAT = 0;
   #CPU_MAX_PERF_ON_BAT = 75;
-
-  CPU_BOOST_ON_AC=1;
-  CPU_BOOST_ON_BAT=0;
-
-  #CPU_HWP_DYN_BOOST_ON_AC=1;
-  #CPU_HWP_DYN_BOOST_ON_BAT=0;
 
   #Optional helps save long term battery health
   START_CHARGE_THRESH_BAT0 = 95;
@@ -471,3 +452,4 @@ environment.localBinInPath = true;
 #!###############
   system.stateVersion = "24.05";
 }
+
