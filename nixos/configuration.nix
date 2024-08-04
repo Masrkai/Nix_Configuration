@@ -156,6 +156,7 @@ environment.systemPackages = with pkgs; [
   git
   file
   xterm
+  gparted
   searxng
   git-lfs
   thermald
@@ -170,8 +171,10 @@ environment.systemPackages = with pkgs; [
     (python311.withPackages (pk: with pk; [
       pip
       nltk
+      lxml
       tqdm
       scapy
+      numpy
       pandas
       netaddr
       requests
@@ -180,8 +183,10 @@ environment.systemPackages = with pkgs; [
       ipykernel
       setuptools
       python-dotenv
+      beautifulsoup4
       terminaltables
       huggingface-hub
+      types-beautifulsoup4
       pyinstaller-versionfile
       ]
     )
