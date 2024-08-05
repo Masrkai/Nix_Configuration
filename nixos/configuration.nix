@@ -216,25 +216,71 @@ environment.systemPackages = with pkgs; [
     vscode = vscodium;
     vscodeExtensions = with vscode-extensions; [
 
+                            #* C++
+                            twxs.cmake
+                            ms-vscode.cmake-tools
+                            llvm-vs-code-extensions.vscode-clangd
+
                             #* Python
                             ms-python.python
                             ms-python.debugpy
+                            ms-toolsai.jupyter
+                            ms-toolsai.jupyter-keymap
+                            ms-toolsai.jupyter-renderers
+                            ms-toolsai.vscode-jupyter-slideshow
+                            ms-toolsai.vscode-jupyter-cell-tags
 
                             #* Nix
                             jnoortheen.nix-ide
 
                             #* General
+                            usernamehw.errorlens
+                            pkief.material-icon-theme
                             formulahendry.code-runner
                             shardulm94.trailing-spaces
+                            streetsidesoftware.code-spell-checker
+
+                            #Screendown
 
                             #* VS-Codium Specific
                             ms-vscode-remote.remote-ssh
     ]
-++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [ {  name = "remote-ssh-edit";
+++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+                                                       # To generate Hash
+                                                       # nix-prefetch-url <Download URL>
+                                                       # nix hash to-sri --type sha256 $(nix hash to-base16 --type sha256 <base32-hash>)
+
+                                                        {
+                                                          name = "remote-ssh-edit";
                                                           publisher = "ms-vscode-remote";
                                                           version = "0.47.2";
-                                                          sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g"; } ];
-  })
+                                                          sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+                                                        }
+                                                        {
+                                                         #https://open-vsx.org/extension/lukinco/lukin-vscode-theme
+                                                          name = "lukin-vscode-theme";
+                                                          publisher = "lukinco";
+                                                          version = "0.1.5";
+                                                          sha256 = "sha256-T6yCPCy2AprDqNTJk2ucN2EsCrODn4j/1oldSnQNigU=";
+                                                        }
+                                                        {
+                                                          #https://open-vsx.org/extension/eliostruyf/screendown
+                                                          name = "screendown";
+                                                          publisher = "eliostruyf";
+                                                          version = "0.0.23";
+                                                          sha256 = "sha256-ZHa4N1QTj7XAizWgeXzRGohhsSbxdPJv1rtCib4sQsU=";
+                                                        }
+                                                        {
+                                                          #https://open-vsx.org/extension/KevinRose/vsc-python-indent
+                                                          name = "vsc-python-indent";
+                                                          publisher = "KevinRose";
+                                                          version = "1.18.0";
+                                                          sha256 = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
+                                                        }
+
+
+
+]; })
 
 
 #?#############
