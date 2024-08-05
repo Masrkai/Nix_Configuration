@@ -224,23 +224,26 @@ environment.systemPackages = with pkgs; [
                             #* Python
                             ms-python.python
                             ms-python.debugpy
-                            ms-toolsai.jupyter
-                            ms-toolsai.jupyter-keymap
-                            ms-toolsai.jupyter-renderers
-                            ms-toolsai.vscode-jupyter-slideshow
-                            ms-toolsai.vscode-jupyter-cell-tags
+                              #>Jupyter
+                              ms-toolsai.jupyter
+                              ms-toolsai.jupyter-keymap
+                              ms-toolsai.jupyter-renderers
+                              ms-toolsai.vscode-jupyter-slideshow
+                              ms-toolsai.vscode-jupyter-cell-tags
 
                             #* Nix
                             jnoortheen.nix-ide
+
+                            #* Markdown
+                            bierner.markdown-mermaid
 
                             #* General
                             usernamehw.errorlens
                             pkief.material-icon-theme
                             formulahendry.code-runner
                             shardulm94.trailing-spaces
+                            aaron-bond.better-comments
                             streetsidesoftware.code-spell-checker
-
-                            #Screendown
 
                             #* VS-Codium Specific
                             ms-vscode-remote.remote-ssh
@@ -277,14 +280,13 @@ environment.systemPackages = with pkgs; [
                                                           version = "1.18.0";
                                                           sha256 = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
                                                         }
-                                                         {
-                                                          #https://github.com/aaron-bond/better-comments
-                                                          name = "better-comments";
-                                                          publisher = "aaron-bond";
-                                                          version = "3.0.2";
-                                                          sha256 = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
+                                                        {
+                                                          #https://open-vsx.org/api/bpruitt-goddard/mermaid-markdown-syntax-highlighting/1.6.6/file/bpruitt-goddard.mermaid-markdown-syntax-highlighting-1.6.6.vsix
+                                                          name = "mermaid-markdown-syntax-highlighting";
+                                                          publisher = "bpruitt-goddard";
+                                                          version = "1.6.6";
+                                                          sha256 = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
                                                         }
-
 
 
 ]; })
