@@ -277,6 +277,13 @@ environment.systemPackages = with pkgs; [
                                                           version = "1.18.0";
                                                           sha256 = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
                                                         }
+                                                         {
+                                                          #https://github.com/aaron-bond/better-comments
+                                                          name = "better-comments";
+                                                          publisher = "aaron-bond";
+                                                          version = "3.0.2";
+                                                          sha256 = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
+                                                        }
 
 
 
