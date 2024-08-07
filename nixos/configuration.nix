@@ -530,7 +530,7 @@ programs.bash = {
         sudo nixos-rebuild switch
     }
     garbage(){
-        nix-collect-garbage -d && nix-store --optimise && pip cache purge && sudo nix-collect-garbage -d
+        nix-collect-garbage -d && nix-store --optimise && pip cache purge
     }
     gens(){
         sudo nix-env --list-generations --profile /nix/var/nix/profiles/system &&  echo "to remove Gens type:  sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations <Gen's-Numbers>"
