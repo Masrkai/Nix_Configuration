@@ -36,31 +36,16 @@ in {
   };
 
   # Enable the KDE Plasma Desktop Environment.
+  services.xserver.enable = true;  # Set to true for Plasma
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
-  services.xserver.enable = true;  # Set to true for Plasma
   services.xserver.desktopManager.plasma5.enable = true;
 
-  # Configure keymap in X11
+  # Configure keymap in X11 
   services.xserver = {
-    xkb.layout = "us";
     xkb.variant = "";
-
+    xkb.layout = "us";
     videoDrivers = [ "intel" "amdgpu" ];
-  };
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  sound.enable = true;
-  security.rtkit.enable = true;
-  hardware.pulseaudio.enable = false;
-
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
   };
 
   # Enable bluetooth
@@ -290,10 +275,7 @@ environment.systemPackages = with pkgs; [
                                                           version = "1.6.6";
                                                           sha256 = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
                                                         }
-
-
 ]; })
-
 
 #?#############
 #? User-Daily:
@@ -343,7 +325,6 @@ environment.systemPackages = with pkgs; [
   aspellDicts.en-science
   aspellDicts.en-computers
 
-
 #!####################
 #! Pentration-Testing:
 #!####################
@@ -362,14 +343,12 @@ environment.systemPackages = with pkgs; [
   aircrack-ng
   linux-wifi-hotspot
 
-
 #>################
 #> Virtualization:
 #>################
   qemu
   virt-manager
 ];
-
 
 ##################
 #Listing services:
@@ -399,7 +378,6 @@ services.tlp = {
   };
 };
 
-
 #!#################
 #! POWER services:
 #!#################
@@ -427,9 +405,9 @@ services.tlp = {
   programs.noisetorch.enable = true;
 
 #--> mlocate // "updatedb & locate"
-  services.locate.package   = pkgs.mlocate;
   services.locate.localuser = null;
   services.locate.enable    = true;
+  services.locate.package   = pkgs.mlocate;
 
 #---> Qemu KVM
   virtualisation.libvirtd.enable = true;
@@ -445,7 +423,7 @@ services.tlp = {
   };
 };
 
-#--->Nginx
+# TODO ---> Nginx
 # services.nginx = {
 #   enable = true;
 #   virtualHosts."localhost" = {
@@ -465,22 +443,22 @@ services.tlp = {
       server = {
         port = 8888;
         bind_address = "127.0.0.1";
-        secret_key   = secrets.searx-secret-key;
         base_url     = "http://localhost/";
+        secret_key   = secrets.searx-secret-key;
       };
       ui = {
-        default_theme  = "simple";
         default_locale = "en";
+        default_theme  = "simple";
       };
       search = {
         safe_search = 0;  # 0: None, 1: Moderate, 2: Strict
-        autocomplete = "duckduckgo";
         default_lang = "en";
+        autocomplete = "duckduckgo";
       };
       engines = [
         { name = "google"; engine = "google"; disabled = false; }
-        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
         { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
+        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
       ];
       outgoing = {
         request_timeout = 6.0;
@@ -494,28 +472,35 @@ services.tlp = {
 
 #---> Qbit_torrent x Jackett
   services.jackett = {
-    dataDir = "/var/lib/jackett";
     enable = true;
-    openFirewall = false; # Optional, if you want to open firewall ports for Jackett
+    openFirewall = false;
+    dataDir = "/var/lib/jackett";
   };
 
-#*#########
-#* System:
-#*#########
+#---> Enable CUPS to print documents.
+  services.printing.enable = true;
+
+#--> Enable sound with pipewire.
+  sound.enable = true;
+  security.rtkit.enable = true;
+  hardware.pulseaudio.enable = false;
+
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+  };
+
 #--> $PATH
 environment.localBinInPath = true;
 
 #--> $BASH
 programs.bash = {
-  enableCompletion = true;
   enableLsColors = true;
-      promptInit =
-      /* bash */
-      ''
-         PS1='\[\e[36;1m\]>>>>>>Hi Masrkai!\[\e[0m\] \[\e[1m\]\w\n\[\e[38;5;160m\]\t\[\e[39m\][\[\e[36m\]\u\[\e[38;5;240m\]_\[\e[38;5;208m\]\H\[\e[39m\]]\$\[\e[0m\] '
-      '';
-  interactiveShellInit =
-   /* bash */''
+  enableCompletion = true;
+  promptInit = '' PS1='\[\e[36;1m\]>>>>>>Hi Masrkai!\[\e[0m\] \[\e[1m\]\w\n\[\e[38;5;160m\]\t\[\e[39m\][\[\e[36m\]\u\[\e[38;5;240m\]_\[\e[38;5;208m\]\H\[\e[39m\]]\$\[\e[0m\] ' '';
+  interactiveShellInit =  /* bash */ ''
+
     #bash configuration
       if [ -f /etc/profile ]; then
         . /etc/profile
@@ -622,18 +607,18 @@ programs.bash = {
   '';
   shellAliases = {
     cl = "clear";
-    ff = "fastfetch";
-    code = "codium";
-    anime = "ani-cli -q 720 --dub";
-    ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
-    sudo = "sudo ";
-    l = "eza  --color=always --long --tree --git --links -a --icons=always";
-    ls = "eza --color=always --long --git --icons=always";
-    ip = "ip --color=auto";
-    grep = "grep --color=auto";
-    cpv = "rsync -avh --info=progress2";
     cp = "cp -vi";
     mv = "mv -vi";
+    sudo = "sudo ";
+    code = "codium";
+    ff = "fastfetch";
+    ip = "ip --color=auto";
+    grep = "grep --color=auto";
+    anime = "ani-cli -q 720 --dub";
+    cpv = "rsync -avh --info=progress2";
+    ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
+    ls = "eza --color=always --long --git --icons=always";
+    l = "eza  --color=always --long --tree --git --links -a --icons=always";
   };
 };
 
