@@ -212,7 +212,7 @@ environment.systemPackages = with pkgs; [
                             ms-python.python
                             ms-python.debugpy
 
-                              #>Jupyter
+                              #->Jupyter
                               ms-toolsai.jupyter
                               ms-toolsai.jupyter-keymap
                               ms-toolsai.jupyter-renderers
@@ -222,16 +222,23 @@ environment.systemPackages = with pkgs; [
                             #* Nix
                             jnoortheen.nix-ide
 
+                            #* HTML
+                            ms-vscode.live-server
+
                             #* Markdown
                             bierner.markdown-mermaid
 
                             #* General
                             usernamehw.errorlens
-                            pkief.material-icon-theme
+                            donjayamanne.githistory #GIT History
+                            grapecity.gc-excelviewer # For Exel Files
                             formulahendry.code-runner
                             shardulm94.trailing-spaces
                             aaron-bond.better-comments
                             streetsidesoftware.code-spell-checker
+
+                            #? theming
+                            pkief.material-icon-theme
 
                             #* VS-Codium Specific
                             ms-vscode-remote.remote-ssh
@@ -275,6 +282,14 @@ environment.systemPackages = with pkgs; [
                                                           version = "1.6.6";
                                                           sha256 = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
                                                         }
+                                                        {
+                                                          #https://open-vsx.org/extension/TabNine/tabnine-vscode
+                                                          name = "tabnine-vscode";
+                                                          publisher = "TabNine";
+                                                          version = "3.132.0";
+                                                          sha256 = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
+                                                        }
+
 ]; })
 
 #?#############
