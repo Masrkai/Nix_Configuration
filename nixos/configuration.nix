@@ -149,6 +149,7 @@ environment.systemPackages = with pkgs; [
   git-lfs
   thermald
   rustdesk-flutter
+  bash-completion
 
   #->Phone
   scrcpy
