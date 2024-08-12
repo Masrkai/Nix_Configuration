@@ -291,7 +291,6 @@ environment.systemPackages = with pkgs; [
   qbittorrent
   signal-desktop
   kdePackages.filelight
-  libsForQt5.kdeconnect-kde
 
   #Productivity
   anytype
@@ -397,7 +396,10 @@ services.tlp = {
 #?########################
 
 #--> KDE connect Specific
-  programs.kdeconnect.enable = true;
+  programs.kdeconnect = {
+    enable = true;
+    package = pkgs.kdePackages.kdeconnect-kde;
+  };
 
 #--> NoiseTorch
   programs.noisetorch.enable = true;
