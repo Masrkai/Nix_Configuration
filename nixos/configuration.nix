@@ -405,9 +405,11 @@ services.tlp = {
   programs.noisetorch.enable = true;
 
 #--> mlocate // "updatedb & locate"
-  services.locate.localuser = null;
-  services.locate.enable    = true;
-  services.locate.package   = pkgs.mlocate;
+  services.locate = {
+    enable    = true;
+    localuser = null;
+    package   = pkgs.mlocate;
+  };
 
 #---> Qemu KVM
   virtualisation.libvirtd.enable = true;
