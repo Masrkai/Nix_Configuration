@@ -101,6 +101,8 @@ in {
   services.flatpak.enable = false;
 
 
+
+
 #-> Fonts
 fonts.packages = with pkgs; [
   #!First Class
@@ -115,11 +117,12 @@ fonts.packages = with pkgs; [
 
 
 environment.systemPackages = with pkgs; [
-#############
-#Development:
-#############
 
-  #->General
+#*############
+#*Development:
+#*############
+
+  #-> General
   bat
   eza
   nil
@@ -130,10 +133,14 @@ environment.systemPackages = with pkgs; [
   searxng
   git-lfs
   thermald
-  rustdesk-flutter
   bash-completion
+  rustdesk-flutter
 
-  #->Phone
+  #-> Engineering
+  kicad
+  freecad
+
+  #-> Phone
   scrcpy
   android-tools
 
@@ -163,10 +170,10 @@ environment.systemPackages = with pkgs; [
   )
 
   #-> C++
-  (hiPrio gcc)
   cmake
   gnumake
   clang-tools
+  (hiPrio gcc)
   (lowPrio clang)
 
   #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it
@@ -292,6 +299,7 @@ environment.systemPackages = with pkgs; [
   betterbird
   qbittorrent
   signal-desktop
+  nix-output-monitor
   kdePackages.filelight
 
   #Productivity
@@ -396,6 +404,7 @@ services.tlp = {
 #?########################
 #? Applications services:
 #?########################
+
 
 #--> KDE connect Specific
   programs.kdeconnect = {

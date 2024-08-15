@@ -31,17 +31,11 @@ programs.bash = {
     scode(){
         sudo codium --no-sandbox --user-data-dir=/home/masrkai/.config/VSCodium
     }
-    switch(){
-        sudo nixos-rebuild switch
-    }
     garbage(){
         sudo nix-collect-garbage -d && nix-store --optimise && pip cache purge
     }
     gens(){
         sudo nix-env --list-generations --profile /nix/var/nix/profiles/system &&  echo "to remove Gens type:  sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations <Gen's-Numbers>"
-    }
-    update(){
-       sudo nix-channel --update && sudo nixos-rebuild switch --upgrade
     }
     sudophone(){
         adb shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh
@@ -124,6 +118,10 @@ programs.bash = {
     ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
     ls = "eza --color=always --long --git --icons=always";
     l = "eza  --color=always --long --tree --git --links -a --icons=always";
+
+    #? NixOS Specific
+    switch = "nixos-rebuild switch --use-remote-sudo --show-trace 2>&1 |& nom";
+    update = "nix-channel --update && nixos-rebuild switch --upgrade --use-remote-sudo --show-trace 2>&1 |& nom";
   };
 };
 }
