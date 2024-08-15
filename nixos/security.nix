@@ -72,14 +72,6 @@ with lib;
     "ufs"
   ];
 
-  #? Use Scudo memory allocator
-  environment= {
-    memoryAllocator.provider = mkDefault "scudo";
-    variables.SCUDO_OPTIONS = mkDefault "ZeroContents=1";
-  };
-
-
-
 #--> CalmAV
   services.clamav = {
     daemon = {

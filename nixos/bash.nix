@@ -120,8 +120,8 @@ programs.bash = {
     l = "eza  --color=always --long --tree --git --links -a --icons=always";
 
     #? NixOS Specific
-    switch = "nixos-rebuild switch --use-remote-sudo --show-trace 2>&1 |& nom";
-    update = "nix-channel --update && nixos-rebuild switch --upgrade --use-remote-sudo --show-trace 2>&1 |& nom";
+    switch = "sudo nixos-rebuild switch --show-trace 2>&1 |& nom";
+    update = "sudo nix-channel --update && sudo nixos-rebuild switch --upgrade --show-trace 2>&1 |&  nom";
   };
 };
 }
