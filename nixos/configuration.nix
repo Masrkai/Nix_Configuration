@@ -3,6 +3,8 @@
 let
   #unstable = import <unstable> {config.allowUnfree = true;};
   secrets = import ./secrets.nix;
+  ctj = pkgs.callPackage ./Programs/Any-To-Jpeg.nix {};
+
 in {
     imports =
     [ # Include the results of the hardware scan.
@@ -121,6 +123,8 @@ environment.systemPackages = with pkgs; [
 #*############
 #*Development:
 #*############
+  #-> Custom
+  ctj
 
   #-> General
   bat
@@ -145,7 +149,7 @@ environment.systemPackages = with pkgs; [
   android-tools
 
   #-> Python
-    (python311.withPackages (pk: with pk; [
+    (python312.withPackages (pk: with pk; [
       pip
       nltk
       lxml
@@ -153,6 +157,7 @@ environment.systemPackages = with pkgs; [
       scapy
       numpy
       pandas
+      pillow
       netaddr
       requests
       colorama

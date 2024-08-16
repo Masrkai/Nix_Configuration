@@ -104,22 +104,29 @@ programs.bash = {
         done
     }
   '';
+
   shellAliases = {
     cl = "clear";
-    cp = "cp -vi";
-    mv = "mv -vi";
     sudo = "sudo ";
     code = "codium";
     ff = "fastfetch";
     ip = "ip --color=auto";
     grep = "grep --color=auto";
     anime = "ani-cli -q 720 --dub";
-    cpv = "rsync -avh --info=progress2";
     ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
+
+    #-> Verposed output when coppying
+    cpv = "rsync -avh --info=progress2";
+
+    #-> Overwrite protection
+    cp = "cp -vi";
+    mv = "mv -vi";
+
+    #-> Replacing List command with eza @_@
     ls = "eza --color=always --long --git --icons=always";
     l = "eza  --color=always --long --tree --git --links -a --icons=always";
 
-    #? NixOS Specific
+    #-? NixOS Specific
     switch = "sudo nixos-rebuild switch --show-trace 2>&1 |& nom";
     update = "sudo nix-channel --update && sudo nixos-rebuild switch --upgrade --show-trace 2>&1 |&  nom";
   };
