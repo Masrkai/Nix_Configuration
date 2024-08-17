@@ -248,42 +248,42 @@ environment.systemPackages = with pkgs; [
                                                           name = "remote-ssh-edit";
                                                           publisher = "ms-vscode-remote";
                                                           version = "0.47.2";
-                                                          sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+                                                          hash = "sha256-LxFOxkcQNCLotgZe2GKc2aGWeP9Ny1BpD1XcTqB85sI=";
                                                         }
                                                         {
                                                          #https://open-vsx.org/extension/lukinco/lukin-vscode-theme
                                                           name = "lukin-vscode-theme";
                                                           publisher = "lukinco";
                                                           version = "0.1.5";
-                                                          sha256 = "sha256-T6yCPCy2AprDqNTJk2ucN2EsCrODn4j/1oldSnQNigU=";
+                                                          hash = "sha256-T6yCPCy2AprDqNTJk2ucN2EsCrODn4j/1oldSnQNigU=";
                                                         }
                                                         {
                                                           #https://open-vsx.org/extension/eliostruyf/screendown
                                                           name = "screendown";
                                                           publisher = "eliostruyf";
                                                           version = "0.0.23";
-                                                          sha256 = "sha256-ZHa4N1QTj7XAizWgeXzRGohhsSbxdPJv1rtCib4sQsU=";
+                                                          hash = "sha256-ZHa4N1QTj7XAizWgeXzRGohhsSbxdPJv1rtCib4sQsU=";
                                                         }
                                                         {
                                                           #https://open-vsx.org/extension/KevinRose/vsc-python-indent
                                                           name = "vsc-python-indent";
                                                           publisher = "KevinRose";
                                                           version = "1.18.0";
-                                                          sha256 = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
+                                                          hash = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
                                                         }
                                                         {
                                                           #https://open-vsx.org/api/bpruitt-goddard/mermaid-markdown-syntax-highlighting/1.6.6/file/bpruitt-goddard.mermaid-markdown-syntax-highlighting-1.6.6.vsix
                                                           name = "mermaid-markdown-syntax-highlighting";
                                                           publisher = "bpruitt-goddard";
                                                           version = "1.6.6";
-                                                          sha256 = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
+                                                          hash = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
                                                         }
                                                         {
                                                           #https://open-vsx.org/extension/TabNine/tabnine-vscode
                                                           name = "tabnine-vscode";
                                                           publisher = "TabNine";
                                                           version = "3.132.0";
-                                                          sha256 = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
+                                                          hash = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
                                                         }
 
 ]; })
