@@ -56,6 +56,13 @@ programs.bash = {
         /home/masrkai/Programs/Bash_Scripts/setup_cpp.sh
     }
 
+    s() {
+    if [[ $# == 0 ]]; then
+        eval "sudo $(fc -ln -1)"
+    else
+        sudo "$@"
+    fi }
+
     #! Extraction function
     function extract {
      if [ $# -eq 0 ]; then
