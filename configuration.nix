@@ -3,7 +3,9 @@
 let
   #unstable = import <unstable> {config.allowUnfree = true;};
   secrets = import ./secrets.nix;
+  backup = pkgs.callPackage ./Programs/backup.nix {};
   ctj = pkgs.callPackage ./Programs/Any-To-Jpeg.nix {};
+
 
 in {
     imports =
@@ -125,6 +127,7 @@ environment.systemPackages = with pkgs; [
 #*############
   #-> Custom
   ctj
+  backup
 
   #-> General
   bat

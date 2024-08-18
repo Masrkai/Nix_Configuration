@@ -55,9 +55,6 @@ programs.bash = {
     setupcpp(){
         /home/masrkai/Programs/Bash_Scripts/setup_cpp.sh
     }
-    backup(){
-       /home/masrkai/Programs/Bash_Scripts/Backup.sh
-    }
 
     #! Extraction function
     function extract {
