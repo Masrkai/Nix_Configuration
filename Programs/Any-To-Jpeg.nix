@@ -2,7 +2,7 @@
 
 let
   pythonWithPackages = pkgs.python3.withPackages (ps: with ps; [
-    pillow
+    pyvips
   ]);
 in
 pkgs.writeScriptBin "ctj" ''

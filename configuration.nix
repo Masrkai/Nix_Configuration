@@ -157,7 +157,7 @@ environment.systemPackages = with pkgs; [
       scapy
       numpy
       pandas
-      pillow
+      pyvips
       netaddr
       requests
       colorama
