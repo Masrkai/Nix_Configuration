@@ -166,7 +166,9 @@ environment.systemPackages = with pkgs; [
       numpy
       pandas
       pyvips
+      sqlite
       netaddr
+      jupyter-core
       requests
       colorama
       netifaces
@@ -494,13 +496,6 @@ services.tlp = {
         cache_dir = "/var/cache/searx";
       };
     };
-  };
-
-#--> Postgresql SQL DB
-  services.postgresql = {
-    enable = true;
-    package = pkgs.postgresql_16;
-    initialScript = ./init_db.sql;
   };
 
 #---> Qbit_torrent x Jackett
