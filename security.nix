@@ -3,7 +3,6 @@
 with lib;
 {
 
-
 #--> Securing the system boot & kernel
   boot = {
     kernel.sysctl = {

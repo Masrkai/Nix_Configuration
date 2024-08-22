@@ -24,9 +24,36 @@ in {
   nix.settings.experimental-features = [ "nix-command" ];
 
   # Bootloader.
+ boot.loader = {
+  efi = {
+    canTouchEfiVariables = true;
+    efiSysMountPoint = "/boot";
+  };
+
+#! it's critical to do this once a change is preformed
+#? sudo bootctl remove && sudo nixos-rebuild --install-bootloader boot
+#! It's undocumented properly
+  grub = {
+    enable = true;
+    devices = ["nodev"];
+    efiSupport = true;
+    configurationLimit = 7;
+    extraEntries = ''
+      menuentry "Firmware Setup" {
+        fwsetup
+      }
+    '';
+    extraConfig = ''
+      set timeout=5
+      set default=0
+    '';
+    theme = pkgs.nixos-grub2-theme;
+  };
+  systemd-boot.enable = false;
+};
+
+  #-> Enable NTFS Support for windows files systems
   boot.supportedFilesystems = [ "ntfs" ];
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   # Set your time zone.
   time.timeZone = "Africa/Cairo";
@@ -47,13 +74,26 @@ in {
   };
 
   # Enable the KDE Plasma Desktop Environment.
-  services.xserver.enable = true;  # Set to true for Plasma
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
 
-  # Configure keymap in X11
+  #! KDE plasma
+  services.desktopManager = {
+    plasma6.enable = true;
+    plasma6.enableQt5Integration = false ;
+  };
+
+  #! What to not install on KDE
+  environment.plasma6.excludePackages = with pkgs; [
+    kdePackages.kate
+    libsForQt5.kwallet
+    libsForQt5.kwallet-pam
+    libsForQt5.kwalletmanager
+    ];
+
+  #! Configure keymap in X11
   services.xserver = {
+    enable = false;
     xkb.variant = "";
     xkb.layout = "us";
     videoDrivers = [ "intel" "amdgpu" ];
@@ -90,10 +130,7 @@ in {
 
   # Add Vulkan ICDs
   environment.variables.AMD_VULKAN_ICD = "RADV";
-  environment.variables.VULKAN_ICD_FILENAMES = "${pkgs.vulkan-loader}/share/vulkan/icd.d/radeon_icd.x86_64.json:${pkgs.vulkan-loader}/share/vulkan/icd.d/intel_icd.x86_64.json"; #MASRKAI
-#########################################################################################################################################################################################
-
-
+  environment.variables.VULKAN_ICD_FILENAMES = "${pkgs.vulkan-loader}/share/vulkan/icd.d/radeon_icd.x86_64.json:${pkgs.vulkan-loader}/share/vulkan/icd.d/intel_icd.x86_64.json";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.masrkai = {
@@ -133,6 +170,7 @@ environment.systemPackages = with pkgs; [
   ctj
   backup
   setupcpp
+  nixos-grub2-theme
 
   #-> General
   bat
@@ -145,6 +183,7 @@ environment.systemPackages = with pkgs; [
   searxng
   git-lfs
   thermald
+  efibootmgr
   bash-completion
   rustdesk-flutter
 
@@ -157,7 +196,7 @@ environment.systemPackages = with pkgs; [
   android-tools
 
   #-> Python
-    (python312.withPackages (pk: with pk; [
+    (python311.withPackages (pk: with pk; [
       pip
       nltk
       lxml
@@ -168,12 +207,21 @@ environment.systemPackages = with pkgs; [
       pyvips
       sqlite
       netaddr
-      jupyter-core
       requests
       colorama
       netifaces
-      ipykernel
       setuptools
+      matplotlib
+
+      #-> Juniper/jupter
+      notebook
+      jupyterlab
+
+      ipykernel
+      ipython-sql
+      ipython-genutils
+
+
       python-dotenv
       beautifulsoup4
       terminaltables
@@ -192,7 +240,6 @@ environment.systemPackages = with pkgs; [
   (lowPrio clang)
 
   #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it
-  rustup
 
   #-> MicroChips
   esptool
@@ -231,8 +278,14 @@ environment.systemPackages = with pkgs; [
                             #* HTML
                             ms-vscode.live-server
 
+                            #* Bash
+                            mads-hartmann.bash-ide-vscode
+
                             #* Markdown
                             bierner.markdown-mermaid
+
+                            #* Yamal
+                            redhat.vscode-yaml
 
                             #* General
                             usernamehw.errorlens
@@ -295,6 +348,20 @@ environment.systemPackages = with pkgs; [
                                                           version = "3.132.0";
                                                           hash = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
                                                         }
+                                                        {
+                                                          #https://open-vsx.org/api/qwtel/sqlite-viewer/0.5.11/file/qwtel.sqlite-viewer-0.5.11.vsix
+                                                          name = "sqlite-viewer";
+                                                          publisher = "qwtel";
+                                                          version = "0.5.11";
+                                                          hash = "sha256-eC3qNzRoRd1pjAtgQtAm1Y7/c5juH1Q+R2xVG3+IpZQ=";
+                                                        }
+                                                        {
+                                                          #https://open-vsx.org/extension/ultram4rine/vscode-choosealicense
+                                                          name = "vscode-choosealicense";
+                                                          publisher = "ultram4rine";
+                                                          version = "0.9.4";
+                                                          hash = "sha256-YmZ1Szvcv3E3q8JVNV1OirXFdYI29a4mR3rnhJfUSMM=";
+                                                        }
 
 ]; })
 
@@ -339,7 +406,6 @@ environment.systemPackages = with pkgs; [
   pciutils
   authenticator
   translate-shell
-  libsForQt5.spectacle
 
   #Spell_check
   aspell
@@ -420,11 +486,9 @@ services.tlp = {
 #? Applications services:
 #?########################
 
-
 #--> KDE connect Specific
   programs.kdeconnect = {
     enable = true;
-    package = pkgs.kdePackages.kdeconnect-kde;
   };
 
 #--> NoiseTorch

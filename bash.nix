@@ -43,6 +43,9 @@ programs.bash = {
     fixcode(){
         rm -rf ~/.config/VSCodium/GPUCache/
     }
+    fix-arduino(){
+        rm -rf ~/.config/arduino-ide/GPUCache/
+    }
     fixbrave(){
         sudo rm -rf ~/.config/BraveSoftware/Brave-Browser/SingletonLock
     }
