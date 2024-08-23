@@ -9,7 +9,7 @@ let
   setupcpp = pkgs.callPackage ./Programs/setupcpp.nix {};
 
   #? Python
-  ctj = pkgs.callPackage ./Programs/Any-To-Jpeg.nix {};
+  ctj = pkgs.callPackage ./Programs/ctj.nix {};
 
 in {
     imports =
@@ -30,25 +30,27 @@ in {
     efiSysMountPoint = "/boot";
   };
 
-#! it's critical to do this once a change is preformed
-#? sudo bootctl remove && sudo nixos-rebuild --install-bootloader boot
-#! It's undocumented properly
+
+  #! it's critical to do this once a change is preformed
+  #? sudo bootctl remove && sudo nixos-rebuild --install-bootloader boot
+  #! It's undocumented properly
   grub = {
     enable = true;
     devices = ["nodev"];
     efiSupport = true;
     configurationLimit = 7;
     extraEntries = ''
-      menuentry "Firmware Setup" {
-        fwsetup
-      }
-    '';
+        menuentry "Firmware Setup" {
+          fwsetup
+        }
+      '';
     extraConfig = ''
-      set timeout=5
-      set default=0
-    '';
+        set timeout=5
+        set default=0
+      '';
     theme = pkgs.nixos-grub2-theme;
   };
+
   systemd-boot.enable = false;
 };
 
@@ -73,11 +75,14 @@ in {
     LC_IDENTIFICATION = "en_US.UTF-8";
   };
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
 
-  #! KDE plasma
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    #theme = "KDE Plasma 5";
+  };
+
+  #! Enable the KDE Plasma Desktop Environment.
   services.desktopManager = {
     plasma6.enable = true;
     plasma6.enableQt5Integration = false ;
@@ -139,26 +144,25 @@ in {
     extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
   };
 
-# Managing unfree packages & Flatpak
+  # Managing unfree packages
   nixpkgs.config = {
     allowUnfree = true;
   };
-  services.flatpak.enable = false;
 
+  #! Diable flatpack
+  services.flatpak.enable = lib.mkForce false;
 
+  #-> Fonts
+  fonts.packages = with pkgs; [
+    #* First Class
+    iosevka-bin
+    material-design-icons
 
-
-#-> Fonts
-fonts.packages = with pkgs; [
-  #!First Class
-  nerdfonts
-  iosevka-bin
-
-  #>Second Class
-  noto-fonts
-  noto-fonts-cjk
-  liberation_ttf
-];
+    #> Second Class
+    noto-fonts
+    noto-fonts-cjk
+    liberation_ttf
+  ];
 
 
 environment.systemPackages = with pkgs; [
@@ -378,14 +382,15 @@ environment.systemPackages = with pkgs; [
   fastfetch
   syncthing
   noisetorch
-  betterbird
   qbittorrent
+  authenticator
   signal-desktop
   nix-output-monitor
   kdePackages.filelight
 
   #Productivity
   anytype
+  betterbird
   libreoffice-qt
   gimp-with-plugins
 
@@ -404,7 +409,6 @@ environment.systemPackages = with pkgs; [
   #System
   mlocate
   pciutils
-  authenticator
   translate-shell
 
   #Spell_check
@@ -473,9 +477,6 @@ services.tlp = {
 #--> Disabled Power-Profiles for TLP to take action.
   services.power-profiles-daemon.enable = false;
 
-#--> Enable powertop
-  powerManagement.powertop.enable = true;
-
 #--> Enable thermald (only necessary if on Intel CPUs)
   services.thermald.enable = true;
 
@@ -487,9 +488,7 @@ services.tlp = {
 #?########################
 
 #--> KDE connect Specific
-  programs.kdeconnect = {
-    enable = true;
-  };
+  programs.kdeconnect.enable = true;
 
 #--> NoiseTorch
   programs.noisetorch.enable = true;

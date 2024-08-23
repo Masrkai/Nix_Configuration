@@ -43,10 +43,14 @@ with lib;
 
 
   boot.blacklistedKernelModules = [
+    #! Flatpak
+    "flatpak"
+
     #! Obscure network protocols
     "ax25"
     "netrom"
     "rose"
+
     #! Old or rare or insufficiently audited filesystems
     "adfs"
     "affs"
