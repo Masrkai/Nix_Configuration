@@ -23,35 +23,12 @@ in {
   #Experimental Features
   nix.settings.experimental-features = [ "nix-command" ];
 
+
   # Bootloader.
  boot.loader = {
-  efi = {
-    canTouchEfiVariables = true;
-    efiSysMountPoint = "/boot";
-  };
-
-
-  #! it's critical to do this once a change is preformed
-  #? sudo bootctl remove && sudo nixos-rebuild --install-bootloader boot
-  #! It's undocumented properly
-  grub = {
-    enable = true;
-    devices = ["nodev"];
-    efiSupport = true;
-    configurationLimit = 7;
-    extraEntries = ''
-        menuentry "Firmware Setup" {
-          fwsetup
-        }
-      '';
-    extraConfig = ''
-        set timeout=5
-        set default=0
-      '';
-    theme = pkgs.nixos-grub2-theme;
-  };
-
-  systemd-boot.enable = false;
+  timeout = 5;
+  systemd-boot.enable = true;
+  efi.canTouchEfiVariables = true;
 };
 
   #-> Enable NTFS Support for windows files systems
@@ -160,6 +137,7 @@ in {
 
     #> Second Class
     noto-fonts
+    dejavu_fonts
     noto-fonts-cjk
     liberation_ttf
   ];
@@ -174,13 +152,13 @@ environment.systemPackages = with pkgs; [
   ctj
   backup
   setupcpp
-  nixos-grub2-theme
 
   #-> General
   bat
   eza
   nil
   git
+  kitty
   unzip
   xterm
   gparted
@@ -192,8 +170,8 @@ environment.systemPackages = with pkgs; [
   rustdesk-flutter
 
   #-> Engineering
-  kicad
-  freecad
+  #kicad
+  #freecad
 
   #-> Phone
   scrcpy
@@ -581,6 +559,47 @@ services.tlp = {
     alsa.enable = true;
     pulse.enable = true;
   };
+
+
+  environment.etc."xdg/kitty/kitty.conf".text = ''
+    # Basic settings
+    font_family Iosevka Fixed Hv Ex Obl
+    font_size 11
+    adjust_line_height 0
+    adjust_column_width 0
+    disable_ligatures never
+
+    # Use additional symbols from Material Design Icons
+    symbol_map U+E000-U+E7C5 MaterialDesignIcons
+
+    # Color scheme
+    background #000000
+    foreground #ffffff
+    cursor #93a1a1
+
+    # Window layout
+    remember_window_size no
+    initial_window_width 157c
+    initial_window_height 36c
+
+    # Tab bar
+    tab_bar_edge bottom
+    tab_bar_style powerline
+
+    # Performance
+    repaint_delay 10
+    input_delay 3
+    sync_to_monitor yes
+
+    # Key mappings
+    map ctrl+shift+c copy_to_clipboard
+    map ctrl+shift+v paste_from_clipboard
+    map ctrl+shift+t new_tab
+    map ctrl+shift+q close_tab
+
+    # Extra configuration (for extensibility)
+    # Add any additional configuration here
+  '';
 
 #--> $PATH
 environment.localBinInPath = true;
