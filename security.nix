@@ -45,11 +45,9 @@ with lib;
 
                           #? Ignore bogus ICMP error responses
                           "net.ipv4.icmp_ignore_bogus_error_responses" = mkForce 1;
-
-
-    };
-    #?> Restrict kernel log p2
-    consoleLogLevel = mkOverride 500 3;
+      };
+      #?> Restrict kernel log p2
+      consoleLogLevel = mkOverride 500 3;
 };
 
 
