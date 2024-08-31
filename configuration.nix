@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  #unstable = import <unstable> {config.allowUnfree = true;};
+  unstable = import <unstable> {config.allowUnfree = true;};
   secrets = import ./secrets.nix;
 
   #! Bash
@@ -93,26 +93,29 @@ in {
 #! AMD-Graphics:
 #!###############
 
-  # GPU drivers and Vulkan support
+  #! GPU drivers and Vulkan support
   hardware.opengl = {
     enable = true;
     driSupport = true;
     driSupport32Bit = true;
-
-  extraPackages  = with pkgs; [
-    mesa
-    libva
-    amdvlk
-    vaapiIntel
-    vulkan-tools
-    vulkan-loader
-    intel-media-driver
+    extraPackages = with pkgs; [
+      mesa
+      libva
+      amdvlk
+      vaapiIntel
+      vulkan-tools
+      vulkan-loader
+      intel-media-driver
+      rocm-opencl-icd
+      rocm-opencl-runtime
     ];
   };
 
-  # Add Vulkan ICDs
-  environment.variables.AMD_VULKAN_ICD = "RADV";
-  environment.variables.VULKAN_ICD_FILENAMES = "${pkgs.vulkan-loader}/share/vulkan/icd.d/radeon_icd.x86_64.json:${pkgs.vulkan-loader}/share/vulkan/icd.d/intel_icd.x86_64.json";
+  #? Add Vulkan ICDs
+  environment.variables = {
+  AMD_VULKAN_ICD = "RADV";
+  VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.masrkai = {
@@ -153,6 +156,9 @@ environment.systemPackages = with pkgs; [
   backup
   setupcpp
 
+  searxng
+  hw-probe
+
   #-> General
   bat
   eza
@@ -162,7 +168,7 @@ environment.systemPackages = with pkgs; [
   unzip
   xterm
   gparted
-  searxng
+  glxinfo
   git-lfs
   thermald
   efibootmgr
@@ -271,8 +277,9 @@ environment.systemPackages = with pkgs; [
 
                             #* General
                             usernamehw.errorlens
-                            donjayamanne.githistory #GIT History
-                            grapecity.gc-excelviewer # For Exel Files
+                            mechatroner.rainbow-csv      #> For DataBases .csv files!
+                            donjayamanne.githistory      #> GIT History
+                            grapecity.gc-excelviewer     #>  For Exel Files
                             formulahendry.code-runner
                             shardulm94.trailing-spaces
                             aaron-bond.better-comments
@@ -317,7 +324,7 @@ environment.systemPackages = with pkgs; [
                                                           hash = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
                                                         }
                                                         {
-                                                          #https://open-vsx.org/api/bpruitt-goddard/mermaid-markdown-syntax-highlighting/1.6.6/file/bpruitt-goddard.mermaid-markdown-syntax-highlighting-1.6.6.vsix
+                                                          #https://open-vsx.org/api/bpruitt-goddard/mermaid-markdown-syntax-highlighting
                                                           name = "mermaid-markdown-syntax-highlighting";
                                                           publisher = "bpruitt-goddard";
                                                           version = "1.6.6";
@@ -331,18 +338,18 @@ environment.systemPackages = with pkgs; [
                                                           hash = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
                                                         }
                                                         {
-                                                          #https://open-vsx.org/api/qwtel/sqlite-viewer/0.5.11/file/qwtel.sqlite-viewer-0.5.11.vsix
-                                                          name = "sqlite-viewer";
-                                                          publisher = "qwtel";
-                                                          version = "0.5.11";
-                                                          hash = "sha256-eC3qNzRoRd1pjAtgQtAm1Y7/c5juH1Q+R2xVG3+IpZQ=";
-                                                        }
-                                                        {
                                                           #https://open-vsx.org/extension/ultram4rine/vscode-choosealicense
                                                           name = "vscode-choosealicense";
                                                           publisher = "ultram4rine";
                                                           version = "0.9.4";
                                                           hash = "sha256-YmZ1Szvcv3E3q8JVNV1OirXFdYI29a4mR3rnhJfUSMM=";
+                                                        }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=yy0931.vscode-sqlite3-editor
+                                                          name = "vscode-sqlite3-editor";
+                                                          publisher = "yy0931";
+                                                          version = "1.0.189";
+                                                          hash = "sha256-zlZTb9zBSWsnZrcYArW1x4hjHzlAp6ITe4TPuUdYazI=";
                                                         }
 
 ]; })

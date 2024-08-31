@@ -6,7 +6,9 @@
     ];
 
   boot = {
-    kernelModules = [ "kvm-intel" "radeon.si_support=1" "amdgpu.si_support=0" ];
+
+    kernelParams = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" ];
+    kernelModules = [ "kvm-intel" ];
     extraModulePackages = [config.boot.kernelPackages.rtl8188eus-aircrack ];
 
     initrd = {

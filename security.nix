@@ -96,6 +96,3 @@ with lib;
     chown -R clamav:clamav /var/lib/clamav
   '';
 }
-
-
-

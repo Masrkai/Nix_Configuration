@@ -3,6 +3,14 @@
 #*#########################
 
 {
+  #   networking.wireless = {
+  #   enable = true;  # Enables wireless support via wpa_supplicant.
+  #   networks = {
+  #     "YourSSID" = {
+  #       psk = "YourPassword";
+  #     };
+  #   };
+  # };
 
   services.resolved = {
     enable = true;

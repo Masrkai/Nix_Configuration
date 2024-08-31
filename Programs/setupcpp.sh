@@ -5,26 +5,56 @@ Cyan='\033[0;36m'
 LightGreen='\033[1;32m'
 NC='\033[0m'       # Reset Color
 
-# *Create the .vscode directory if it doesn't exist
-mkdir -p .vscode
+  mkdir -p src
+  echo '#include <iostream>
 
-# *Define the source and destination paths
-src_dir="/home/masrkai/Templates/C++"
-dest_dir="."
+  int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+  }' > src/main.cpp
 
-# *List of files to copy
-files=(
-  "main.cpp"
-  "shell.nix"
-  "CMakeLists.txt"
-  ".vscode/tasks.json"
-  ".vscode/launch.json"
-)
+  echo '{ pkgs ? import <nixpkgs> {} }:
 
-# *Copy files to the destination
-for file in "${files[@]}"; do
-  cp "$src_dir/${file#./}" "$dest_dir/${file#./}" 2>/dev/null
-done
+      let
+        stdenv = pkgs.stdenv;
+        gcc = pkgs.gcc;
+        lib = pkgs.lib;
+      in
+      stdenv.mkDerivation {
+        name = "CMS";
+
+        # Specify your source files here
+        src = ./src;
+
+        # Compiler flags
+        CXXFLAGS = "-std=c++23";
+
+        # Linker flags (if any)
+        LDFLAGS = "";
+
+        buildInputs = [ gcc ];
+
+        # Build command
+        buildPhase = ''
+          mkdir -p $out/bin
+          g++ $CXXFLAGS -o $out/bin/output.exe $src/main.cpp $LDFLAGS
+        '';
+
+        # Optional install phase if you want to do something specific
+        # installPhase = ''
+        #   echo "Installation phase"
+        # '';
+
+        meta = with lib; {
+          description = "CMS";
+          license = licenses.mit;
+          platforms = platforms.linux;
+        };
+      }' > default.nix
+
+  echo 'result' > .gitignore
+
+  echo '# C++ Project'
 
 # *Output completion message
-echo -e "${LightGreen}VS Codium C++ configuration setup completed.${NC}"
+echo -e "${LightGreen}C++ development environment setup complete.${NC}"
