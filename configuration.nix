@@ -227,7 +227,8 @@ environment.systemPackages = with pkgs; [
   (hiPrio gcc)
   (lowPrio clang)
 
-  #-> Rust #Rust is a very special case and it's packaged by default in Nix DW about it
+  #-> Rust
+  #-> Rust is a very special case and it's packaged by default in Nix DW about it
 
   #-> MicroChips
   esptool
@@ -538,7 +539,7 @@ services.tlp = {
       ];
       outgoing = {
         request_timeout = 6.0;
-        max_request_timeout = 15.0;
+        max_request_timeout = 8.0;
       };
       cache = {
         cache_dir = "/var/cache/searx";

@@ -32,8 +32,19 @@ with lib;
                           #? Ignore ICMP echo requests
                           "net.ipv4.icmp_echo_ignore_all" = mkForce 1;
 
+                          #? Prevent IP Spoofing attacks
+                          "net.ipv4.conf.all.rp_filter" = mkForce 1;
+                          "net.ipv4.conf.default.rp_filter" = mkForce 1;
+
                           #? Enable protection against time-wait assasination (RFC 1337)
                           "net.ipv4.tcp_rfc1337" = mkForce 1;
+
+                          #? Log Martian packets
+                          "net.ipv4.conf.all.log_martians" = mkDefault true;
+                          "net.ipv4.conf.default.log_martians" = mkDefault true;
+
+                          #? Ignore bogus ICMP error responses
+                          "net.ipv4.icmp_ignore_bogus_error_responses" = mkForce 1;
 
 
     };
@@ -73,6 +84,10 @@ with lib;
     "sysv"
     "ufs"
   ];
+
+
+#--> Fail2ban // prevent brute-force attacks
+services.fail2ban.enable = true;
 
 #--> CalmAV
   services.clamav = {
