@@ -14,8 +14,8 @@
 
   services.resolved = {
     enable = true;
-    domains = [ "~." ]; # use as default interface for all requests
-    # let Avahi handle mDNS publication
+    domains = [ "~." ]; #! use as default interface for all requests
+    #! let Avahi handle mDNS publication
     extraConfig = ''
       MulticastDNS=resolve
     '';
@@ -24,7 +24,8 @@
 
   networking = {
 
-    hostName = "NixOS"; # Defining hostname.
+    hostName = "NixOS"; #* Defining hostname.
+    nftables.enable = true; #* Using the newer standard
     nameservers = [ "::1" "127.0.0.1"];
 
     networkmanager.enable = true;
@@ -33,8 +34,9 @@
     #! Firewall
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 443 8888  8384  22000 18081 /*#Syncthing */  ];
-      allowedUDPPorts = [ 443 22000 21027 18081 /*#Syncthing */ ];
+      allowedTCPPorts = [ 443 8888 8384 22000 18081 ];
+      allowedUDPPorts = [ 443 22000 21027 18081 ];
+      logReversePathDrops = true;
 
     #? Proxy // IF i ever had one to use
     # proxy = {
