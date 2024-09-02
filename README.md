@@ -6,16 +6,14 @@ This is a very specialized configuration i really put my heart into over a year 
 
  - I have been learning Nix for a Year until the last update of this configuration, I am no expert like some others maybe are so take my choices with a grain of salt
 
- - As of 9/8/2024 I added lots and lots of VScodium extensions to have absolute redundancy for my development Environment
+ - Reviewed README on "2/9/2024"
 
 # In configuration I added support for
 
 - Nix
 - C++
-- Rust
 - Python
 - Bash
-- PostgreSQL
 
 # I Have More!
 _It's too long to document but i am going to soon_
