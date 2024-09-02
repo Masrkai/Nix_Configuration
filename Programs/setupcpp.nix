@@ -1,6 +1,6 @@
 { pkgs }:
 
-pkgs.writeScriptBin "setupcpp" ''
-  #!${pkgs.bash}/bin/bash
-  ${builtins.readFile ./setupcpp.sh}
-''
+  pkgs.writeScriptBin  "setupcpp" ''
+    #!/${pkgs.bash}/bin/bash
+    ${pkgs.bash}/bin/bash ${./setupcpp.sh}
+  ''

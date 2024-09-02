@@ -55,9 +55,6 @@ programs.bash = {
     fusb(){
          sudo chown masrkai  /dev/ttyUSB0
     }
-    setupcpp(){
-        /home/masrkai/Programs/Bash_Scripts/setup_cpp.sh
-    }
 
     s() {
     if [[ $# == 0 ]]; then
