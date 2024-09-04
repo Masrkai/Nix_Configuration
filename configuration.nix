@@ -407,7 +407,9 @@ environment.systemPackages = with pkgs; [
 #! Pentration-Testing:
 #!####################
   iw
+  dig
   mdk4
+  getdns
   crunch
   asleap
   openssl
@@ -545,6 +547,27 @@ services.tlp = {
         cache_dir = "/var/cache/searx";
       };
     };
+  };
+
+#---> GNS3
+  services.gns3-server = {
+    enable = true;
+
+    auth = {
+      enable = true;
+      user = "gns3";
+      passwordFile = "/var/lib/secrets/gns3_password";
+    };
+
+    ssl = {
+      enable = true;
+      certFile = "/var/lib/gns3/ssl/cert.pem";
+      keyFile = "/var/lib/gns3/ssl/key.pem";
+    };
+
+    dynamips.enable = true;
+    ubridge.enable = true;
+    vpcs.enable = true;
   };
 
 #---> Qbit_torrent x Jackett

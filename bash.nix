@@ -118,6 +118,7 @@ programs.bash = {
     grep = "grep --color=auto";
     anime = "ani-cli -q 720 --dub";
     ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
+    fixnet = "sudo systemctl restart NetworkManager nftables stubby";
 
     #-> Verposed output when coppying
     cpv = "rsync -avh --info=progress2";
