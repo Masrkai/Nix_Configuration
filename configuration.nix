@@ -604,9 +604,6 @@ services.tlp = {
     map ctrl+shift+v paste_from_clipboard
     map ctrl+shift+t new_tab
     map ctrl+shift+q close_tab
-
-    # Extra configuration (for extensibility)
-    # Add any additional configuration here
   '';
 
 #--> $PATH
