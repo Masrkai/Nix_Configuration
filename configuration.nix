@@ -176,6 +176,7 @@ environment.systemPackages = with pkgs; [
   rustdesk-flutter
 
   #-> Engineering
+  gns3-gui
   #kicad
   #freecad
 
