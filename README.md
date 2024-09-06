@@ -6,7 +6,7 @@ This is a very specialized configuration i really put my heart into over a year 
 
  - I have been learning Nix for a Year until the last update of this configuration, I am no expert like some others maybe are so take my choices with a grain of salt
 
- - Reviewed README on "2/9/2024"
+ - Reviewed README on "6/9/2024"
 
 # In configuration I added support for
 
