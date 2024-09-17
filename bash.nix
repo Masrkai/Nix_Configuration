@@ -132,8 +132,9 @@ programs.bash = {
     l = "eza  --color=always --long --tree --git --links -a --icons=always";
 
     #-? NixOS Specific
-    switch = "sudo nixos-rebuild switch --show-trace 2>&1 |& nom";
+    switch = "nixos-rebuild switch --show-trace 2>&1 |& nom";
     update = "sudo nix-channel --update && sudo nixos-rebuild switch --upgrade --show-trace 2>&1 |&  nom";
+    checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 7 '#include <...> search starts here:'";
   };
 };
 }
