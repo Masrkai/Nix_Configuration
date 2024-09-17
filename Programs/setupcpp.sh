@@ -14,7 +14,8 @@ NC='\033[0m'       # Reset Color
     return 0;
   }' > src/main.cpp
 
-  echo '{ pkgs ? import <nixpkgs> {} }:
+  cat << 'EOF' > default.nix
+{ pkgs ? import <nixpkgs> {} }:
 
 let
   stdenv = pkgs.stdenv;
@@ -51,7 +52,9 @@ stdenv.mkDerivation {
     license = licenses.mit;
     platforms = platforms.linux;
   };
-}' > default.nix
+}
+EOF
+
 
   echo 'result' > .gitignore
 
