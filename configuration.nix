@@ -4,14 +4,19 @@ let
   #unstable = import <unstable> {config.allowUnfree = true;};
   secrets = import ./secrets.nix;
 
-  #! Bash
-  backup = pkgs.callPackage ./Programs/backup.nix {};
-  setupcpp = pkgs.callPackage ./Programs/setupcpp.nix {};
+  customPackages = {
+    #? .Nix
+    super-productivity = pkgs.callPackage ./Programs/super-productivity.nix {};
 
-  #? Python
-  ctj = pkgs.callPackage ./Programs/ctj.nix {};
+    #! Bash
+    backup = pkgs.callPackage ./Programs/backup.nix {};
+    setupcpp = pkgs.callPackage ./Programs/setupcpp.nix {};
 
-in {
+    #? Python
+    ctj = pkgs.callPackage ./Programs/ctj.nix {};
+  };
+
+in{
     imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -20,27 +25,17 @@ in {
       ./bash.nix
     ];
 
-  #Experimental Features
+  #! Experimental Features
   nix.settings.experimental-features = [ "nix-command" ];
 
-
-  # Bootloader.
- boot.loader = {
-  timeout = 5;
-  systemd-boot.enable = true;
-  efi.canTouchEfiVariables = true;
-};
-
-  #-> Enable NTFS Support for windows files systems
-  boot.supportedFilesystems = [ "ntfs" ];
-
-  # Set your time zone.
+  #? Set your time zone.
   time.timeZone = "Africa/Cairo";
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n={
+    #? Select internationalisation properties.
+    defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
+    extraLocaleSettings = {
     LC_TIME = "en_US.UTF-8";
     LC_NAME = "en_US.UTF-8";
     LC_PAPER = "en_US.UTF-8";
@@ -50,19 +45,40 @@ in {
     LC_TELEPHONE = "en_US.UTF-8";
     LC_MEASUREMENT = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
+  }; };
+
+  # Enable KDE Plasma 6 Desktop Environment
+  services.desktopManager.plasma6 = {
+    enable = true;
+    # Qt5 integration is typically not needed for Plasma 6
+    enableQt5Integration = false;
+  };
+
+  # Configure X11 server (needed for some Wayland compositors)
+  services.xserver = {
+    enable = false;  # This should be true even for Wayland
+    xkb.layout = "us";
+    xkb.variant = "";
+    videoDrivers = [ "intel" "amdgpu" ];
   };
 
 
-  services.displayManager.sddm = {
+  # Set default session to Wayland
+  services.displayManager={
+    defaultSession = "plasma";
+    sddm = {
     enable = true;
     wayland.enable = true;
-    #theme = "KDE Plasma 5";
+    };
   };
+  # Enable Wayland-specific services
+  programs.xwayland.enable = true;
 
-  #! Enable the KDE Plasma Desktop Environment.
-  services.desktopManager = {
-    plasma6.enable = true;
-    plasma6.enableQt5Integration = false ;
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      kdePackages.xdg-desktop-portal-kde
+    ];
   };
 
   #! What to not install on KDE
@@ -73,21 +89,14 @@ in {
     libsForQt5.kwalletmanager
     ];
 
-  #! Configure keymap in X11
-  services.xserver = {
-    enable = false;
-    xkb.variant = "";
-    xkb.layout = "us";
-    videoDrivers = [ "intel" "amdgpu" ];
-  };
-
-  # Enable bluetooth
-  hardware.bluetooth.enable = true ;
-  hardware.bluetooth.powerOnBoot = false ;
-
-  # Enable touchpad support
+  #! Enable touchpad support
   services.libinput.enable = true;
 
+  #? Weylus
+  programs.weylus = {
+    enable = true;
+    openFirewall = true;
+  };
 
 #!###############
 #! AMD-Graphics:
@@ -100,8 +109,10 @@ in {
     driSupport32Bit = true;
     extraPackages = with pkgs; [
       mesa
+      vkd3d
       libva
       amdvlk
+      dxvk_2
       vaapiIntel
       vulkan-tools
       vulkan-loader
@@ -111,10 +122,52 @@ in {
     ];
   };
 
-  #? Add Vulkan ICDs
-  environment.variables = {
-  AMD_VULKAN_ICD = "RADV";
-  VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
+  environment={
+    #? Set up environment variables for colored man pages
+    variables = {
+    MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
+    LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
+    LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
+    MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
+
+    CPLUS_INCLUDE_PATH = let
+      includeDirs = [
+        "${pkgs.eigen}/include/eigen3"
+        "${pkgs.nlohmann_json}/include"
+        "${pkgs.boost185.dev}/include/"
+      ];
+    in builtins.concatStringsSep ":" includeDirs;
+
+    LIBRARY_PATH = let
+      libDirs = [
+        "${pkgs.eigen}/lib"
+        "${pkgs.nlohmann_json}/lib"
+        "${pkgs.boost185}/lib"
+      ];
+    in builtins.concatStringsSep ":" libDirs;
+
+
+      #? Add Vulkan ICDs for Graphics
+      AMD_VULKAN_ICD = "RADV";
+      VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
+    };
+
+    # Set environment variables for Wayland
+    sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+      XDG_SESSION_TYPE = "wayland";
+      QT_QPA_PLATFORM = "wayland";
+      GDK_BACKEND = "wayland";
+      WLR_NO_HARDWARE_CURSORS = "1";
+    };
+   localBinInPath = true;
+  };
+
+  programs.less = {
+    enable = true;
+    envVariables = {
+      LESS = "-R --use-color -Dd+r$Du+b";
+    };
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -125,58 +178,68 @@ in {
   };
 
   # Managing unfree packages
-  nixpkgs.config = {
-    allowUnfree = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   #! Diable flatpack
   services.flatpak.enable = lib.mkForce false;
 
   #-> Fonts
-  fonts.packages = with pkgs; [
+  fonts = {
+  packages = with pkgs; [
+
     #* First Class
     iosevka-bin
     material-design-icons
 
-    #> Second Class
-    noto-fonts
-    dejavu_fonts
-    noto-fonts-cjk
-    liberation_ttf
-  ];
+      #> Second Class
+      noto-fonts
+      dejavu_fonts
+      noto-fonts-cjk
+      liberation_ttf
+      ];
 
+        fontconfig.defaultFonts.emoji = [
+        "Noto Color Emoji"
+        ];
+  };
 
-environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
+  #*############
+  #*Development:
+  #*############
 
-#*############
-#*Development:
-#*############
   #-> Custom
-  ctj
-  backup
-  setupcpp
+  customPackages.ctj
+  customPackages.backup
+  customPackages.setupcpp
+  customPackages.super-productivity
 
   searxng
-  hw-probe
 
   #-> General
   bat
   eza
   nil
   git
+  less
+  most
   kitty
   unzip
   xterm
+  weylus
   gparted
   glxinfo
   git-lfs
+  hw-probe
   thermald
   efibootmgr
-  bash-completion
   rustdesk-flutter
+  (lowPrio bash-completion)
+
+  (hiPrio nvtopPackages.amd)
+  (lowPrio nvtopPackages.intel)
 
   #-> Engineering
-  gns3-gui
   #kicad
   #freecad
 
@@ -210,8 +273,6 @@ environment.systemPackages = with pkgs; [
       ipython-sql
       ipython-genutils
 
-
-      python-dotenv
       beautifulsoup4
       terminaltables
       huggingface-hub
@@ -222,11 +283,26 @@ environment.systemPackages = with pkgs; [
   )
 
   #-> C++
+  #? Builders
   cmake
   gnumake
-  clang-tools
+  cppcheck
+  pkg-config
+
+  #? Libraries
+  eigen
+  nlohmann_json
+
+  boost185.dev
+  (hiPrio boost185)
+
+  #! Compilers + Extras
+  gdb
   (hiPrio gcc)
-  (lowPrio clang)
+
+  clang-tools
+  clang-analyzer
+  (lowPrio clang_18)
 
   #-> Rust
   #-> Rust is a very special case and it's packaged by default in Nix DW about it
@@ -248,7 +324,7 @@ environment.systemPackages = with pkgs; [
 
                             #* C++
                             twxs.cmake
-                            ms-vscode.cmake-tools
+                            vadimcn.vscode-lldb
                             llvm-vs-code-extensions.vscode-clangd
 
                             #* Python
@@ -279,7 +355,7 @@ environment.systemPackages = with pkgs; [
 
                             #* General
                             usernamehw.errorlens
-                            mechatroner.rainbow-csv      #> For DataBases .csv files!
+                            mechatroner.rainbow-csv      #> For .csv files!
                             donjayamanne.githistory      #> GIT History
                             grapecity.gc-excelviewer     #>  For Exel Files
                             formulahendry.code-runner
@@ -291,13 +367,11 @@ environment.systemPackages = with pkgs; [
                             pkief.material-icon-theme
 
                             #* VS-Codium Specific
+                            editorconfig.editorconfig
                             ms-vscode-remote.remote-ssh
+                            github.vscode-pull-request-github
     ]
 ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-                                                       # To generate Hash
-                                                       # nix-prefetch-url <Download URL>
-                                                       # nix hash to-sri --type sha256 $(nix hash to-base16 --type sha256 <base32-hash>)
-
                                                         {
                                                           name = "remote-ssh-edit";
                                                           publisher = "ms-vscode-remote";
@@ -353,8 +427,29 @@ environment.systemPackages = with pkgs; [
                                                           version = "1.0.189";
                                                           hash = "sha256-zlZTb9zBSWsnZrcYArW1x4hjHzlAp6ITe4TPuUdYazI=";
                                                         }
-
-]; })
+                                                        {
+                                                          #https://open-vsx.org/extension/markwylde/vscode-filesize
+                                                          name = "vscode-filesize";
+                                                          publisher = "mkxml";
+                                                          version = "3.1.0";
+                                                          hash = "sha256-5485MjY3kMdeq/Z2mYaNjPj1XA+xRHizMrQDWDLWrf8=";
+                                                        }
+                                                        {
+                                                          # https://marketplace.visualstudio.com/items?itemName=cheshirekow.cmake-format
+                                                          name = "cmake-format";
+                                                          publisher = "cheshirekow";
+                                                          version = "0.6.11";
+                                                          hash = "sha256-NdU8J0rkrH5dFcLs8p4n/j2VpSP/X7eSz2j4CMDiYJM=";
+                                                        }
+                                                        {
+                                                          name = "cpptools";
+                                                          publisher = "ms-vscode";
+                                                          version = "1.22.2";  # Check for the latest version
+                                                          hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";  # Replace with actual sha256
+                                                        }
+    ];
+  }
+)
 
 #?#############
 #? User-Daily:
@@ -362,7 +457,6 @@ environment.systemPackages = with pkgs; [
   btop
   kooha
   brave
-  clamtk
   haruna
   jackett
   ani-cli
@@ -371,21 +465,22 @@ environment.systemPackages = with pkgs; [
   noisetorch
   qbittorrent
   authenticator
+  mission-center
   signal-desktop
   nix-output-monitor
+
+  #-> KDE Specific
+  kdePackages.kgamma
   kdePackages.filelight
+  kdePackages.colord-kde
 
   #Productivity
-  anytype
   betterbird
   libreoffice-qt
   gimp-with-plugins
 
   #Gaming
-  mesa
-  vkd3d
   heroic
-  dxvk_2
   bottles
   winetricks
   wineWowPackages.full
@@ -403,6 +498,11 @@ environment.systemPackages = with pkgs; [
   aspellDicts.en
   aspellDicts.en-science
   aspellDicts.en-computers
+
+  #Documentation
+  linux-manual
+  man-pages
+  man-pages-posix
 
 #!####################
 #! Pentration-Testing:
@@ -453,8 +553,8 @@ services.tlp = {
   #CPU_MIN_PERF_ON_BAT = 0;
   #CPU_MAX_PERF_ON_BAT = 75;
 
-  #Optional helps save long term battery health
-  START_CHARGE_THRESH_BAT0 = 95;
+  #! Optional helps save long term battery health
+  START_CHARGE_THRESH_BAT0 = 80;
   STOP_CHARGE_THRESH_BAT0 = 100;
   };
 };
@@ -550,26 +650,8 @@ services.tlp = {
     };
   };
 
-#---> GNS3
-  services.gns3-server = {
-    enable = true;
-
-    auth = {
-      enable = true;
-      user = "gns3";
-      passwordFile = "/var/lib/secrets/gns3_password";
-    };
-
-    ssl = {
-      enable = true;
-      certFile = "/var/lib/gns3/ssl/cert.pem";
-      keyFile = "/var/lib/gns3/ssl/key.pem";
-    };
-
-    dynamips.enable = true;
-    ubridge.enable = true;
-    vpcs.enable = true;
-  };
+#---> Colord
+services.colord.enable = true;
 
 #---> Qbit_torrent x Jackett
   services.jackett = {
@@ -611,7 +693,7 @@ services.tlp = {
 
     # Window layout
     remember_window_size no
-    initial_window_width 157c
+    initial_window_width 177c
     initial_window_height 36c
 
     # Tab bar
@@ -629,9 +711,6 @@ services.tlp = {
     map ctrl+shift+t new_tab
     map ctrl+shift+q close_tab
   '';
-
-#--> $PATH
-environment.localBinInPath = true;
 
 #!###############
 #! NixOS Version:
