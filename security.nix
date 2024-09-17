@@ -88,24 +88,24 @@ with lib;
 services.fail2ban.enable = true;
 
 #--> CalmAV
-  services.clamav = {
-    daemon = {
-      enable = true;
-    };
-    updater = {
-      enable = true;
-      interval = "daily";
-    };
-  };
+  # services.clamav = {
+  #   daemon = {
+  #     enable = true;
+  #   };
+  #   updater = {
+  #     enable = true;
+  #     interval = "daily";
+  #   };
+  # };
 
-  # Ensure log directory exists with correct permissions
-  systemd.tmpfiles.rules = [
-    "d /var/log/clamav 0755 clamav clamav -"
-  ];
+  # # Ensure log directory exists with correct permissions
+  # systemd.tmpfiles.rules = [
+  #   "d /var/log/clamav 0755 clamav clamav -"
+  # ];
 
-  # Ensure the clamav user can write to its database directory
-  system.activationScripts.clamavPermissions = ''
-    mkdir -p /var/lib/clamav
-    chown -R clamav:clamav /var/lib/clamav
-  '';
+  # # Ensure the clamav user can write to its database directory
+  # system.activationScripts.clamavPermissions = ''
+  #   mkdir -p /var/lib/clamav
+  #   chown -R clamav:clamav /var/lib/clamav
+  # '';
 }
