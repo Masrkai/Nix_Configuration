@@ -1,20 +1,35 @@
-{ config, lib, modulesPath, ... }:
+{ config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
+  imports = [
+      (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
   boot = {
+    #-> Enable NTFS Support for windows files systems
+    supportedFilesystems = [ "ntfs" ];
 
-    kernelParams = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" ];
-    kernelModules = [ "kvm-intel" ];
-    extraModulePackages = [config.boot.kernelPackages.rtl8188eus-aircrack ];
+    #? Loader
+    loader = {
+      timeout = 5;
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      };
+
+    kernelPackages = pkgs.linuxPackages_latest;
+    extraModulePackages = [
+      #config.boot.kernelPackages.rtl8188eus-aircrack
+      ];
+
+    kernelModules  = [ "kvm-intel" "uinput" ];
+    kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" ];
 
     initrd = {
-    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
     kernelModules = [ "amdgpu" ];
+    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
     };
+
+    consoleLogLevel = 3;
   };
 
   fileSystems."/" =
@@ -30,8 +45,15 @@
 
   swapDevices = [ ];
 
-  networking.useDHCP = lib.mkDefault true;
-
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  hardware = {
+    cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+    #! Enable bluetooth
+    bluetooth = {
+      enable = true;
+      powerOnBoot = false;
+    };
+  };
 }
