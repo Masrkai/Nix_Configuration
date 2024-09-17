@@ -1,49 +1,163 @@
+{ lib, ... }:
+
 #*#########################
 #* Networking-Configration:
 #*#########################
+let 
 
-{
-  #   networking.wireless = {
-  #   enable = true;  # Enables wireless support via wpa_supplicant.
-  #   networks = {
-  #     "Hello!" = {
-  #       psk = "WHY2HATEme>.>";
-  #       hidden = true;
-  #     };
-  #     "AfafAfaf" = {
-  #       psk = "19781978";
-  #     };
-  #   };
-  # };
+  secrets = import ./secrets.nix;
+
+
+in{
 
   services.resolved.enable = false;
   networking = {
-    hostName = "NixOS"; #* Defining hostname.
-    enableIPv6 = false; #* Disabling IPV6 to decrease attack surface for good
-    nftables.enable = true; #* Using the newer standard instead of iptables
-    dhcpcd.extraConfig = "nohook resolv.conf"; #* prevent overrides by dhcpcd
-    nameservers = [ "::1" "127.0.0.1"];
-    usePredictableInterfaceNames = false ; #* wlan0 wlan1 instead of gebrish
-    networkmanager = {
-      enable = true;
-      dns = "none";  #-> Disable NetworkManager's DNS management
-    };
+      useDHCP = lib.mkDefault true;
+      hostName = "NixOS";                        #* Defining hostname.
+      enableIPv6 = false;                        #* Disabling IPV6 to decrease attack surface for good
+      nftables.enable = true;                    #* Using the newer standard instead of iptables
+      dhcpcd.extraConfig = "nohook resolv.conf"; #* prevent overrides by dhcpcd
+      usePredictableInterfaceNames = false ;     #* wlan0 wlan1 instead of gebrish
+      nameservers = [
+        # "::1"     #> IPv6
+        "127.0.0.1" #> IPv4
+        ];
 
-    #! Firewall
-    firewall = {
+      #! Firewall
+      firewall = {
       enable = true;
       allowedTCPPorts = [ 443 8888 8384 22000 18081 ];
       allowedUDPPorts = [ 443 22000 21027 18081 ];
       logReversePathDrops = true;
+      };
 
-    #? Proxy // IF i ever had one to use
-    # proxy = {
-    #   default = "https://88.198.212.86:3128/";
-    #   noProxy = "127.0.0.1,localhost,internal.domain";
-    #  };
+      networkmanager = {
+      enable = true;
+      dns = "none";  #-> Disable NetworkManager's DNS management
+      ensureProfiles = {
+        profiles = {
+#?//////////////////////////////////////////////////////////////////////////////   Networks
+          AfafAfaf = {
+            connection = {
+              id = "AfafAfaf";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 1;  #! Higher means more priority priority
+            };
+            wifi = {
+              ssid = "AfafAfaf";
+              mode = "infrastructure";
+              mac-address-randomization = "always";
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = secrets.AFafAfaf_psk;
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          Meemoo = {
+            connection = {
+              id = "Meemoo";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 2;  #! Higher means more priority priority
+            };
+            wifi = {
+              ssid = "Meemoo";
+              mode = "infrastructure";
+              mac-address-randomization = "always";
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = secrets.Meemoo_psk;
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          ALY2 = {
+            connection = {
+              id = "ALY2";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 3;  #! Higher means more priority priority
+              };
+            wifi = {
+              ssid = "ALY2";
+              mode = "infrastructure";
+              mac-address-randomization = "always";  #? or "default" or "never"
+              # mac-address = "00:11:22:33:44:55";   # Set your desired MAC address here
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = secrets.ALY2_psk;
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "Hello!" = {
+            connection = {
+              id = "Hello!";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 4;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = true;            #! Specify if the network is hidden
+              ssid = "Hello!";
+              mode = "infrastructure";
+              bssid = "46:FB:5A:D1:93:49";
+              mac-address-randomization = "never";  #? or "default" or "never"
+              cloned-mac-address= secrets.Hello_device_mac;
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = secrets.Hello_psk;
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+          # You can add more profiles here following the same structure
+        };
+      };
     };
-
   };
 
   #> DNS-over-TLS
@@ -54,7 +168,7 @@
       # ::1 cause error, use 0::1 instead
       listen_addresses = [ 
         "127.0.0.1"
-        "0::1"
+        # "0::1"
         ];
 
       # https://github.com/getdnsapi/stubby/blob/develop/stubby.yml.example
@@ -92,12 +206,6 @@
     };
   };
 
-  # Ensure Stubby starts before network services
-  systemd.services.stubby = {
-    wantedBy = [ "multi-user.target" ];
-    before = [ "network.target" "NetworkManager.service" ];
-  };
-
   # WebRTC leak prevention for Chromium-based browsers
   environment.etc."chromium/policies/managed/policies.json".text = ''
     {
@@ -132,4 +240,12 @@
 
   # Prevent other services from modifying resolv.conf
   environment.etc."resolv.conf".mode = "0444";  # Read-only
+
+
+  # Ensure Stubby starts before network services
+  systemd.services.stubby = {
+    wantedBy = [ "multi-user.target" ];
+    before = [ "network.target" "NetworkManager.service" ];
+  };
+
 }
