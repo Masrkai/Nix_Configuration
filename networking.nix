@@ -241,11 +241,4 @@ in{
   # Prevent other services from modifying resolv.conf
   environment.etc."resolv.conf".mode = "0444";  # Read-only
 
-
-  # Ensure Stubby starts before network services
-  systemd.services.stubby = {
-    wantedBy = [ "multi-user.target" ];
-    before = [ "network.target" "NetworkManager.service" ];
-  };
-
 }
