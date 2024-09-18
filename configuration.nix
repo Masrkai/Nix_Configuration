@@ -256,6 +256,7 @@ in{
       scapy
       numpy
       pandas
+      pylint
       pyvips
       sqlite
       netaddr
@@ -330,6 +331,7 @@ in{
                             #* Python
                             ms-python.python
                             ms-python.debugpy
+                            ms-python.vscode-pylance
 
                               #->Jupyter
                               ms-toolsai.jupyter
@@ -446,6 +448,13 @@ in{
                                                           publisher = "ms-vscode";
                                                           version = "1.22.2";  # Check for the latest version
                                                           hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";  # Replace with actual sha256
+                                                        }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
+                                                          name = "pylint";
+                                                          publisher = "ms-python";
+                                                          version = "2023.11.13481007";  # Check for the latest version
+                                                          hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";  # Replace with actual sha256
                                                         }
     ];
   }
