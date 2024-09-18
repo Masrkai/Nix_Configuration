@@ -16,7 +16,7 @@
       efi.canTouchEfiVariables = true;
       };
 
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
     extraModulePackages = [
       #config.boot.kernelPackages.rtl8188eus-aircrack
       ];
