@@ -16,7 +16,7 @@
       efi.canTouchEfiVariables = true;
       };
 
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_11;
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_10;
     extraModulePackages = [
       #config.boot.kernelPackages.rtl8188eus-aircrack
       ];
@@ -30,6 +30,16 @@
     };
 
     consoleLogLevel = 3;
+
+    # kernelPatches = [
+    #   {
+    #     name = "Rust Support";
+    #     patch = null;
+    #       features = {
+    #         rust = true;
+    #       };
+    #   }
+    # ];
   };
 
   fileSystems."/" =
