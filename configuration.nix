@@ -219,7 +219,6 @@ in{
   #-> General
   bat
   eza
-  nil
   git
   less
   most
@@ -306,7 +305,11 @@ in{
   (lowPrio clang_18)
 
   #-> Rust
-  #-> Rust is a very special case and it's packaged by default in Nix DW about it
+  rustc
+  cargo
+  rustfmt
+  rust-analyzer
+  clippy
 
   #-> MicroChips
   esptool
@@ -315,6 +318,11 @@ in{
   arduino-ide
   arduino-core
 
+  #-> Nix
+  nil
+  direnv
+  nix-direnv
+  nix-output-monitor
 
 #*#########################
 #* Vscodium Configuration:
@@ -327,6 +335,9 @@ in{
                             twxs.cmake
                             vadimcn.vscode-lldb
                             llvm-vs-code-extensions.vscode-clangd
+
+                            #* Rust
+                            rust-lang.rust-analyzer
 
                             #* Python
                             ms-python.python
@@ -341,7 +352,9 @@ in{
                               ms-toolsai.vscode-jupyter-cell-tags
 
                             #* Nix
+                            mkhl.direnv
                             jnoortheen.nix-ide
+                            arrterian.nix-env-selector
 
                             #* HTML
                             ms-vscode.live-server
@@ -357,8 +370,8 @@ in{
 
                             #* General
                             usernamehw.errorlens
-                            mechatroner.rainbow-csv      #> For .csv files!
                             donjayamanne.githistory      #> GIT History
+                            mechatroner.rainbow-csv      #> For .csv files!
                             grapecity.gc-excelviewer     #>  For Exel Files
                             formulahendry.code-runner
                             shardulm94.trailing-spaces
@@ -443,12 +456,12 @@ in{
                                                           version = "0.6.11";
                                                           hash = "sha256-NdU8J0rkrH5dFcLs8p4n/j2VpSP/X7eSz2j4CMDiYJM=";
                                                         }
-                                                        {
-                                                          name = "cpptools";
-                                                          publisher = "ms-vscode";
-                                                          version = "1.22.2";  # Check for the latest version
-                                                          hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";  # Replace with actual sha256
-                                                        }
+                                                        # {
+                                                        #   name = "cpptools";
+                                                        #   publisher = "ms-vscode";
+                                                        #   version = "1.22.2";  # Check for the latest version
+                                                        #   hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";  # Replace with actual sha256
+                                                        # }
                                                         {
                                                           #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
                                                           name = "pylint";
@@ -476,7 +489,7 @@ in{
   authenticator
   mission-center
   signal-desktop
-  nix-output-monitor
+
 
   #-> KDE Specific
   kdePackages.kgamma
@@ -509,8 +522,8 @@ in{
   aspellDicts.en-computers
 
   #Documentation
-  linux-manual
   man-pages
+  linux-manual
   man-pages-posix
 
 #!####################
@@ -584,6 +597,13 @@ services.tlp = {
 #?########################
 #? Applications services:
 #?########################
+
+#--> direnv
+   programs.direnv = {
+    enable = true;
+    loadInNixShell = true;
+    nix-direnv.enable = true;
+  };
 
 #--> KDE connect Specific
   programs.kdeconnect.enable = true;
