@@ -7,6 +7,8 @@ let
   customPackages = {
     #? .Nix
     super-productivity = pkgs.callPackage ./Programs/super-productivity.nix {};
+    airgeddon = pkgs.callPackage ./Programs/airgeddon.nix {};
+
 
     #! Bash
     backup = pkgs.callPackage ./Programs/backup.nix {};
@@ -212,6 +214,7 @@ in{
   customPackages.ctj
   customPackages.backup
   customPackages.setupcpp
+  customPackages.airgeddon
   customPackages.super-productivity
 
   searxng
@@ -532,6 +535,7 @@ in{
   iw
   dig
   mdk4
+  tmux
   getdns
   crunch
   asleap
