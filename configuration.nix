@@ -496,8 +496,12 @@ in{
 
   #-> KDE Specific
   kdePackages.kgamma
-  kdePackages.filelight
+  kdePackages.kscreen
   kdePackages.colord-kde
+  kdePackages.kscreenlocker
+
+  kdePackages.filelight
+  kdePackages.plasma-browser-integration
 
   #Productivity
   betterbird
