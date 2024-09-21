@@ -206,6 +206,13 @@ in{
     };
   };
 
+  # Enable Chrony NTP service
+  services.chrony = {
+    enable = true;
+    enableNTS = true;
+    servers = [ "time.cloudflare.com" ];
+  };
+
   # WebRTC leak prevention for Chromium-based browsers
   environment.etc."chromium/policies/managed/policies.json".text = ''
     {
