@@ -1,107 +1,97 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, makeWrapper
+{ lib, stdenv, makeWrapper, fetchFromGitHub
   # Required
-, aircrack-ng
-, bash
-, coreutils-full
-, gawk
-, gnugrep
-, gnused
-, iproute2
 , iw
-, pciutils
-, procps
 , tmux
+, bash
+, gawk
+, procps
+, gnused
+, gnugrep
+, pciutils
+, iproute2
+, aircrack-ng
+, coreutils-full
   # X11 Front
-, xterm
-, xorg
+, xorg, xterm
   # what the author calls "Internals"
-, usbutils
-, wget
-, ethtool
-, util-linux
-, ccze
+, usbutils, wget, ethtool, util-linux, ccze
   # Optionals
   # Missing in nixpkgs: beef, hostapd-wpe
-, asleap
-, bettercap
+, john
+, mdk4
 , bully
 , crunch
-, dhcp
-, dnsmasq
-, ettercap
-, hashcat
-, hcxdumptool
-, hcxtools
-, hostapd
-, john
-, lighttpd
-, mdk4
-, nftables
+, asleap
 , openssl
+, dnsmasq
+, hashcat
+, hostapd
+, hcxtools
+, lighttpd
+, nftables
+, ettercap
 , pixiewps
-, reaverwps-t6x # Could be the upstream version too
+, bettercap
+, hcxdumptool
 , wireshark-cli
+, reaverwps-t6x # Could be the upstream version too
   # Undocumented requirements (there is also ping)
-, apparmor-bin-utils
 , curl
 , glibc
 , ncurses
-, networkmanager
 , systemd
+, networkmanager
+, apparmor-bin-utils
   # Support groups
 , supportWpaWps ? true # Most common use-case
-, supportHashCracking ? false
-, supportEvilTwin ? false
+, supportHashCracking ? true
+, supportEvilTwin ? true
 , supportX11 ? false # Allow using xterm instead of tmux, hard to test
 }:
 let
   deps = [
-    aircrack-ng
-    bash
-    coreutils-full
-    curl
-    gawk
-    glibc
-    gnugrep
-    gnused
-    iproute2
     iw
-    networkmanager
-    ncurses
-    pciutils
-    procps
     tmux
-    usbutils
+    bash
+    curl
     wget
-    ethtool
-    util-linux
+    gawk
     ccze
+    glibc
+    procps
+    gnused
     systemd
+    ncurses
+    gnugrep
+    ethtool
+    pciutils
+    iproute2
+    usbutils
+    util-linux
+    aircrack-ng
+    coreutils-full
+    networkmanager
   ] ++ lib.optionals supportWpaWps [
     bully
     pixiewps
     reaverwps-t6x
   ] ++ lib.optionals supportHashCracking [
+    john
     asleap
     crunch
     hashcat
-    hcxdumptool
     hcxtools
-    john
+    hcxdumptool
     wireshark-cli
   ] ++ lib.optionals supportEvilTwin [
-    bettercap
-    dhcp
-    dnsmasq
-    ettercap
-    hostapd
-    lighttpd
-    openssl
     mdk4
+    hostapd
+    dnsmasq
+    openssl
     nftables
+    lighttpd
+    ettercap
+    bettercap
     apparmor-bin-utils
   ] ++ lib.optionals supportX11 [
     xterm
@@ -117,7 +107,7 @@ stdenv.mkDerivation rec {
     owner = "v1s1t0r1sh3r3";
     repo = "airgeddon";
     rev = "v${version}";
-    hash = "sha256-3Rx1tMRIpSk+IEJGOs+t+kDlvGHYOx1IOSi+663uzrw=";
+    hash = "sha256-tflUIjTBKgbFfPD4kSEBTGvpodWaseelOc7fPUwR+pk=";
   };
 
   strictDeps = true;
@@ -138,19 +128,23 @@ stdenv.mkDerivation rec {
       s|AIRGEDDON_WINDOWS_HANDLING=xterm|AIRGEDDON_WINDOWS_HANDLING=tmux|
       ' .airgeddonrc
 
-    sed -Ei '
-      s|\$\(pwd\)|${placeholder "out"}/share/airgeddon;scriptfolder=${placeholder "out"}/share/airgeddon/|
-      s|\$\{0\}|${placeholder "out"}/bin/airgeddon|
-      s|tmux send-keys -t "([^"]+)" "|tmux send-keys -t "\1" "export PATH=\\"$PATH\\"; |
-      ' airgeddon.sh
+    # Modify the script to use a writable directory for runtime files
+    sed -i 's|scriptfolder=".*"|scriptfolder="$HOME/.config/airgeddon"|' airgeddon.sh
+    sed -i 's|language_strings_file=".*"|language_strings_file="$scriptfolder/language_strings.sh"|' airgeddon.sh
+    sed -i 's|saved_arc_path=".*"|saved_arc_path="$scriptfolder/.airgeddonrc"|' airgeddon.sh
+
+    # Ensure the script creates the necessary directory
+    sed -i '1a mkdir -p "$HOME/.config/airgeddon"' airgeddon.sh
+    sed -i '2a cp -n ${placeholder "out"}/share/airgeddon/{.airgeddonrc,language_strings.sh,known_pins.db} "$HOME/.config/airgeddon/"' airgeddon.sh
   '';
 
-  # ATTENTION: No need to chdir around, we're removing the occurrences of "$(pwd)"
-  postInstall = ''
-    wrapProgram $out/bin/airgeddon --prefix PATH : ${lib.makeBinPath deps}
+ postInstall = ''
+    wrapProgram $out/bin/airgeddon \
+      --prefix PATH : ${lib.makeBinPath deps} \
+      --run 'mkdir -p "$HOME/.config/airgeddon"' \
+      --run 'cp -n ${placeholder "out"}/share/airgeddon/{.airgeddonrc,language_strings.sh,known_pins.db} "$HOME/.config/airgeddon/"'
   '';
 
-  # Install only the interesting files
   installPhase = ''
     runHook preInstall
     install -Dm 755 airgeddon.sh "$out/bin/airgeddon"
@@ -160,10 +154,38 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "Multi-use TUI to audit wireless networks. ";
+    description = "Multi-use TUI to audit wireless networks";
     homepage = "https://github.com/v1s1t0r1sh3r3/airgeddon";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ pedrohlc ];
+    maintainers = with maintainers; [ offline ];
     platforms = platforms.linux;
   };
 }
+
+
+
+
+
+
+#   # ATTENTION: No need to chdir around, we're removing the occurrences of "$(pwd)"
+#   postInstall = ''
+#     wrapProgram $out/bin/airgeddon --prefix PATH : ${lib.makeBinPath deps}
+#   '';
+
+#   # Install only the interesting files
+#   installPhase = ''
+#     runHook preInstall
+#     install -Dm 755 airgeddon.sh "$out/bin/airgeddon"
+#     install -dm 755 "$out/share/airgeddon"
+#     cp -dr .airgeddonrc known_pins.db language_strings.sh plugins/ "$out/share/airgeddon/"
+#     runHook postInstall
+#   '';
+
+#   meta = with lib; {
+#     description = "Multi-use TUI to audit wireless networks. ";
+#     homepage = "https://github.com/v1s1t0r1sh3r3/airgeddon";
+#     license = licenses.gpl3Plus;
+#     maintainers = with maintainers; [ pedrohlc ];
+#     platforms = platforms.linux;
+#   };
+# }
