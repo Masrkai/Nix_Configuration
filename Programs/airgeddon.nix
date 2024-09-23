@@ -125,7 +125,7 @@ stdenv.mkDerivation rec {
       s|AIRGEDDON_AUTO_UPDATE=true|AIRGEDDON_AUTO_UPDATE=false|
       s|AIRGEDDON_SKIP_INTRO=false|AIRGEDDON_SKIP_INTRO=true|
       s|AIRGEDDON_PLUGINS_ENABLED=true|AIRGEDDON_PLUGINS_ENABLED=false|
-      s|AIRGEDDON_WINDOWS_HANDLING=xterm|AIRGEDDON_WINDOWS_HANDLING=tmux|
+      s|AIRGEDDON_WINDOWS_HANDLING=xterm|AIRGEDDON_WINDOWS_HANDLING=xterm|
       ' .airgeddonrc
 
     # Modify the script to use a writable directory for runtime files
