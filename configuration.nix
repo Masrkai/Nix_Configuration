@@ -6,9 +6,8 @@ let
 
   customPackages = {
     #? .Nix
-    super-productivity = pkgs.callPackage ./Programs/super-productivity.nix {};
     airgeddon = pkgs.callPackage ./Programs/airgeddon.nix {};
-
+    super-productivity = pkgs.callPackage ./Programs/super-productivity.nix {};
 
     #! Bash
     backup = pkgs.callPackage ./Programs/backup.nix {};
@@ -158,7 +157,9 @@ in{
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
       XDG_SESSION_TYPE = "wayland";
-      QT_QPA_PLATFORM = "wayland";
+      XDG_RUNTIME_DIR = "/run/user/$UID";
+
+      #QT_QPA_PLATFORM = "wayland";
       GDK_BACKEND = "wayland";
       WLR_NO_HARDWARE_CURSORS = "1";
     };
@@ -176,7 +177,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "wireshark" "libvirtd" ];
   };
 
   # Managing unfree packages
@@ -540,6 +541,7 @@ in{
   dig
   mdk4
   tmux
+  hping
   getdns
   crunch
   asleap
@@ -550,7 +552,6 @@ in{
   lighttpd
   ettercap
   bettercap
-  wireshark
   aircrack-ng
   linux-wifi-hotspot
 
@@ -593,11 +594,11 @@ services.tlp = {
 #! POWER services:
 #!#################
 
-#--> Disabled Power-Profiles for TLP to take action.
-  services.power-profiles-daemon.enable = false;
-
 #--> Enable thermald (only necessary if on Intel CPUs)
   services.thermald.enable = true;
+
+#--> Disabled Power-Profiles for TLP to take action.
+  services.power-profiles-daemon.enable = false;
 
 #--> Better scheduling for CPU cycles
   services.system76-scheduler.settings.cfsProfiles.enable = true;
@@ -611,6 +612,13 @@ services.tlp = {
     enable = true;
     loadInNixShell = true;
     nix-direnv.enable = true;
+  };
+
+#--> Wireshark
+  programs.wireshark= {
+    enable = true;
+    package = pkgs.wireshark;
+    permissions = "capabilities";
   };
 
 #--> KDE connect Specific
