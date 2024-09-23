@@ -16,9 +16,9 @@
       efi.canTouchEfiVariables = true;
       };
 
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_10;
+    #kernelPackages = pkgs.linuxKernel.packages.linux_6_10;
     extraModulePackages = [
-      #config.boot.kernelPackages.rtl8188eus-aircrack
+      config.boot.kernelPackages.rtl8188eus-aircrack
       ];
 
     kernelModules  = [ "kvm-intel" "uinput" ];
