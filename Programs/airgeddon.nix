@@ -1,47 +1,15 @@
 { lib, stdenv, makeWrapper, fetchFromGitHub
   # Required
-, iw
-, tmux
-, bash
-, gawk
-, procps
-, gnused
-, gnugrep
-, pciutils
-, iproute2
-, aircrack-ng
-, coreutils-full
+, iw , tmux , bash , gawk , procps , gnused , gnugrep , pciutils , iproute2 , aircrack-ng , coreutils-full
   # X11 Front
 , xorg, xterm
   # what the author calls "Internals"
 , usbutils, wget, ethtool, util-linux, ccze
   # Optionals
   # Missing in nixpkgs: beef, hostapd-wpe
-, john
-, mdk4
-, bully
-, crunch
-, asleap
-, openssl
-, dnsmasq
-, hashcat
-, hostapd
-, hcxtools
-, lighttpd
-, nftables
-, ettercap
-, pixiewps
-, bettercap
-, hcxdumptool
-, wireshark-cli
-, reaverwps-t6x # Could be the upstream version too
+, john , mdk4 , bully , crunch , asleap , openssl , dnsmasq , hashcat , hostapd , hcxtools , lighttpd , nftables , ettercap , pixiewps , bettercap , hcxdumptool , wireshark-cli , reaverwps-t6x
   # Undocumented requirements (there is also ping)
-, curl
-, glibc
-, ncurses
-, systemd
-, networkmanager
-, apparmor-bin-utils
+, curl , glibc , ncurses , systemd , networkmanager , apparmor-bin-utils
   # Support groups
 , supportWpaWps ? true # Most common use-case
 , supportHashCracking ? true
@@ -50,49 +18,17 @@
 }:
 let
   deps = [
-    iw
-    tmux
-    bash
-    curl
-    wget
-    gawk
-    ccze
-    glibc
-    procps
-    gnused
-    systemd
-    ncurses
-    gnugrep
-    ethtool
-    pciutils
-    iproute2
-    usbutils
-    util-linux
-    aircrack-ng
-    coreutils-full
-    networkmanager
+    iw tmux bash curl wget gawk ccze glibc procps gnused systemd ncurses gnugrep ethtool pciutils iproute2 usbutils util-linux aircrack-ng coreutils-full networkmanager
+
   ] ++ lib.optionals supportWpaWps [
-    bully
-    pixiewps
-    reaverwps-t6x
+    bully pixiewps reaverwps-t6x
+
   ] ++ lib.optionals supportHashCracking [
-    john
-    asleap
-    crunch
-    hashcat
-    hcxtools
-    hcxdumptool
-    wireshark-cli
+    john asleap crunch hashcat hcxtools hcxdumptool wireshark-cli
+
   ] ++ lib.optionals supportEvilTwin [
-    mdk4
-    hostapd
-    dnsmasq
-    openssl
-    nftables
-    lighttpd
-    ettercap
-    bettercap
-    apparmor-bin-utils
+    mdk4 hostapd dnsmasq openssl nftables lighttpd ettercap bettercap apparmor-bin-utils
+
   ] ++ lib.optionals supportX11 [
     xterm
     xorg.xset
@@ -113,12 +49,7 @@ stdenv.mkDerivation rec {
   strictDeps = true;
   nativeBuildInputs = [ makeWrapper ];
 
-  #? What these replacings do?
-  # - Disable the auto-updates (we'll run from a read-only directory);
-  # - UnSilence the checks (NixOS will enforce the PATH, it will only see the tools as we listed);
-  # - Use "tmux", we're not patching XTerm commands;
-  # - Remove PWD and $0 references, forcing it to use the paths from store;
-  # - Force our PATH to all tmux sessions.
+
   postPatch = ''
     patchShebangs airgeddon.sh
     sed -i '
@@ -161,31 +92,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
-
-
-
-
-
-
-#   # ATTENTION: No need to chdir around, we're removing the occurrences of "$(pwd)"
-#   postInstall = ''
-#     wrapProgram $out/bin/airgeddon --prefix PATH : ${lib.makeBinPath deps}
-#   '';
-
-#   # Install only the interesting files
-#   installPhase = ''
-#     runHook preInstall
-#     install -Dm 755 airgeddon.sh "$out/bin/airgeddon"
-#     install -dm 755 "$out/share/airgeddon"
-#     cp -dr .airgeddonrc known_pins.db language_strings.sh plugins/ "$out/share/airgeddon/"
-#     runHook postInstall
-#   '';
-
-#   meta = with lib; {
-#     description = "Multi-use TUI to audit wireless networks. ";
-#     homepage = "https://github.com/v1s1t0r1sh3r3/airgeddon";
-#     license = licenses.gpl3Plus;
-#     maintainers = with maintainers; [ pedrohlc ];
-#     platforms = platforms.linux;
-#   };
-# }
