@@ -43,6 +43,9 @@ programs.bash = {
     fixcode(){
         rm -rf ~/.config/VSCodium/GPUCache/
     }
+    fixgit(){
+        sudo chown -R $(whoami) .git
+    }
     fix-arduino(){
         rm -rf ~/.config/arduino-ide/GPUCache/
     }
@@ -132,8 +135,8 @@ programs.bash = {
     l = "eza  --color=always --long --tree --git --links -a --icons=always";
 
     #-? NixOS Specific
-    switch = "sudo nixos-rebuild switch --show-trace 2>&1 |& nom";
-    update = "sudo nix-channel --update && sudo nixos-rebuild switch --upgrade --show-trace 2>&1 |&  nom";
+    switch = "sudo nixos-rebuild switch --show-trace 2>&1 | nom";
+    update = "sudo nix-channel --update && sudo nixos-rebuild switch --upgrade --show-trace 2>&1 |  nom";
     checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 7 '#include <...> search starts here:'";
   };
 };
