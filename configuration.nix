@@ -376,7 +376,6 @@ in{
                             usernamehw.errorlens
                             donjayamanne.githistory      #> GIT History
                             mechatroner.rainbow-csv      #> For .csv files!
-                            grapecity.gc-excelviewer     #>  For Exel Files
                             formulahendry.code-runner
                             shardulm94.trailing-spaces
                             aaron-bond.better-comments
@@ -464,14 +463,21 @@ in{
                                                         #   name = "cpptools";
                                                         #   publisher = "ms-vscode";
                                                         #   version = "1.22.2";  # Check for the latest version
-                                                        #   hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";  # Replace with actual sha256
+                                                        #   hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";
                                                         # }
                                                         {
                                                           #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
                                                           name = "pylint";
                                                           publisher = "ms-python";
                                                           version = "2023.11.13481007";  # Check for the latest version
-                                                          hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";  # Replace with actual sha256
+                                                          hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";
+                                                        }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-office
+                                                          name = "vscode-office";
+                                                          publisher = "cweijan";
+                                                          version = "3.4.1";  # Check for the latest version
+                                                          hash = "sha256-UNjU+DEeq8aoJuTOWpPg1WAUBwGpxdOrnsMBW7xddzw=";
                                                         }
     ];
   }
@@ -618,7 +624,6 @@ services.tlp = {
   programs.wireshark= {
     enable = true;
     package = pkgs.wireshark;
-    permissions = "capabilities";
   };
 
 #--> KDE connect Specific
