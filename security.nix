@@ -87,6 +87,9 @@ with lib;
 #--> Fail2ban // prevent brute-force attacks
 services.fail2ban.enable = true;
 
+#--> Fwupd
+services.fwupd.enable = true;
+
 #--> CalmAV
   # services.clamav = {
   #   daemon = {
