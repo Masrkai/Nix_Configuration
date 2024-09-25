@@ -52,11 +52,11 @@ programs.bash = {
     fixbrave(){
         sudo rm -rf ~/.config/BraveSoftware/Brave-Browser/SingletonLock
     }
-    wl(){
-         sudo python3 /home/masrkai/Programs/Better-Evil-Limiter/evillimiter/evillimiter.py -f
-    }
     fusb(){
          sudo chown masrkai  /dev/ttyUSB0
+    }
+    sec(){
+        fwupdmgr get-devices && fwupdmgr refresh && fwupdmgr get-updates && fwupdmgr update
     }
 
     s() {
