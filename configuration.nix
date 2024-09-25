@@ -568,199 +568,198 @@ in{
   virt-manager
 ];
 
-##################
-#Listing services:
-##################
-#--> TLP enabling
-services.tlp = {
-  enable = true;
-  settings = {
+#>#################
+#>Listing services:
+#>#################
 
-  USB_AUTOSUSPEND=0;
 
-  CPU_SCALING_GOVERNOR_ON_AC = "performance";
-  CPU_SCALING_GOVERNOR_ON_BAT = "balanced";
+  #!#################
+  #! POWER services:
+  #!#################
 
-  CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
-  CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
-
-  #CPU_MIN_PERF_ON_AC = 10;
-  #CPU_MAX_PERF_ON_AC = 65;
-
-  #CPU_MIN_PERF_ON_BAT = 0;
-  #CPU_MAX_PERF_ON_BAT = 75;
-
-  #! Optional helps save long term battery health
-  START_CHARGE_THRESH_BAT0 = 80;
-  STOP_CHARGE_THRESH_BAT0 = 100;
-  };
-};
-
-#!#################
-#! POWER services:
-#!#################
-
-#--> Enable thermald (only necessary if on Intel CPUs)
-  services.thermald.enable = true;
-
-#--> Disabled Power-Profiles for TLP to take action.
-  services.power-profiles-daemon.enable = false;
-
-#--> Better scheduling for CPU cycles
-  services.system76-scheduler.settings.cfsProfiles.enable = true;
-
-#?########################
-#? Applications services:
-#?########################
-
-#--> direnv
-   programs.direnv = {
-    enable = true;
-    loadInNixShell = true;
-    nix-direnv.enable = true;
-  };
-
-#--> Wireshark
-  programs.wireshark= {
-    enable = true;
-    package = pkgs.wireshark;
-  };
-
-#--> KDE connect Specific
-  programs.kdeconnect.enable = true;
-
-#--> NoiseTorch
-  programs.noisetorch.enable = true;
-
-#--> mlocate // "updatedb & locate"
-  services.locate = {
-    enable    = true;
-    localuser = null;
-    package   = pkgs.mlocate;
-  };
-
-#---> Qemu KVM
-  virtualisation.libvirtd.enable = true;
-  programs.virt-manager.enable   = true;
-
-#---> Syncthing
-  services = {
-  syncthing = {
-     enable = true;
-     user = "masrkai";
-     dataDir = "/home/masrkai";
-     configDir = "/home/masrkai/Documents/.config/syncthing";
-  };
-};
-
-# TODO ---> Nginx
-# services.nginx = {
-#   enable = true;
-#   virtualHosts."localhost" = {
-#     listen = [{ addr = "127.0.0.1"; port = 443; ssl = true; }];
-#     sslCertificate = secrets.Nginx-ssl-Certificate;
-#     sslCertificateKey = secrets.Nginx-ssl-Certificate-Key;
-#     locations."/" = {
-#       proxyPass = "http://127.0.0.1:8888";
-#     };
-#   };
-# };
-
-#---> SearXNG
-  services.searx = {
+  #--> TLP enabling
+  services.tlp = {
     enable = true;
     settings = {
-      server = {
-        port = 8888;
-        bind_address = "127.0.0.1";
-        base_url     = "http://localhost/";
-        secret_key   = secrets.searx-secret-key;
-      };
-      ui = {
-        default_locale = "en";
-        default_theme  = "simple";
-      };
-      search = {
-        safe_search = 0;  # 0: None, 1: Moderate, 2: Strict
-        default_lang = "en";
-        autocomplete = "duckduckgo";
-      };
-      engines = [
-        { name = "google"; engine = "google"; disabled = false; }
-        { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
-        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
-      ];
-      outgoing = {
-        request_timeout = 6.0;
-        max_request_timeout = 8.0;
-      };
-      cache = {
-        cache_dir = "/var/cache/searx";
-      };
+
+    USB_AUTOSUSPEND=0;
+
+    RUNTIME_PM_ON_BAT = "on";
+    RUNTIME_PM_ON_AC = "on";
+
+    CPU_SCALING_GOVERNOR_ON_AC = "performance";
+    CPU_SCALING_GOVERNOR_ON_BAT = "balanced";
+
+    CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
+    CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+
+    #! Optional helps save long term battery health
+    START_CHARGE_THRESH_BAT0 = 80;
+    STOP_CHARGE_THRESH_BAT0 = 100;
     };
   };
 
-#---> Colord
-services.colord.enable = true;
+  #--> Enable thermald (only necessary if on Intel CPUs)
+    services.thermald.enable = true;
 
-#---> Qbit_torrent x Jackett
-  services.jackett = {
-    enable = true;
-    openFirewall = false;
-    dataDir = "/var/lib/jackett";
+  #--> Disabled Power-Profiles for TLP to take action.
+    services.power-profiles-daemon.enable = false;
+
+  #--> Better scheduling for CPU cycles
+    services.system76-scheduler.settings.cfsProfiles.enable = true;
+
+  #?########################
+  #? Applications services:
+  #?########################
+
+  #--> direnv
+    programs.direnv = {
+      enable = true;
+      loadInNixShell = true;
+      nix-direnv.enable = true;
+    };
+
+  #--> Wireshark
+    programs.wireshark= {
+      enable = true;
+      package = pkgs.wireshark;
+    };
+
+  #--> KDE connect Specific
+    programs.kdeconnect.enable = true;
+
+  #--> NoiseTorch
+    programs.noisetorch.enable = true;
+
+  #--> mlocate // "updatedb & locate"
+    services.locate = {
+      enable    = true;
+      localuser = null;
+      package   = pkgs.mlocate;
+    };
+
+  #---> Qemu KVM
+    virtualisation.libvirtd.enable = true;
+    programs.virt-manager.enable   = true;
+
+  #---> Syncthing
+    services = {
+    syncthing = {
+      enable = true;
+      user = "masrkai";
+      dataDir = "/home/masrkai";
+      configDir = "/home/masrkai/Documents/.config/syncthing";
+    };
   };
 
-#---> Enable CUPS to print documents.
-  services.printing.enable = true;
+  # TODO ---> Nginx
+  # services.nginx = {
+  #   enable = true;
+  #   virtualHosts."localhost" = {
+  #     listen = [{ addr = "127.0.0.1"; port = 443; ssl = true; }];
+  #     sslCertificate = secrets.Nginx-ssl-Certificate;
+  #     sslCertificateKey = secrets.Nginx-ssl-Certificate-Key;
+  #     locations."/" = {
+  #       proxyPass = "http://127.0.0.1:8888";
+  #     };
+  #   };
+  # };
 
-#--> Enable sound with pipewire.
-  sound.enable = true;
-  security.rtkit.enable = true;
-  hardware.pulseaudio.enable = false;
+  #---> SearXNG
+    services.searx = {
+      enable = true;
+      settings = {
+        server = {
+          port = 8888;
+          bind_address = "127.0.0.1";
+          base_url     = "http://localhost/";
+          secret_key   = secrets.searx-secret-key;
+        };
+        ui = {
+          default_locale = "en";
+          default_theme  = "simple";
+        };
+        search = {
+          safe_search = 0;  # 0: None, 1: Moderate, 2: Strict
+          default_lang = "en";
+          autocomplete = "duckduckgo";
+        };
+        engines = [
+          { name = "google"; engine = "google"; disabled = false; }
+          { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
+          { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
+        ];
+        outgoing = {
+          request_timeout = 6.0;
+          max_request_timeout = 8.0;
+        };
+        cache = {
+          cache_dir = "/var/cache/searx";
+        };
+      };
+    };
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-  };
+  #---> Colord
+  services.colord.enable = true;
+
+  #---> Qbit_torrent x Jackett
+    services.jackett = {
+      enable = true;
+      openFirewall = false;
+      dataDir = "/var/lib/jackett";
+    };
+
+  #---> Enable CUPS to print documents.
+    services.printing.enable = true;
+
+  #--> Enable sound with pipewire.
+    sound.enable = true;
+    security.rtkit.enable = true;
+    hardware.pulseaudio.enable = false;
+
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+      pulse.enable = true;
+    };
 
 
-  environment.etc."xdg/kitty/kitty.conf".text = ''
-    # Basic settings
-    font_family Iosevka Fixed Hv Ex Obl
-    font_size 11
-    adjust_line_height 0
-    adjust_column_width 0
-    disable_ligatures never
+    environment.etc."xdg/kitty/kitty.conf".text = ''
+      # Basic settings
+      font_family Iosevka Fixed Hv Ex Obl
+      font_size 11
+      adjust_line_height 0
+      adjust_column_width 0
+      disable_ligatures never
 
-    # Use additional symbols from Material Design Icons
-    symbol_map U+E000-U+E7C5 MaterialDesignIcons
+      # Use additional symbols from Material Design Icons
+      symbol_map U+E000-U+E7C5 MaterialDesignIcons
 
-    # Color scheme
-    background #000000
-    foreground #ffffff
-    cursor #93a1a1
+      # Color scheme
+      background #000000
+      foreground #ffffff
+      cursor #93a1a1
 
-    # Window layout
-    remember_window_size no
-    initial_window_width 177c
-    initial_window_height 36c
+      # Window layout
+      remember_window_size no
+      initial_window_width 177c
+      initial_window_height 36c
 
-    # Tab bar
-    tab_bar_edge bottom
-    tab_bar_style powerline
+      # Tab bar
+      tab_bar_edge bottom
+      tab_bar_style powerline
 
-    # Performance
-    repaint_delay 10
-    input_delay 3
-    sync_to_monitor yes
+      # Performance
+      repaint_delay 10
+      input_delay 3
+      sync_to_monitor yes
 
-    # Key mappings
-    map ctrl+shift+c copy_to_clipboard
-    map ctrl+shift+v paste_from_clipboard
-    map ctrl+shift+t new_tab
-    map ctrl+shift+q close_tab
-  '';
+      # Key mappings
+      map ctrl+shift+c copy_to_clipboard
+      map ctrl+shift+v paste_from_clipboard
+      map ctrl+shift+t new_tab
+      map ctrl+shift+q close_tab
+    '';
 
 #!###############
 #! NixOS Version:
