@@ -26,8 +26,19 @@ in{
       #! Firewall
       firewall = {
       enable = true;
-      allowedTCPPorts = [ 443 8888 8384 22000 18081 ];
-      allowedUDPPorts = [ 443 22000 21027 18081 ];
+      allowedTCPPorts = [
+                          6881 #? Qbittorrent
+                          443 8888 8384 22000 18081 ];
+      allowedUDPPorts = [
+                          6881 #? Qbittorrent
+                          443 22000 21027 18081 ];
+      #--> Ranges
+      allowedTCPPortRanges = [
+                            { from = 1714; to = 1764; }  #? KDEconnect
+                         ];
+      allowedUDPPortRanges = [
+                            { from = 1714; to = 1764; }  #? KDEconnect
+                         ];
       logReversePathDrops = true;
       };
 
@@ -206,7 +217,7 @@ in{
     };
   };
 
-  # Enable Chrony NTP service
+  # Enable Chrony NTS service
   services.chrony = {
     enable = true;
     enableNTS = true;
