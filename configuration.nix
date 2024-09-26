@@ -177,7 +177,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "wireshark" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" ];
   };
 
   # Managing unfree packages
@@ -219,6 +219,7 @@ in{
   customPackages.super-productivity
 
   searxng
+  nixos-generators
 
   #-> General
   bat
@@ -488,6 +489,7 @@ in{
 #?#############
   btop
   kooha
+  p7zip
   brave
   haruna
   jackett
