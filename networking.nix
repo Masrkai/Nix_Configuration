@@ -33,12 +33,12 @@ in{
                           6881 #? Qbittorrent
                           443 22000 21027 18081 ];
       #--> Ranges
-      allowedTCPPortRanges = [
-                            { from = 1714; to = 1764; }  #? KDEconnect
-                         ];
-      allowedUDPPortRanges = [
-                            { from = 1714; to = 1764; }  #? KDEconnect
-                         ];
+      # allowedTCPPortRanges = [
+      #                       { from = 1714; to = 1764; }  #? KDEconnect
+      #                    ];
+      # allowedUDPPortRanges = [
+      #                       { from = 1714; to = 1764; }  #? KDEconnect
+      #                    ];
       logReversePathDrops = true;
       };
 
@@ -157,6 +157,38 @@ in{
             ipv4 = {
               method = "auto";
               dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "RN-Meemoo" = {
+            connection = {
+              id = "RN-Meemoo";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 4;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = true;            #! Specify if the network is hidden
+              ssid = "M1";
+              mode = "infrastructure";
+              bssid = "D8:0D:17:AA:E4:1D";
+              mac-address-randomization = "never";  #? or "default" or "never"
+              cloned-mac-address= secrets.M1_device_mac;
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = secrets.M1_psk;
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "manual";
+              address1 = "192.168.1.71/24,192.168.1.1";  # IP/prefix,gateway
+              dns = "127.0.0.1";         # You can add more DNS servers if needed
               ignore-auto-dns = true;
             };
             ipv6 = {
