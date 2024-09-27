@@ -17,3 +17,5 @@
   # Optional: Set a custom ISO name
   isoImage.isoName = "Main_NixOS_System.iso";
 }
+
+# sudo nixos-generate -c /etc/nixos/VMISO/iso.nix  -f iso
