@@ -1,6 +1,6 @@
 # My NixOS Configuration ❄️
 
-![NixOS](https://img.shields.io/badge/-NixOS-5277C3?style=flat-square&logo=nixos&logoColor=black)![Nix](https://img.shields.io/badge/-Nix-7EBAFF?style=flat-square&logo=nixos&logoColor=black)
+![NixOS](https://img.shields.io/badge/-NixOS-5277C3?style=flat-square&logo=nixos&logoColor=black) ![Nix](https://img.shields.io/badge/-Nix-7EBAFF?style=flat-square&logo=nixos&logoColor=black)
 
 This is a very specialized configuration i really put my heart into over a year to have redundancy for my system because this is the whole point of NixOS in the first place
 
