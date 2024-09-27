@@ -560,6 +560,7 @@ in{
   lighttpd
   ettercap
   bettercap
+  traceroute
   aircrack-ng
   linux-wifi-hotspot
 
