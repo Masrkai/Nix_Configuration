@@ -25,21 +25,21 @@ in{
 
       #! Firewall
       firewall = {
-      enable = true;
-      allowedTCPPorts = [
+      enable = lib.mkForce true;
+      allowedTCPPorts = lib.mkForce [
                           6881 #? Qbittorrent
                           443 8888 8384 22000 18081 ];
-      allowedUDPPorts = [
+      allowedUDPPorts = lib.mkForce [
                           6881 #? Qbittorrent
                           443 22000 21027 18081 ];
       #--> Ranges
-      allowedTCPPortRanges = [
+      allowedTCPPortRanges = lib.mkForce [
                             { from = 1714; to = 1764; }  #? KDEconnect
                          ];
-      allowedUDPPortRanges = [
+      allowedUDPPortRanges = lib.mkForce [
                             { from = 1714; to = 1764; }  #? KDEconnect
                          ];
-      logReversePathDrops = true;
+      logReversePathDrops = lib.mkForce true;
       };
 
       networkmanager = {
