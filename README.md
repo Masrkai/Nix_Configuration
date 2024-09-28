@@ -14,7 +14,7 @@ This is a very specialized configuration i really put my heart into over a year 
 - Python
 - Bash
 
-## Configuration Schematic
+## Configuration S chematic
 
 1. Programs and my own hand made things are in [/Programs](https://github.com/Masrkai/Nix_Configuration/tree/main/Programs "Programs") which currently include:
 
