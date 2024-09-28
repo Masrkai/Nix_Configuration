@@ -7,6 +7,8 @@ let
   customPackages = {
     #? .Nix
     airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
+    wifi-honey = pkgs.callPackage ./Programs/Packages/wifi-honey.nix {};
+    hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
 
     #! Bash
@@ -217,6 +219,8 @@ in{
   customPackages.backup
   customPackages.setupcpp
   customPackages.airgeddon
+  customPackages.wifi-honey
+  customPackages.hostapd-wpe
   customPackages.super-productivity
 
   searxng
