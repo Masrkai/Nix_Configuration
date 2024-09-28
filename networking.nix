@@ -9,7 +9,7 @@ let
 
 
 in{
-
+  # services.avahi.enable = true;
   services.resolved.enable = false;
   networking = {
       useDHCP = lib.mkDefault true;
@@ -33,12 +33,12 @@ in{
                           6881 #? Qbittorrent
                           443 22000 21027 18081 ];
       #--> Ranges
-      # allowedTCPPortRanges = [
-      #                       { from = 1714; to = 1764; }  #? KDEconnect
-      #                    ];
-      # allowedUDPPortRanges = [
-      #                       { from = 1714; to = 1764; }  #? KDEconnect
-      #                    ];
+      allowedTCPPortRanges = [
+                            { from = 1714; to = 1764; }  #? KDEconnect
+                         ];
+      allowedUDPPortRanges = [
+                            { from = 1714; to = 1764; }  #? KDEconnect
+                         ];
       logReversePathDrops = true;
       };
 

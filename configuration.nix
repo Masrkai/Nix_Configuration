@@ -6,15 +6,15 @@ let
 
   customPackages = {
     #? .Nix
-    airgeddon = pkgs.callPackage ./Programs/airgeddon.nix {};
-    super-productivity = pkgs.callPackage ./Programs/super-productivity.nix {};
+    airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
+    super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
 
     #! Bash
-    backup = pkgs.callPackage ./Programs/backup.nix {};
-    setupcpp = pkgs.callPackage ./Programs/setupcpp.nix {};
+    backup = pkgs.callPackage ./Programs/custom/backup.nix {};
+    setupcpp = pkgs.callPackage ./Programs/custom/setupcpp.nix {};
 
     #? Python
-    ctj = pkgs.callPackage ./Programs/ctj.nix {};
+    ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
   };
 
 in{
@@ -88,6 +88,7 @@ in{
     libsForQt5.kwallet
     libsForQt5.kwallet-pam
     libsForQt5.kwalletmanager
+    kdePackages.kdeconnect-kde
     ];
 
   #! Enable touchpad support
@@ -629,7 +630,10 @@ in{
     };
 
   #--> KDE connect Specific
-    programs.kdeconnect.enable = true;
+    programs.kdeconnect = {
+      enable =lib.mkForce true;
+      package = lib.mkForce pkgs.kdePackages.kdeconnect-kde;
+    };
 
   #--> NoiseTorch
     programs.noisetorch.enable = true;
