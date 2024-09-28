@@ -51,7 +51,7 @@ with lib;
 };
 
 
-  boot.blacklistedKernelModules = [
+  boot.blacklistedKernelModules = mkForce [
     #! Flatpak
     "flatpak"
 
@@ -83,6 +83,8 @@ with lib;
     "ufs"
   ];
 
+#--> Disable CUPS deamon
+services.printing.enable = mkForce false;
 
 #--> Fail2ban // prevent brute-force attacks
 services.fail2ban.enable = true;
