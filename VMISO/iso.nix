@@ -3,6 +3,7 @@
 {
   imports = [
     ../configuration.nix  # Import your existing configuration
+    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
   ];
 
   boot.loader.timeout = lib.mkForce 10;
@@ -17,5 +18,3 @@
   # Optional: Set a custom ISO name
   isoImage.isoName = "Main_NixOS_System.iso";
 }
-
-# sudo nixos-generate -c /etc/nixos/VMISO/iso.nix  -f iso
