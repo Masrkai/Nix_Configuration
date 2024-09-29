@@ -592,6 +592,10 @@ in{
 
     USB_AUTOSUSPEND=0;
 
+    # Disable turbo boost on battery
+    CPU_BOOST_ON_BAT = "0";       # 0 = Disable turbo boost when on battery
+    CPU_BOOST_ON_AC = "1";        # 1 = Enable turbo boost when on AC
+
     RUNTIME_PM_ON_BAT = "on";
     RUNTIME_PM_ON_AC = "on";
 
