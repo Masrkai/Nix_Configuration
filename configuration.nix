@@ -9,6 +9,7 @@ let
     airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
     wifi-honey = pkgs.callPackage ./Programs/Packages/wifi-honey.nix {};
     hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
+    logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
 
     #! Bash
@@ -221,6 +222,7 @@ in{
   customPackages.airgeddon
   customPackages.wifi-honey
   customPackages.hostapd-wpe
+  customPackages.logisim-evolution
   customPackages.super-productivity
 
   searxng
@@ -317,9 +319,9 @@ in{
   #-> Rust
   rustc
   cargo
+  clippy
   rustfmt
   rust-analyzer
-  clippy
 
   #-> MicroChips
   esptool
@@ -484,6 +486,13 @@ in{
                                                           publisher = "cweijan";
                                                           version = "3.4.1";  # Check for the latest version
                                                           hash = "sha256-UNjU+DEeq8aoJuTOWpPg1WAUBwGpxdOrnsMBW7xddzw=";
+                                                        }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=tom-latham.markdown-pdf-plus
+                                                          name = "markdown-pdf-plus";
+                                                          publisher = "tom-latham";
+                                                          version = "1.2.4";  # Check for the latest version
+                                                          hash = "sha256-Rx6hjwYL/H+MXKBWJ8scYehLKm8ZM7HnIK6FTfq13Rw=";
                                                         }
     ];
   }
@@ -658,14 +667,32 @@ in{
     programs.virt-manager.enable   = true;
 
   #---> Syncthing
-    services = {
-    syncthing = {
-      enable = true;
-      user = "masrkai";
-      dataDir = "/home/masrkai";
-      configDir = "/home/masrkai/Documents/.config/syncthing";
+  services.syncthing = {
+    enable = true;
+    user = "masrkai";
+    dataDir = "/home/masrkai";
+    configDir = "/home/masrkai/Documents/.config/syncthing";
+
+  overrideDevices = true; #! Overrides devices added or deleted through the WebUI
+  overrideFolders = true; #! Overrides folders added or deleted through the WebUI
+
+  settings = {
+    devices = {
+      "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
+      "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
+    };
+      folders = {
+        "College_shit" = {
+          path = "~/Documents/College/Current/";
+          devices = [ "A71" "Tablet" ];
+        };
+        "Forbidden_Knowledge" = {
+          path = "~/Documents/Books/";
+          devices = [ "A71" ];
+        };
     };
   };
+};
 
   # TODO ---> Nginx
   # services.nginx = {
@@ -738,17 +765,26 @@ in{
       pulse.enable = true;
     };
 
-
-    environment.etc."xdg/kitty/kitty.conf".text = ''
+      #->Kitty terminal
+      environment.etc."xdg/kitty/kitty.conf".text = ''
       # Basic settings
       font_family Iosevka Fixed Hv Ex Obl
-      font_size 11
-      adjust_line_height 0
+      font_size 13
+
+      # Adjust this value as needed
+      modify_font cell_height 90%
       adjust_column_width 0
       disable_ligatures never
 
+      # Scroll settings
+      scrollback_lines 10000
+      mouse_wheel_scroll yes
+
       # Use additional symbols from Material Design Icons
-      symbol_map U+E000-U+E7C5 MaterialDesignIcons
+      symbol_map U+E000-U+E7C5 Material Design Icons
+
+      clipboard_control write-clipboard read-clipboard
+      GLFW_IM_MODULE=ibus
 
       # Color scheme
       background #000000
@@ -774,6 +810,9 @@ in{
       map ctrl+shift+v paste_from_clipboard
       map ctrl+shift+t new_tab
       map ctrl+shift+q close_tab
+
+      # Initial zoom level (optional)
+      initial_zoom_level 0.75
     '';
 
 #!###############

@@ -28,10 +28,12 @@ in{
       enable = lib.mkForce true;
       allowedTCPPorts = lib.mkForce [
                           6881 #? Qbittorrent
-                          443 8888 8384 22000 18081 ];
+                          8384 22000 #? Syncthing
+                          443 8888 18081 ];
       allowedUDPPorts = lib.mkForce [
                           6881 #? Qbittorrent
-                          443 22000 21027 18081 ];
+                          21027 #? Syncthing
+                          443 18081 ];
       #--> Ranges
       allowedTCPPortRanges = lib.mkForce [
                             { from = 1714; to = 1764; }  #? KDEconnect
@@ -189,6 +191,36 @@ in{
               method = "manual";
               address1 = "192.168.1.71/24,192.168.1.1";  # IP/prefix,gateway
               dns = "127.0.0.1";         # You can add more DNS servers if needed
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "Library" = {
+            connection = {
+              id = "Library";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 2;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = true;            #! Specify if the network is hidden
+              ssid = "Study";
+              mode = "infrastructure";
+              bssid = "A4:B2:39:9C:EC:C0";
+              mac-address-randomization = "default";  #? or "default" or "never"
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = secrets.Study_psk;
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
               ignore-auto-dns = true;
             };
             ipv6 = {
