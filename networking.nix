@@ -215,7 +215,7 @@ in{
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = secrets.Study_psk;
+              psk = ''${secrets.Study_psk}'';
               auth-alg = "open";
             };
             ipv4 = {
