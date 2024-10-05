@@ -11,8 +11,8 @@ let
 in{
   # services.avahi.enable = true;
   services.resolved.enable = false;
-  networking = {
-      useDHCP = lib.mkDefault true;
+  networking = lib.mkForce {
+      useDHCP = true;
       hostName = "NixOS";                        #* Defining hostname.
       enableIPv6 = false;                        #* Disabling IPV6 to decrease attack surface for good
       nftables.enable = true;                    #* Using the newer standard instead of iptables
@@ -25,29 +25,30 @@ in{
 
       #! Firewall
       firewall = {
-      enable = lib.mkForce true;
-      allowedTCPPorts = lib.mkForce [
+      enable = true;
+      allowedTCPPorts = [
                           6881 #? Qbittorrent
                           8384 22000 #? Syncthing
                           443 8888 18081 ];
-      allowedUDPPorts = lib.mkForce [
+      allowedUDPPorts = [
                           6881 #? Qbittorrent
                           21027 #? Syncthing
                           443 18081 ];
       #--> Ranges
-      allowedTCPPortRanges = lib.mkForce [
+      allowedTCPPortRanges = [
                             { from = 1714; to = 1764; }  #? KDEconnect
-                         ];
-      allowedUDPPortRanges = lib.mkForce [
+                             ];
+      allowedUDPPortRanges = [
                             { from = 1714; to = 1764; }  #? KDEconnect
-                         ];
-      logReversePathDrops = lib.mkForce true;
+                             ];
+      logReversePathDrops = true;
       };
 
       networkmanager = {
       enable = true;
       dns = "none";  #-> Disable NetworkManager's DNS management
       ensureProfiles = {
+        environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
         profiles = {
 #?//////////////////////////////////////////////////////////////////////////////   Networks
           AfafAfaf = {
@@ -65,7 +66,7 @@ in{
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = secrets.AFafAfaf_psk;
+              psk = "\${AFafAfaf_psk}";
               auth-alg = "open";
             };
             ipv4 = {
@@ -93,7 +94,7 @@ in{
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = secrets.Meemoo_psk;
+              psk = "\${Meemoo_psk}";
               auth-alg = "open";
             };
             ipv4 = {
@@ -122,7 +123,7 @@ in{
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = secrets.ALY2_psk;
+              psk = "\${ALY2_psk}";
               auth-alg = "open";
             };
             ipv4 = {
@@ -149,11 +150,11 @@ in{
               mode = "infrastructure";
               bssid = "46:FB:5A:D1:93:49";
               mac-address-randomization = "never";  #? or "default" or "never"
-              cloned-mac-address= secrets.Hello_device_mac;
+              cloned-mac-address= "\${Hello_device_mac}";
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = secrets.Hello_psk;
+              psk = "\${Hello_psk}";
               auth-alg = "open";
             };
             ipv4 = {
@@ -180,11 +181,11 @@ in{
               mode = "infrastructure";
               bssid = "D8:0D:17:AA:E4:1D";
               mac-address-randomization = "never";  #? or "default" or "never"
-              cloned-mac-address= secrets.M1_device_mac;
+              cloned-mac-address= "\${M1_device_mac}";
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = secrets.M1_psk;
+              psk = "\${M1_psk}";
               auth-alg = "open";
             };
             ipv4 = {
@@ -215,7 +216,7 @@ in{
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = ''${secrets.Study_psk}'';
+              psk = "\${Study_psk}";
               auth-alg = "open";
             };
             ipv4 = {
@@ -236,7 +237,7 @@ in{
   };
 
   #> DNS-over-TLS
-  services.stubby = {
+  services.stubby = lib.mkForce {
     enable = true;
     settings = {
 
@@ -282,7 +283,7 @@ in{
   };
 
   # Enable Chrony NTS service
-  services.chrony = {
+  services.chrony = lib.mkForce {
     enable = true;
     enableNTS = true;
     servers = [ "time.cloudflare.com" ];
