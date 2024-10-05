@@ -2,7 +2,7 @@
 
 let
   #unstable = import <unstable> {config.allowUnfree = true;};
-  secrets = import ./secrets.nix;
+  secrets = import ./Sec/secrets.nix;
 
   customPackages = {
     #? .Nix
@@ -595,7 +595,7 @@ in{
   #!#################
 
   #--> TLP enabling
-  services.tlp = {
+  services.tlp = lib.mkForce {
     enable = true;
     settings = {
 
@@ -647,9 +647,9 @@ in{
     };
 
   #--> KDE connect Specific
-    programs.kdeconnect = {
-      enable =lib.mkForce true;
-      package = lib.mkForce pkgs.kdePackages.kdeconnect-kde;
+    programs.kdeconnect = lib.mkForce {
+      enable = true;
+      package =  pkgs.kdePackages.kdeconnect-kde;
     };
 
   #--> NoiseTorch
