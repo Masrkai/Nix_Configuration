@@ -28,8 +28,9 @@ copy_commit_and_push() {
     if [ -e "$src" ]; then
         # Use rsync to copy files
         rsync -av "$src" "$dest"
-        rm -rf "$nix_config_dir/secrets.nix"
-        
+        rm -rf "$nix_config_dir/Sec/secrets.nix"
+        rm -rf "$nix_config_dir/Sec/network-manager.env"
+
         if [ "$offline_mode" = false ]; then
             cd "$repo_dir"
             
