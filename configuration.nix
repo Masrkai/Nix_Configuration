@@ -18,6 +18,8 @@ let
 
     #? Python
     ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
+    MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+
   };
 
 in{
@@ -217,6 +219,7 @@ in{
 
   #-> Custom
   customPackages.ctj
+  customPackages.MD-PDF
   customPackages.backup
   customPackages.setupcpp
   customPackages.airgeddon
@@ -262,6 +265,7 @@ in{
     (python311.withPackages (pk: with pk; [
       pip
       nltk
+      fire
       lxml
       tqdm
       scapy
@@ -274,6 +278,8 @@ in{
       requests
       colorama
       netifaces
+      markdown2
+      weasyprint
       setuptools
       matplotlib
 
@@ -486,13 +492,6 @@ in{
                                                           publisher = "cweijan";
                                                           version = "3.4.1";  # Check for the latest version
                                                           hash = "sha256-UNjU+DEeq8aoJuTOWpPg1WAUBwGpxdOrnsMBW7xddzw=";
-                                                        }
-                                                        {
-                                                          #https://marketplace.visualstudio.com/items?itemName=tom-latham.markdown-pdf-plus
-                                                          name = "markdown-pdf-plus";
-                                                          publisher = "tom-latham";
-                                                          version = "1.2.4";  # Check for the latest version
-                                                          hash = "sha256-Rx6hjwYL/H+MXKBWJ8scYehLKm8ZM7HnIK6FTfq13Rw=";
                                                         }
     ];
   }
