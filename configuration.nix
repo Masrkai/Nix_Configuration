@@ -183,7 +183,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" ];
   };
 
   # Managing unfree packages
@@ -232,6 +232,13 @@ in{
   nixos-generators
 
   #-> General
+    #-! GNS3 Specific Bullshit
+    gns3-gui
+    gns3-server
+    dynamips
+    vpcs
+    ubridge
+
   bat
   eza
   git
