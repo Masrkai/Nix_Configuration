@@ -254,6 +254,7 @@ in{
   hw-probe
   thermald
   efibootmgr
+  unrar-wrapper
   rustdesk-flutter
   (lowPrio bash-completion)
 
@@ -587,7 +588,8 @@ in{
 #>################
 #> Virtualization:
 #>################
-  qemu
+  qemu_full
+  qemu-utils
   virt-manager
 ];
 
@@ -669,8 +671,40 @@ in{
     };
 
   #---> Qemu KVM
-    virtualisation.libvirtd.enable = true;
+    virtualisation = lib.mkForce {
+    libvirtd = {
+      enable = true;
+      qemu = {
+        package = pkgs.qemu_full;
+        runAsRoot = true;
+        ovmf = {
+          enable = true;
+          packages = [ pkgs.OVMFFull.fd ];
+        };
+      };
+    };
+    spiceUSBRedirection.enable = true;
+
+    libvirtd.qemu.verbatimConfig = ''
+    cgroup_device_acl = [
+      "/dev/null", "/dev/full", "/dev/zero",
+      "/dev/random", "/dev/urandom",
+      "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+      "/dev/rtc", "/dev/hpet", "/dev/sev",
+      "/dev/usb", "/dev/usb/*"
+    ]
+    user = "root"
+    group = "root"
+    clear_emulator_capabilities = 0
+  '';
+  };
+    services.spice-vdagentd.enable = true;
     programs.virt-manager.enable   = true;
+
+  # Ensure USB storage is not automatically mounted
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6860", ENV{UDISKS_AUTO}="0"
+  '';
 
   #---> Syncthing
   services.syncthing = {
