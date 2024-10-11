@@ -51,6 +51,26 @@ in{
         environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
         profiles = {
 #?//////////////////////////////////////////////////////////////////////////////   Networks
+            "WiredConnection" = {
+                connection = {
+                id = "WiredConnection";
+                type = "ethernet";
+                permissions = "";
+                autoconnect = true;
+                };
+                ethernet = {
+                  mac-address-randomization = "always";  #! Set to 'never' for a static MAC if you need it
+                };
+                ipv4 = {
+                  method = "auto";  # Use DHCP for IPv4
+                  dns = "127.0.0.1";  # Local DNS resolver
+                  ignore-auto-dns = true;  # Ignore DNS provided by DHCP
+                };
+                ipv6 = {
+                  method = "ignore";  # Disable IPv6 if not needed
+                };
+            };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           AfafAfaf = {
             connection = {
               id = "AfafAfaf";
