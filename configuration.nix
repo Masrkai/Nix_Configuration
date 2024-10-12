@@ -62,12 +62,11 @@ in{
 
   # Configure X11 server (needed for some Wayland compositors)
   services.xserver = {
-    enable = false;  # This should be true even for Wayland
+    enable = true;  # This should be true even for Wayland
     xkb.layout = "us";
     xkb.variant = "";
     videoDrivers = [ "intel" "amdgpu" ];
   };
-
 
   # Set default session to Wayland
   services.displayManager={
@@ -97,7 +96,14 @@ in{
     ];
 
   #! Enable touchpad support
-  services.libinput.enable = true;
+  services.libinput = {
+  enable = true;
+  touchpad.disableWhileTyping = false;
+    touchpad = {
+    accelSpeed = "0.3";
+    naturalScrolling = true;
+    };
+  };
 
   #? Weylus
   programs.weylus = {
@@ -227,9 +233,11 @@ in{
   customPackages.hostapd-wpe
   customPackages.logisim-evolution
   customPackages.super-productivity
+  #customPackages.custom-httrack
 
   searxng
   nixos-generators
+
 
   #-> General
     #-! GNS3 Specific Bullshit
@@ -242,6 +250,7 @@ in{
   bat
   eza
   git
+  wget
   less
   most
   kitty
@@ -550,6 +559,7 @@ in{
   #System
   mlocate
   pciutils
+  xorg.xhost
   translate-shell
 
   #Spell_check
@@ -590,7 +600,15 @@ in{
 #>################
   qemu_full
   qemu-utils
+
+  virt-viewer
   virt-manager
+
+  spice
+  spice-protocol
+
+  win-spice
+  win-virtio
 ];
 
 #>#################
@@ -601,6 +619,10 @@ in{
   #!#################
   #! POWER services:
   #!#################
+  powerManagement.resumeCommands = ''
+  ${pkgs.kmod}/bin/modprobe -r psmouse
+  ${pkgs.kmod}/bin/modprobe psmouse
+'';
 
   #--> TLP enabling
   services.tlp = lib.mkForce {
@@ -670,36 +692,30 @@ in{
       package   = pkgs.mlocate;
     };
 
-  #---> Qemu KVM
+  #--> Qemu KVM
     virtualisation = lib.mkForce {
-    libvirtd = {
-      enable = true;
-      qemu = {
-        package = pkgs.qemu_full;
-        runAsRoot = true;
-        ovmf = {
-          enable = true;
-          packages = [ pkgs.OVMFFull.fd ];
+    spiceUSBRedirection.enable = true;
+      libvirtd = {
+        enable = true;
+        allowedBridges = [ "virbr0"];
+        qemu = {
+          package = pkgs.qemu_full;
+          runAsRoot = true;
+          swtpm.enable = true;
+
+          ovmf = {
+            enable = true;
+            packages = [(pkgs.OVMFFull.override {
+            secureBoot = true;
+            tpmSupport = true;
+          }).fd];
+          };
         };
       };
     };
-    spiceUSBRedirection.enable = true;
-
-    libvirtd.qemu.verbatimConfig = ''
-    cgroup_device_acl = [
-      "/dev/null", "/dev/full", "/dev/zero",
-      "/dev/random", "/dev/urandom",
-      "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
-      "/dev/rtc", "/dev/hpet", "/dev/sev",
-      "/dev/usb", "/dev/usb/*"
-    ]
-    user = "root"
-    group = "root"
-    clear_emulator_capabilities = 0
-  '';
-  };
     services.spice-vdagentd.enable = true;
     programs.virt-manager.enable   = true;
+    programs.dconf.enable = true;
 
   # Ensure USB storage is not automatically mounted
   services.udev.extraRules = ''
