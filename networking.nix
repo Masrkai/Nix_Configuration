@@ -28,6 +28,7 @@ in{
       enable = true;
       allowedTCPPorts = [
                           6881 #? Qbittorrent
+                          16509 #? libvirt
                           8384 22000 #? Syncthing
                           443 8888 18081 ];
       allowedUDPPorts = [
