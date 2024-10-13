@@ -11,6 +11,7 @@ let
     hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
+    #custom-httrack = pkgs.libsForQt5.callPackage ./Programs/Packages/custom-httrack.nix {};
 
     #! Bash
     backup = pkgs.callPackage ./Programs/custom/backup.nix {};
