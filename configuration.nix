@@ -544,7 +544,7 @@ in{
   kdePackages.plasma-browser-integration
 
   #Productivity
-  betterbird
+  thunderbird-bin
   libreoffice-qt
   gimp-with-plugins
 
