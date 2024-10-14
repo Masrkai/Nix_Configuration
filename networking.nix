@@ -27,6 +27,8 @@ in{
       firewall = {
       enable = true;
       allowedTCPPorts = [
+                          465
+                          587 #? outlook.office365.com Mail server
                           6881 #? Qbittorrent
                           16509 #? libvirt
                           8384 22000 #? Syncthing
