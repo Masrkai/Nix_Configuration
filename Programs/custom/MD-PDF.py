@@ -1,9 +1,16 @@
-from markdown2 import markdown, markdown_path
+from markdown2 import Markdown
 from weasyprint import HTML, CSS
 import fire
 import os
+import re
 
-def md2pdf(md_file_path, output_file_path=None, new_page_char="---", style_file_path=None):
+class CustomMarkdown(Markdown):
+    def preprocess(self, text):
+        # Replace the explicit page break div with a marker
+        text = re.sub(r'<div\s+style="page-break-after:\s*always;"\s*>\s*</div>', '<!-- PAGE_BREAK -->', text)
+        return super().preprocess(text)
+
+def md2pdf(md_file_path, output_file_path=None, style_file_path=None):
     """
     This converts markdown to pdf
 
@@ -11,8 +18,6 @@ def md2pdf(md_file_path, output_file_path=None, new_page_char="---", style_file_
     :type md_file_path: str
     :param output_file_path: Path to the output PDF file (it will not create a folder for you, make sure directory already exists)
     :type output_file_path: str
-    :param new_page_char: Character for new page break
-    :type new_page_char: str
     :param style_file_path: Path to the CSS file
     :type style_file_path: str
     :return: Path of the converted PDF file
@@ -27,13 +32,15 @@ def md2pdf(md_file_path, output_file_path=None, new_page_char="---", style_file_
         'wiki-table'
     ]
     
-    # Convert Markdown to HTML
-    html_in_text = markdown_path(md_file_path, extras=extras)
+    # Create custom Markdown instance
+    custom_markdown = CustomMarkdown(extras=extras)
     
-    # Handle new page character
-    if new_page_char:
-        page_break_char = markdown(new_page_char, extras=extras)
-        html_in_text = html_in_text.replace(page_break_char, '<p style="page-break-before: always" ></p>')
+    # Convert Markdown to HTML
+    with open(md_file_path, 'r') as md_file:
+        html_in_text = custom_markdown.convert(md_file.read())
+    
+    # Replace the page break marker with actual page break
+    html_in_text = html_in_text.replace('<!-- PAGE_BREAK -->', '<p style="page-break-before: always" ></p>')
     
     # Create HTML object
     html_object = HTML(string=html_in_text)
