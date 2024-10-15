@@ -3,12 +3,13 @@
 #*#########################
 #* Networking-Configration:
 #*#########################
-let 
+{
+  boot.kernel.sysctl = {
+    #! Enable BBR congestion control algorithm
+    "net.core.default_qdisc" = "fq";
+    "net.ipv4.tcp_congestion_control" = "bbr";
+  };
 
-  secrets = import ./secrets.nix;
-
-
-in{
   # services.avahi.enable = true;
   services.resolved.enable = false;
   networking = lib.mkForce {
