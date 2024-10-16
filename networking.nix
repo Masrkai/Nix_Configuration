@@ -5,6 +5,9 @@
 #*#########################
 {
   boot.kernel.sysctl = {
+    #! For Hotspot
+    "net.ipv4.ip_forward" = 1;
+
     #! Enable BBR congestion control algorithm
     "net.core.default_qdisc" = "fq";
     "net.ipv4.tcp_congestion_control" = "bbr";
@@ -24,11 +27,17 @@
         "127.0.0.1" #> IPv4
         ];
 
+      #! Nat for hotspot
+      nat = {
+        enable = true;
+        externalInterface = "eth0";  # Adjust this to your main internet-connected interface
+        internalInterfaces = [ "wlan0" "wlan1" ];
+      };
+
       #! Firewall
       firewall = {
       enable = true;
       allowedTCPPorts = [
-                          465
                           587 #? outlook.office365.com Mail server
                           6881 #? Qbittorrent
                           16509 #? libvirt
@@ -74,6 +83,26 @@
                   method = "ignore";  # Disable IPv6 if not needed
                 };
             };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "Nix_Hotspot" = {
+            connection = {
+              id = "Nix_Hotspot";
+              type = "wifi";
+              interface-name = "wlan0";
+            };
+            wifi = {
+              mode = "ap";
+              ssid = "Nix_Hotspot";
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = "\${AFafAfaf_psk}";  # This will be replaced by the value from the environment file
+            };
+            ipv4 = {
+              method = "shared";
+            };
+            ipv6.method = "ignore";
+          };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           AfafAfaf = {
             connection = {
@@ -266,9 +295,9 @@
     settings = {
 
       # ::1 cause error, use 0::1 instead
-      listen_addresses = [ 
-        "127.0.0.1"
-        # "0::1"
+        listen_addresses = [
+        "127.0.0.1@53"
+        #"0::1@53"
         ];
 
       # https://github.com/getdnsapi/stubby/blob/develop/stubby.yml.example
@@ -304,6 +333,38 @@
         }
       ];
     };
+  };
+
+  #! Enable DHCP server for the hotspot
+  services.kea.dhcp4 = {
+    enable = true;
+    settings = {
+      interfaces-config = {
+        interfaces = [ "wlan0" "wlan1" ];
+      };
+      lease-database = {
+        type = "memfile";
+        name = "/var/lib/kea/dhcp4.leases";
+      };
+      valid-lifetime = 4000;
+      renew-timer = 1000;
+      rebind-timer = 2000;
+      subnet4 = [{
+        subnet = "10.42.0.0/24";
+        pools = [{ pool = "10.42.0.2 - 10.42.0.254"; }];
+        option-data = [
+          { name = "routers"; data = "10.42.0.1"; }
+          { name = "domain-name-servers"; data = "127.0.0.1"; }
+          { name = "subnet-mask"; data = "255.255.255.0"; }
+        ];
+      }];
+    };
+  };
+
+  # Ensure the Kea DHCP server starts after the network is online
+  systemd.services.kea-dhcp4-server = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
   };
 
   # Enable Chrony NTS service
