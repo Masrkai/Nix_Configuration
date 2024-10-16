@@ -544,6 +544,7 @@ in{
   kdePackages.plasma-browser-integration
 
   #Productivity
+  gnome.gnome-disk-utility
   thunderbird-bin
   libreoffice-qt
   gimp-with-plugins
