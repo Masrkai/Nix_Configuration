@@ -9,6 +9,9 @@
     #-> Enable NTFS Support for windows files systems
     supportedFilesystems = [ "ntfs" ];
 
+    extraModprobeConfig =
+    '' options cfg80211 ieee80211_regdom="EG" '';
+
     #? Loader
     loader = {
       timeout = 5;
@@ -21,7 +24,7 @@
       config.boot.kernelPackages.rtl8188eus-aircrack
       ];
 
-    kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd"  ];
+    kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
     kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" "intel_iommu=on" "iommu=pt" ];
 
     initrd = {
@@ -58,6 +61,7 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   hardware = {
+    firmware = with pkgs; [ wireless-regdb ];
     cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
     #! Enable bluetooth
