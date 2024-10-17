@@ -5,10 +5,15 @@
 #*#########################
 {
   boot.kernel.sysctl = {
-    #! For Hotspot
-    "net.ipv4.ip_forward" = 1;
+    "net.ipv4.ip_forward" = 1;      #? For Hotspot
 
-    #! Enable BBR congestion control algorithm
+    "net.ipv4.tcp_mtu_probing" = 1;                      #? MTU Probing
+    "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;     #? Set the initial MTU probe size (in bytes)
+
+    "net.ipv4.tcp_timestamps" = lib.mkDefault 1;         #? TCP timestamps
+    "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;  #? limit on the maximum segment size
+
+    #? Enable BBR congestion control algorithm
     "net.core.default_qdisc" = "fq";
     "net.ipv4.tcp_congestion_control" = "bbr";
   };
@@ -20,19 +25,22 @@
       hostName = "NixOS";                        #* Defining hostname.
       enableIPv6 = false;                        #* Disabling IPV6 to decrease attack surface for good
       nftables.enable = true;                    #* Using the newer standard instead of iptables
-      dhcpcd.extraConfig = "nohook resolv.conf"; #* prevent overrides by dhcpcd
+
       usePredictableInterfaceNames = false ;     #* wlan0 wlan1 instead of gebrish
+      dhcpcd.extraConfig = "nohook resolv.conf"; #* prevent overrides by dhcpcd
+
+      wireless.athUserRegulatoryDomain = true;
       nameservers = [
         # "::1"     #> IPv6
         "127.0.0.1" #> IPv4
         ];
 
-      #! Nat for hotspot
-      nat = {
-        enable = true;
-        externalInterface = "eth0";  # Adjust this to your main internet-connected interface
-        internalInterfaces = [ "wlan0" "wlan1" ];
-      };
+      # #! Nat for hotspot
+      # nat = {
+      #   enable = true;
+      #   externalInterface = "eth0";  # Adjust this to your main internet-connected interface
+      #   internalInterfaces = [ "wlan0" "wlan1" ];
+      # };
 
       #! Firewall
       firewall = {
@@ -58,8 +66,16 @@
       };
 
       networkmanager = {
-      enable = true;
       dns = "none";  #-> Disable NetworkManager's DNS management
+      enable = true;
+      ethernet.macAddress = "random";  #? Enable random MAC during Ethernet_Connection
+      wifi.scanRandMacAddress = true;  #? Enable random MAC during scanning
+      settings = {
+        global = {
+          #! Enable random MAC address for scanning (prevents exposure during scans)
+          "wifi.scan-rand-mac-address" = true;
+        };
+      };
       ensureProfiles = {
         environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
         profiles = {
@@ -69,18 +85,19 @@
                 id = "WiredConnection";
                 type = "ethernet";
                 permissions = "";
+                interface-name = "eth0";              # Specify the interface name
                 autoconnect = true;
                 };
                 ethernet = {
-                  mac-address-randomization = "always";  #! Set to 'never' for a static MAC if you need it
+                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                 };
                 ipv4 = {
-                  method = "auto";  # Use DHCP for IPv4
-                  dns = "127.0.0.1";  # Local DNS resolver
-                  ignore-auto-dns = true;  # Ignore DNS provided by DHCP
+                  method = "auto";         #? Use DHCP for IPv4
+                  dns = "127.0.0.1";       #? Local DNS resolver
+                  ignore-auto-dns = true;  #? Ignore DNS provided by DHCP
                 };
                 ipv6 = {
-                  method = "ignore";  # Disable IPv6 if not needed
+                  method = "ignore";       #? Disable IPv6
                 };
             };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -115,7 +132,7 @@
             wifi = {
               ssid = "AfafAfaf";
               mode = "infrastructure";
-              mac-address-randomization = "always";
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
@@ -143,7 +160,7 @@
             wifi = {
               ssid = "Meemoo";
               mode = "infrastructure";
-              mac-address-randomization = "always";
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
@@ -171,7 +188,7 @@
             wifi = {
               ssid = "ALY2";
               mode = "infrastructure";
-              mac-address-randomization = "always";  #? or "default" or "never"
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
               # mac-address = "00:11:22:33:44:55";   # Set your desired MAC address here
             };
             wifi-security = {
@@ -202,7 +219,7 @@
               ssid = "Hello!";
               mode = "infrastructure";
               bssid = "46:FB:5A:D1:93:49";
-              mac-address-randomization = "never";  #? or "default" or "never"
+              mac-address-randomization = 0;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
               cloned-mac-address= "\${Hello_device_mac}";
             };
             wifi-security = {
@@ -265,7 +282,7 @@
               ssid = "Study";
               mode = "infrastructure";
               bssid = "A4:B2:39:9C:EC:C0";
-              mac-address-randomization = "default";  #? or "default" or "never"
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
@@ -335,37 +352,67 @@
     };
   };
 
-  #! Enable DHCP server for the hotspot
-  services.kea.dhcp4 = {
-    enable = true;
-    settings = {
-      interfaces-config = {
-        interfaces = [ "wlan0" "wlan1" ];
-      };
-      lease-database = {
-        type = "memfile";
-        name = "/var/lib/kea/dhcp4.leases";
-      };
-      valid-lifetime = 4000;
-      renew-timer = 1000;
-      rebind-timer = 2000;
-      subnet4 = [{
-        subnet = "10.42.0.0/24";
-        pools = [{ pool = "10.42.0.2 - 10.42.0.254"; }];
-        option-data = [
-          { name = "routers"; data = "10.42.0.1"; }
-          { name = "domain-name-servers"; data = "127.0.0.1"; }
-          { name = "subnet-mask"; data = "255.255.255.0"; }
-        ];
-      }];
+
+  # Define the network check script
+  environment.etc."check-internet.sh".text = ''
+    #!/bin/sh
+    # Check for internet connectivity by pinging a reliable external host (e.g., Cloudflare's 1.1.1.1)
+    if ping -c 3 1.1.1.1 > /dev/null; then
+      echo "Internet connection is working."
+    else
+      echo "No internet connection. Restarting stubby..."
+      systemctl restart stubby.service
+    fi
+  '';
+  environment.etc."check-internet.sh".mode = "0755";  # Add execute permission
+
+  # Create a systemd service that runs the check-internet script periodically
+  systemd.services.check-internet = {
+    description = "Check for internet connectivity and restart stubby if down";
+    serviceConfig = {
+      ExecStart = "/etc/check-internet.sh";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+
+  # Create a systemd timer to run the service every 5 minutes
+  systemd.timers.check-internet = {
+    description = "Run check-internet every 5 minutes";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "1min";   # First run 1 minute after boot
+      OnUnitActiveSec = "5min";  # Run every 5 minutes
     };
   };
 
-  # Ensure the Kea DHCP server starts after the network is online
-  systemd.services.kea-dhcp4-server = {
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-  };
+  # #! Enable DHCP server for the hotspot
+  # services.kea.dhcp4 = {
+  #   enable = true;
+  #   settings = {
+  #     interfaces-config = {
+  #       interfaces = [ "wlan0" "wlan1" ];
+  #       service-sockets-require-all = false;
+  #       service-sockets-retry-wait-time = 5000;
+  #     };
+  #     lease-database = {
+  #       type = "memfile";
+  #       name = "/var/lib/kea/dhcp4.leases";
+  #     };
+  #     valid-lifetime = 4000;
+  #     renew-timer = 1000;
+  #     rebind-timer = 2000;
+  #     subnet4 = [{
+  #       id = 1;  # Add this line
+  #       subnet = "10.42.0.0/24";
+  #       pools = [{ pool = "10.42.0.2 - 10.42.0.254"; }];
+  #       option-data = [
+  #         { name = "routers"; data = "10.42.0.1"; }
+  #         { name = "domain-name-servers"; data = "127.0.0.1"; }
+  #         { name = "subnet-mask"; data = "255.255.255.0"; }
+  #       ];
+  #     }];
+  #   };
+  # };
 
   # Enable Chrony NTS service
   services.chrony = lib.mkForce {
