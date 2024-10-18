@@ -41,6 +41,13 @@ in{
   i18n={
     #? Select internationalisation properties.
     defaultLocale = "en_US.UTF-8";
+      supportedLocales = [
+      "en_US.UTF-8/UTF-8"
+      "C.UTF-8/UTF-8"
+      "ru_RU.UTF-8/UTF-8"
+      "ar_EG.UTF-8/UTF-8"
+      "de_DE.UTF-8/UTF-8"  # Added German locale
+      ];
 
     extraLocaleSettings = {
     LC_TIME = "en_US.UTF-8";
@@ -267,9 +274,6 @@ in{
   unrar-wrapper
   rustdesk-flutter
   (lowPrio bash-completion)
-
-  (hiPrio nvtopPackages.amd)
-  (lowPrio nvtopPackages.intel)
 
   #-> Engineering
   #kicad
@@ -583,6 +587,7 @@ in{
   mdk4
   tmux
   hping
+  stubby
   getdns
   crunch
   asleap
@@ -641,7 +646,7 @@ in{
     RUNTIME_PM_ON_AC = "on";
 
     CPU_SCALING_GOVERNOR_ON_AC = "performance";
-    CPU_SCALING_GOVERNOR_ON_BAT = "balanced";
+    CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
 
     CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
     CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
@@ -677,6 +682,19 @@ in{
       enable = true;
       package = pkgs.wireshark;
     };
+
+  #--> journald
+    # systemd.journald = {
+    #   SystemMaxUse = "100M";  # Adjust size if needed
+    #   MaxRetentionSec = 2 * 24 * 60 * 60;  # Logs older than 2 days (in seconds) will be cleared
+    # };
+    # #--> journald
+    # services.journald = {
+    #   settings = {
+    #   SystemMaxUse = "100M";    #? Adjust size if needed
+    #   MaxRetentionSec = "2d";   #? Keep logs only for the last 2 days
+    #   };
+    # };
 
   #--> KDE connect Specific
     programs.kdeconnect = lib.mkForce {
@@ -766,9 +784,10 @@ in{
   # };
 
   #---> SearXNG
-    services.searx = {
-      enable = true;
-      settings = {
+  services.searx = {
+  enable = true;
+  package = pkgs.searxng;  # Ensure you're using the correct package
+  settings = {
         server = {
           port = 8888;
           bind_address = "127.0.0.1";
@@ -792,6 +811,12 @@ in{
         outgoing = {
           request_timeout = 6.0;
           max_request_timeout = 8.0;
+          # Add these lines to ensure Searx uses Stubby for DNS
+          dns_resolver = {
+            enable = true;
+            use_system_resolver = false;  # Disable system resolver
+            resolver_address = "127.0.0.1:8053";  # Point to Stubby
+          };
         };
         cache = {
           cache_dir = "/var/cache/searx";
