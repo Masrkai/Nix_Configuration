@@ -18,10 +18,8 @@
     "net.ipv4.tcp_congestion_control" = "bbr";
   };
 
-  # services.avahi.enable = true;
-  services.resolved.enable = false;
   networking = lib.mkForce {
-      useDHCP = true;
+      useDHCP = false;
       hostName = "NixOS";                        #* Defining hostname.
       enableIPv6 = false;                        #* Disabling IPV6 to decrease attack surface for good
       nftables.enable = true;                    #* Using the newer standard instead of iptables
@@ -48,11 +46,13 @@
       allowedTCPPorts = [
                           587 #? outlook.office365.com Mail server
                           6881 #? Qbittorrent
+                          8053 #? Stubby
                           16509 #? libvirt
                           8384 22000 #? Syncthing
                           443 8888 18081 ];
       allowedUDPPorts = [
                           6881 #? Qbittorrent
+                          8053 #? Stubby
                           21027 #? Syncthing
                           443 18081 ];
       #--> Ranges
@@ -307,6 +307,7 @@
   };
 
   #> DNS-over-TLS
+  services.resolved.enable = lib.mkForce false;
   services.stubby = lib.mkForce {
     enable = true;
     settings = {
@@ -317,9 +318,8 @@
         #"0::1@53"
         ];
 
-      # https://github.com/getdnsapi/stubby/blob/develop/stubby.yml.example
       resolution_type = "GETDNS_RESOLUTION_STUB";
-      dns_transport_list = [ "GETDNS_TRANSPORT_TLS" ];
+      dns_transport_list = [  "GETDNS_TRANSPORT_TLS" ];
       tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
       tls_query_padding_blocksize = 128;
       idle_timeout = 10000;
@@ -329,8 +329,8 @@
       dnssec_return_status = "GETDNS_EXTENSION_TRUE";
       appdata_dir = "/var/cache/stubby";
       # prefetch = "true";
-      # # hide-identity = "true";
-      # # hide-version = "true";
+      # hide_identity = "true";   # Hides the identity of the resolver
+      # hide_version = "true";    # Hides the version of the resolver
       upstream_recursive_servers = [
         {
           address_data = "1.1.1.1";
@@ -354,17 +354,21 @@
 
 
   # Define the network check script
-  environment.etc."check-internet.sh".text = ''
-    #!/bin/sh
-    # Check for internet connectivity by pinging a reliable external host (e.g., Cloudflare's 1.1.1.1)
-    if ping -c 3 1.1.1.1 > /dev/null; then
-      echo "Internet connection is working."
-    else
-      echo "No internet connection. Restarting stubby..."
-      systemctl restart stubby.service
-    fi
-  '';
-  environment.etc."check-internet.sh".mode = "0755";  # Add execute permission
+  environment.etc."check-internet.sh" = {
+    text = ''
+      #!/bin/sh
+      # Check for internet connectivity by pinging a reliable external host (e.g., Cloudflare's 1.1.1.1)
+      if curl -s https://1.1.1.1 > /dev/null; then
+        echo "Internet connection is working."
+      else
+        echo "No internet connection. Restarting stubby..."
+        systemctl restart stubby.service
+      fi
+    '';
+    mode = "0700";  # Only the owner (root) can read, write, and execute
+    uid = 0;        # Set owner to root (user ID 0)
+    gid = 0;        # Set group to root (group ID 0)
+  };
 
   # Create a systemd service that runs the check-internet script periodically
   systemd.services.check-internet = {
@@ -385,35 +389,6 @@
     };
   };
 
-  # #! Enable DHCP server for the hotspot
-  # services.kea.dhcp4 = {
-  #   enable = true;
-  #   settings = {
-  #     interfaces-config = {
-  #       interfaces = [ "wlan0" "wlan1" ];
-  #       service-sockets-require-all = false;
-  #       service-sockets-retry-wait-time = 5000;
-  #     };
-  #     lease-database = {
-  #       type = "memfile";
-  #       name = "/var/lib/kea/dhcp4.leases";
-  #     };
-  #     valid-lifetime = 4000;
-  #     renew-timer = 1000;
-  #     rebind-timer = 2000;
-  #     subnet4 = [{
-  #       id = 1;  # Add this line
-  #       subnet = "10.42.0.0/24";
-  #       pools = [{ pool = "10.42.0.2 - 10.42.0.254"; }];
-  #       option-data = [
-  #         { name = "routers"; data = "10.42.0.1"; }
-  #         { name = "domain-name-servers"; data = "127.0.0.1"; }
-  #         { name = "subnet-mask"; data = "255.255.255.0"; }
-  #       ];
-  #     }];
-  #   };
-  # };
-
   # Enable Chrony NTS service
   services.chrony = lib.mkForce {
     enable = true;
@@ -421,39 +396,15 @@
     servers = [ "time.cloudflare.com" ];
   };
 
-  # WebRTC leak prevention for Chromium-based browsers
-  environment.etc."chromium/policies/managed/policies.json".text = ''
-    {
-      "WebRtcIPHandlingPolicy": "disable_non_proxied_udp",
-      "WebRtcUDPPortRange": "10000-10010",
-      "WebRtcLocalIpsAllowedUrls": [""],
-      "WebRtcAllowLegacyTLSProtocols": false
-    }
-  '';
-
-  # WebRTC leak prevention for Firefox
-  environment.etc."firefox/policies/policies.json".text = ''
-    {
-      "policies": {
-        "DisableWebRTC": true,
-        "Preferences": {
-          "media.peerconnection.enabled": false,
-          "media.peerconnection.ice.default_address_only": true,
-          "media.peerconnection.ice.no_host": true,
-          "media.peerconnection.ice.proxy_only": true
-        }
-      }
-    }
-  '';
-
-
-  # Ensure DNS settings persist across reboots
-  environment.etc."resolv.conf".text = ''
-    nameserver 127.0.0.1
-    options edns0 trust-ad
-  '';
-
-  # Prevent other services from modifying resolv.conf
-  environment.etc."resolv.conf".mode = "0444";  # Read-only
+    # Ensure DNS settings persist across reboots
+    environment.etc."resolv.conf" = lib.mkForce {
+      text = ''
+      nameserver 127.0.0.1
+      options ndots:1 timeout:1 attempts:1 use-vc trust-ad edns0 port:53
+      '';
+    mode = "0444";  # Only the owner (root) can read, write, and execute
+    uid = 0;        # Set owner to root (user ID 0)
+    gid = 0;        # Set group to root (group ID 0)
+    };
 
 }
