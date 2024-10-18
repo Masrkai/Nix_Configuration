@@ -25,7 +25,7 @@
       ];
 
     kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
-    kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" "intel_iommu=on" "iommu=pt" ];
+    kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" "intel_pstate=active" "intel_iommu=on" "iommu=pt" ];
 
     initrd = {
     kernelModules = [ "amdgpu" ];
