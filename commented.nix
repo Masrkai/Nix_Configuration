@@ -28,6 +28,13 @@
   #   };
   # };
 
+  #! Nat for hotspot
+  # networking.nat = {
+  #   enable = true;
+  #   externalInterface = "eth0";  # Adjust this to your main internet-connected interface
+  #   internalInterfaces = [ "wlan0" "wlan1" ];
+  # };
+
     # WebRTC leak prevention for Chromium-based browsers
   environment.etc."chromium/policies/managed/policies.json".text = ''
     {
