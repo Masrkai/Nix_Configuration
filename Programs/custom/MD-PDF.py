@@ -56,6 +56,22 @@ def md2pdf(md_file_path, output_file_path=None, style_file_path=None):
     # Add A4 page size CSS rule
     css.append(CSS(string='@page { size: A4; margin: 1cm; }'))  # You can adjust margins as needed
     
+    # Add default table styling CSS
+    table_css = """
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    """
+    css.append(CSS(string=table_css))  # Add table CSS
+
     if style_file_path:
         css.append(CSS(filename=style_file_path))
     
