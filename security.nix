@@ -90,7 +90,13 @@ services.printing.enable = mkForce false;
 services.fail2ban.enable = true;
 
 #--> Fwupd
-services.fwupd.enable = true;
+services.fwupd ={
+  enable = true;
+  uefiCapsuleSettings = {
+    DisableQuiet = true;
+    DisableUefiReboot = true;
+  };
+};
 
 #--> CalmAV
   # services.clamav = {
