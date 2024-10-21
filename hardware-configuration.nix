@@ -9,8 +9,9 @@
     #-> Enable NTFS Support for windows files systems
     supportedFilesystems = [ "ntfs" ];
 
-    extraModprobeConfig =
-    '' options cfg80211 ieee80211_regdom="EG" '';
+    extraModprobeConfig =''
+    options cfg80211 ieee80211_regdom="EG"
+    '';
 
     #? Loader
     loader = {
@@ -20,9 +21,11 @@
       };
 
     #kernelPackages = pkgs.linuxKernel.packages.linux_6_10;
-    extraModulePackages = [
-      config.boot.kernelPackages.rtl8188eus-aircrack
-      ];
+    extraModulePackages = with config.boot.kernelPackages; [
+    rtl8188eus-aircrack
+    #hpuefi-mod
+    #tp_smapi
+    ];
 
     kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
     kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" "intel_pstate=active" "intel_iommu=on" "iommu=pt" ];
@@ -63,6 +66,7 @@
   hardware = {
     firmware = with pkgs; [ wireless-regdb ];
     cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    enableAllFirmware = true;
 
     #! Enable bluetooth
     bluetooth = {
