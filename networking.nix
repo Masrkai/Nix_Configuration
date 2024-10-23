@@ -28,31 +28,29 @@
       dhcpcd.extraConfig = "nohook resolv.conf"; #* prevent overrides by dhcpcd
 
       wireless.athUserRegulatoryDomain = true;
+      resolvconf.extraOptions = [
+      "ndots:1"
+      "timeout:2"
+      "attempts:3"
+      "edns0"
+      ];
       nameservers = [
         # "::1"     #> IPv6
         "127.0.0.1" #> IPv4
         ];
-
-      # #! Nat for hotspot
-      # nat = {
-      #   enable = true;
-      #   externalInterface = "eth0";  # Adjust this to your main internet-connected interface
-      #   internalInterfaces = [ "wlan0" "wlan1" ];
-      # };
 
       #! Firewall
       firewall = {
       enable = true;
       allowedTCPPorts = [
                           587 #? outlook.office365.com Mail server
+                          853 #?DNSoverTLS
                           6881 #? Qbittorrent
-                          8053 #? Stubby
                           16509 #? libvirt
                           8384 22000 #? Syncthing
                           443 8888 18081 ];
       allowedUDPPorts = [
                           6881 #? Qbittorrent
-                          8053 #? Stubby
                           21027 #? Syncthing
                           443 18081 ];
       #--> Ranges
@@ -62,12 +60,15 @@
       allowedUDPPortRanges = [
                             { from = 1714; to = 1764; }  #? KDEconnect
                              ];
+      logRefusedPackets = true;
       logReversePathDrops = true;
+      logRefusedConnections = true;
       };
 
       networkmanager = {
       dns = "none";  #-> Disable NetworkManager's DNS management
       enable = true;
+      logLevel = "INFO";
       ethernet.macAddress = "random";  #? Enable random MAC during Ethernet_Connection
       wifi.scanRandMacAddress = true;  #? Enable random MAC during scanning
       settings = {
@@ -307,30 +308,49 @@
   };
 
   #> DNS-over-TLS
+    # DNSCrypt-proxy configuration
+  services.dnscrypt-proxy2 = {
+    enable = false;
+    settings = {
+      listen_addresses = [ "127.0.0.1:53" ];
+      server_names = [ "cloudflare" ];
+      forwarding_rules = "forwards.txt";
+
+      log_level = 2;  # 0: none, 1: error, 2: info, 3: debug
+      log_file = "/var/log/dnscrypt-proxy.log";
+    };
+  };
+
+  # Create forwarding rules for DNSCrypt-proxy
+  environment.etc."dnscrypt-proxy/forwards.txt" = {
+    text = ''
+      * 127.0.0.1:5353
+    '';
+    mode = "0644";
+  };
+
   services.resolved.enable = lib.mkForce false;
   services.stubby = lib.mkForce {
     enable = true;
     settings = {
-
-      # ::1 cause error, use 0::1 instead
-        listen_addresses = [
-        "127.0.0.1@53"
-        #"0::1@53"
-        ];
-
-      resolution_type = "GETDNS_RESOLUTION_STUB";
-      dns_transport_list = [  "GETDNS_TRANSPORT_TLS" ];
-      tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
-      tls_query_padding_blocksize = 128;
-      idle_timeout = 10000;
-      round_robin_upstreams = 1;
-      tls_min_version = "GETDNS_TLS1_3";
-      dnssec = "GETDNS_EXTENSION_TRUE";
-      dnssec_return_status = "GETDNS_EXTENSION_TRUE";
-      appdata_dir = "/var/cache/stubby";
+    listen_addresses = [ "127.0.0.1@53"
+                        #"0::1@5353"           #! ::1 cause error, use 0::1 instead
+                       ];
+    resolution_type = "GETDNS_RESOLUTION_STUB";
+    dns_transport_list = [ "GETDNS_TRANSPORT_TLS" ];
+    tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
+    tls_query_padding_blocksize = 128;
+    idle_timeout = 20000;
+    round_robin_upstreams = 0;
+    tls_min_version = "GETDNS_TLS1_3";
+    dnssec = "GETDNS_EXTENSION_TRUE";
+    dnssec_return_status = "GETDNS_EXTENSION_TRUE";
+    appdata_dir = "/var/cache/stubby";
       # prefetch = "true";
       # hide_identity = "true";   # Hides the identity of the resolver
       # hide_version = "true";    # Hides the version of the resolver
+      #edns_client_subnet_private = 1;
+      #tls_ciphersuites = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
       upstream_recursive_servers = [
         {
           address_data = "1.1.1.1";
@@ -395,16 +415,5 @@
     enableNTS = true;
     servers = [ "time.cloudflare.com" ];
   };
-
-    # Ensure DNS settings persist across reboots
-    environment.etc."resolv.conf" = lib.mkForce {
-      text = ''
-      nameserver 127.0.0.1
-      options ndots:1 timeout:1 attempts:1 use-vc trust-ad edns0 port:53
-      '';
-    mode = "0444";  # Only the owner (root) can read, write, and execute
-    uid = 0;        # Set owner to root (user ID 0)
-    gid = 0;        # Set group to root (group ID 0)
-    };
 
 }
