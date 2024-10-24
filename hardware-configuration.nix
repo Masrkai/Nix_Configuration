@@ -22,6 +22,7 @@
 
     #kernelPackages = pkgs.linuxKernel.packages.linux_6_10;
     extraModulePackages = with config.boot.kernelPackages; [
+    acpi_call
     rtl8188eus-aircrack
     #hpuefi-mod
     #tp_smapi
@@ -37,41 +38,75 @@
 
     consoleLogLevel = 3;
 
-    # kernelPatches = [
-    #   {
-    #     name = "Rust Support";
-    #     patch = null;
-    #       features = {
-    #         rust = true;
-    #       };
-    #   }
-    # ];
+    kernel.sysctl = {
+    "vm.dirty_writeback_centisecs" = 1500;
+    "vm.dirty_expire_centisecs" = 3000;
+    };
+
   };
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/c2973410-4dd5-4c19-a859-e2e1db7ec9b2";
-      fsType = "btrfs";
-      options = [ "subvol=@" "noatime" "nodiratime" "discard" ];
-    };
+  fileSystems."/" = {
+  device = "/dev/disk/by-uuid/c2973410-4dd5-4c19-a859-e2e1db7ec9b2";
+  fsType = "btrfs";
+  options = [
+    "subvol=@"
+    "noatime"
+    "nodiratime"
+    "discard=async"     # Instead of just "discard"
+    "space_cache=v2"    # Better space cache
+    "compress=zstd:1"   # Efficient compression
+    "ssd"               # Optimize for SSD
+    "autodefrag"        # Automatic defragmentation
+  ];
+};
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/45FF-32D8";
-      fsType = "vfat";
-    };
+
+fileSystems."/boot" =
+{ device = "/dev/disk/by-uuid/45FF-32D8";
+  fsType = "vfat";
+};
+
+services.fstrim = {
+  enable = true;
+  interval = "weekly";
+};
 
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   hardware = {
-    firmware = with pkgs; [ wireless-regdb ];
-    cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    enableAllFirmware = true;
+      firmware = with pkgs; [ wireless-regdb ];
+      cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+      enableAllFirmware = true;
 
-    #! Enable bluetooth
-    bluetooth = {
+      #! Enable bluetooth
+      bluetooth = {
+        enable = true;
+        powerOnBoot = false;
+      };
+
+
+      fancontrol = {
       enable = true;
-      powerOnBoot = false;
+      config = ''
+      INTERVAL=10
+      # Corrected paths based on your system
+      DEVPATH=hwmon5=devices/platform/coretemp.0 hwmon4=devices/platform/hp-wmi hwmon0=devices/pci0000:00/0000:00:1c.4/0000:03:00.0
+      DEVNAME=hwmon5=coretemp hwmon4=hp hwmon0=amdgpu
+
+      # CPU fan control
+      FCTEMPS=hwmon4/pwm1=hwmon5/temp1_input
+      FCFANS=hwmon4/pwm1=hwmon0/fan1_input
+
+      # Temperature thresholds (in Celsius)
+      MINTEMP=hwmon4/pwm1=45
+      MAXTEMP=hwmon4/pwm1=85
+
+      # PWM values (0-255)
+      MINSTART=hwmon4/pwm1=40
+      MINSTOP=hwmon4/pwm1=20
+    '';
     };
   };
 }
