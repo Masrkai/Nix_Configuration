@@ -38,6 +38,14 @@
         fwupdmgr get-devices && fwupdmgr refresh && fwupdmgr get-updates && fwupdmgr update
     }
 
+    #--> yt-dlp
+    download-playlist(){
+        yt-dlp -f "bv[height<=1440]+ba/b[height<=1440]" --sleep-interval 1 --max-sleep-interval 2 --merge-output-format mp4 --download-archive download_archive.txt
+    }
+    download-video(){
+        yt-dlp -f "bv[height<=1440]+ba/b[height<=1440]" --sleep-interval 1 --max-sleep-interval 2 --merge-output-format mp4 --download-archive  download_archive.txt
+    }
+
     s() {
     if [[ $# == 0 ]]; then
         eval "sudo $(fc -ln -1)"
