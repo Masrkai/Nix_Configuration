@@ -39,11 +39,16 @@
     }
 
     #--> yt-dlp
-    download-playlist(){
-        yt-dlp -f "bv[height<=1440]+ba/b[height<=1440]" --sleep-interval 1 --max-sleep-interval 2 --merge-output-format mp4 --download-archive download_archive.txt
+    # Function to download a playlist with a specified resolution
+    download-playlist() {
+        local resolution="${2:-1440}"  # Default to 1440p if no resolution is provided
+        yt-dlp -f "bv[height<=${resolution}]+ba/b[height<=${resolution}]" --sleep-interval 1 --max-sleep-interval 2 --merge-output-format mp4 --download-archive download_archive.txt "$1"
     }
-    download-video(){
-        yt-dlp -f "bv[height<=1440]+ba/b[height<=1440]" --sleep-interval 1 --max-sleep-interval 2 --merge-output-format mp4 --download-archive  download_archive.txt
+
+    # Function to download a single video with a specified resolution
+    download-video() {
+        local resolution="${2:-1440}"  # Default to 1440p if no resolution is provided
+        yt-dlp -f "bv[height<=${resolution}]+ba/b[height<=${resolution}]" --sleep-interval 1 --max-sleep-interval 2 --merge-output-format mp4 --download-archive download_archive.txt "$1"
     }
 
     s() {
