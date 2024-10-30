@@ -20,16 +20,23 @@
       efi.canTouchEfiVariables = true;
       };
 
-    #kernelPackages = pkgs.linuxKernel.packages.linux_6_10;
+    kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
-    acpi_call
-    rtl8188eus-aircrack
+    #rtl8188eus-aircrack
+    #acpi_call
     #hpuefi-mod
     #tp_smapi
     ];
 
-    kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
-    kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1" "radeon.si_support=0" "radeon.cik_support=0" "intel_pstate=active" "intel_iommu=on" "iommu=pt" "pci_pm_async=0" "pcie_aspm=force" "i915.enable_dc=2" "i915.enable_fbc=1"];
+    kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "hp_wmi" "drivetemp"
+                       "cpufreq_ondemand" "cpufreq_conservative"   #? CPU governores
+                     ];
+
+    kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1"                                                      #? AMD GPU driver
+                       "radeon.si_support=0" "radeon.cik_support=0"                                                      #? Disabling Radeon GPU
+                       "intel_pstate=active" "intel_pstate=no_hwp" "intel_iommu=on" "iommu=pt"                           #? Intel Specific
+                       "pci_pm_async=0" "pcie_aspm=force" "i915.enable_dc=2" "i915.enable_fbc=1" "usbcore.autosuspend=1" #? Battery saving related
+                     ];
 
     initrd = {
     kernelModules = [ "amdgpu" ];
@@ -86,27 +93,41 @@ services.fstrim = {
         powerOnBoot = false;
       };
 
+    sensor.iio.enable = true;
+    sensor.hddtemp.enable =true;
+    sensor.hddtemp.drives = ["/dev/sda"];
 
-      fancontrol = {
-      enable = true;
-      config = ''
-      INTERVAL=10
-      # Corrected paths based on your system
-      DEVPATH=hwmon5=devices/platform/coretemp.0 hwmon4=devices/platform/hp-wmi hwmon0=devices/pci0000:00/0000:00:1c.4/0000:03:00.0
-      DEVNAME=hwmon5=coretemp hwmon4=hp hwmon0=amdgpu
+    fancontrol = {
+      enable = false;
+      config =
+      ''
+      INTERVAL=5  # Polling interval in seconds
 
-      # CPU fan control
-      FCTEMPS=hwmon4/pwm1=hwmon5/temp1_input
-      FCFANS=hwmon4/pwm1=hwmon0/fan1_input
+      # Define path to the fan control and CPU temperature sensor
+      DEVPATH=/dev/hwmon_coretemp
+      DEVNAME=coretemp
 
-      # Temperature thresholds (in Celsius)
-      MINTEMP=hwmon4/pwm1=45
-      MAXTEMP=hwmon4/pwm1=85
+      # Map PWM control to CPU temperature
+      FCTEMPS=/dev/hwmon_coretemp/pwm1=/dev/hwmon_coretemp/temp1_input
+      FCFANS=/dev/hwmon_coretemp/pwm1=/dev/hwmon_coretemp/fan1_input
 
-      # PWM values (0-255)
-      MINSTART=hwmon4/pwm1=40
-      MINSTOP=hwmon4/pwm1=20
-    '';
+      # Set temperature thresholds and fan speed
+      MINTEMP=/dev/hwmon_coretemp/pwm1=45  # Fan off below 45°C
+      MAXTEMP=/dev/hwmon_coretemp/pwm1=85  # Full speed at 85°C
+      MINSTART=/dev/hwmon_coretemp/pwm1=50 # Minimum PWM speed to start the fan
+      MINSTOP=/dev/hwmon_coretemp/pwm1=30  # PWM speed to stop the fan
+      '';
     };
   };
+
+  # #! For persistant Sensors names
+  services.udev.enable = true;
+  services.udev.extraRules = lib.mkForce ''
+    # Persistent names for hwmon devices
+    SUBSYSTEM=="hwmon", ATTR{name}=="amdgpu", SYMLINK+="hwmon_amdgpu"
+    SUBSYSTEM=="hwmon", ATTR{name}=="hp", SYMLINK+="hwmon_hp"
+    SUBSYSTEM=="hwmon", ATTR{name}=="coretemp", SYMLINK+="hwmon_coretemp"
+    SUBSYSTEM=="hwmon", ATTR{name}=="acpitz", SYMLINK+="hwmon_acpitz"
+  '';
+
 }
