@@ -24,8 +24,7 @@ let
   };
 
 in{
-    imports =
-    [ # Include the results of the hardware scan.
+    imports = [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./networking.nix
       ./security.nix
@@ -70,7 +69,7 @@ in{
 
   # Configure X11 server (needed for some Wayland compositors)
   services.xserver = {
-    enable = true;  # This should be true even for Wayland
+    enable = false;  # This should be true even for Wayland
     xkb.layout = "us";
     xkb.variant = "";
     videoDrivers = [ "intel" "amdgpu" ];
@@ -96,11 +95,17 @@ in{
 
   #! What to not install on KDE
   environment.plasma6.excludePackages = with pkgs; [
+    #? Kate
+    libsForQt5.kate
     kdePackages.kate
+
+    #? Kwallet
     libsForQt5.kwallet
     libsForQt5.kwallet-pam
     libsForQt5.kwalletmanager
+
     kdePackages.kdeconnect-kde
+    libsForQt5.qt5.qtvirtualkeyboard
     ];
 
   #! Enable touchpad support
@@ -207,23 +212,50 @@ in{
   services.flatpak.enable = lib.mkForce false;
 
   #-> Fonts
-  fonts = {
-  packages = with pkgs; [
+  # fonts = {
+  # packages = with pkgs; [
 
-    #* First Class
-    iosevka-bin
-    material-design-icons
+  #   #* First Class
+  #   iosevka-bin
+  #   material-design-icons
+
+  #     #> Second Class
+  #     noto-fonts
+  #     dejavu_fonts
+  #     noto-fonts-cjk
+  #     liberation_ttf
+  #     ];
+
+  #       fontconfig.defaultFonts.emoji = [
+  #       "Noto Color Emoji"
+  #       ];
+  # };
+
+  fonts = {
+    packages = with pkgs; [
+
+      #* First Class
+      iosevka-bin
+      material-design-icons
 
       #> Second Class
       noto-fonts
       dejavu_fonts
-      noto-fonts-cjk
       liberation_ttf
+      noto-fonts-cjk
+      noto-fonts-emoji
+      (nerdfonts.override { fonts = [ "Iosevka" ]; })
       ];
 
-        fontconfig.defaultFonts.emoji = [
-        "Noto Color Emoji"
-        ];
+      fontconfig = {
+        enable = true;
+        defaultFonts = {
+          monospace = [ "Iosevka Nerd Font" "Iosevka" ];
+          sansSerif = [ "DejaVu Sans" ];
+          serif = [ "DejaVu Serif" ];
+          emoji = [ "Noto Color Emoji" ];
+        };
+      };
   };
 
   environment.systemPackages = with pkgs; [
@@ -243,17 +275,21 @@ in{
   customPackages.super-productivity
   #customPackages.custom-httrack
 
+  fan2go
+  lm_sensors
+
   searxng
+  nix-prefetch-git
   nixos-generators
 
 
   #-> General
     #-! GNS3 Specific Bullshit
-    gns3-gui
-    gns3-server
-    dynamips
     vpcs
     ubridge
+    gns3-gui
+    dynamips
+    gns3-server
 
   bat
   eza
@@ -283,44 +319,49 @@ in{
   scrcpy
   android-tools
 
+
+  nodePackages.katex
+
   #-> Python
     (python311.withPackages (pk: with pk; [
-      pip
-      nltk
-      fire
-      lxml
-      tqdm
-      scapy
-      numpy
-      pandas
-      pylint
-      pyvips
-      sqlite
-      netaddr
-      requests
-      colorama
-      netifaces
-      markdown2
-      weasyprint
-      setuptools
-      matplotlib
+        pip
+        nltk
+        fire
+        lxml
+        tqdm
+        scapy
+        numpy
+        pandas
+        pylint
+        pyvips
+        sqlite
+        netaddr
+        networkx
+        requests
+        colorama
+        netifaces
+        markdown2
+        weasyprint
+        setuptools
+        matplotlib
+        markdown-it-py
 
-      #-> Juniper/jupter
-      notebook
-      jupyterlab
+        #-> Juniper/jupter
+        notebook
+        jupyterlab
 
-      ipykernel
-      ipython-sql
-      ipython-genutils
+        ipykernel
+        ipython-sql
+        ipython-genutils
 
-      beautifulsoup4
-      terminaltables
-      huggingface-hub
-      types-beautifulsoup4
-      pyinstaller-versionfile
-      ]
+        beautifulsoup4
+        terminaltables
+        huggingface-hub
+        types-beautifulsoup4
+        pyinstaller-versionfile
+        ]
+      )
     )
-  )
 
   #-> C++
   #? Builders
@@ -359,10 +400,15 @@ in{
   arduino-core
 
   #-> Nix
-  nil
+  nixd
+  alejandra
+
   direnv
   nix-direnv
   nix-output-monitor
+
+  #-->UML
+  mermerd
 
 #*#########################
 #* Vscodium Configuration:
@@ -397,13 +443,15 @@ in{
                             arrterian.nix-env-selector
 
                             #* HTML
-                            ms-vscode.live-server
+                            # ms-vscode.live-server
+                            vscode-extensions.ritwickdey.liveserver
 
                             #* Bash
                             mads-hartmann.bash-ide-vscode
 
                             #* Markdown
                             bierner.markdown-mermaid
+                            shd101wyy.markdown-preview-enhanced
 
                             #* Yamal
                             redhat.vscode-yaml
@@ -515,6 +563,27 @@ in{
                                                           version = "3.4.1";  # Check for the latest version
                                                           hash = "sha256-UNjU+DEeq8aoJuTOWpPg1WAUBwGpxdOrnsMBW7xddzw=";
                                                         }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=darkriszty.markdown-table-prettify
+                                                          name = "markdown-table-prettify";
+                                                          publisher = "darkriszty";
+                                                          version = "3.6.0";  # Check for the latest version
+                                                          hash = "sha256-FZTiNGSY+8xk3DJsTKQu4AHy1UFvg0gbrzPpjqRlECI=";
+                                                        }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=goessner.mdmath
+                                                          name = "mdmath";
+                                                          publisher = "goessner";
+                                                          version = "2.7.4";  # Check for the latest version
+                                                          hash = "sha256-DCh6SG7nckDxWLQvHZzkg3fH0V0KFzmryzSB7XTCj6s=";
+                                                        }
+                                                        {
+                                                          #https://marketplace.visualstudio.com/items?itemName=shellscape.shellscape-brackets
+                                                          name = "shellscape-brackets";
+                                                          publisher = "shellscape";
+                                                          version = "0.1.2";  # Check for the latest version
+                                                          hash = "sha256-dcxtgUfn2GhVVyTxd+6mC0bhwMeLUxB6T9mPBUbgxbA=";
+                                                        }
     ];
   }
 )
@@ -524,8 +593,8 @@ in{
 #?#############
   btop
   kooha
-  p7zip
   brave
+  yt-dlp
   haruna
   jackett
   ani-cli
@@ -537,12 +606,17 @@ in{
   mission-center
   signal-desktop
 
+  #-> Archivers
+  xz
+  p7zip
+  tarlz
 
   #-> KDE Specific
   kdePackages.kgamma
   kdePackages.kscreen
   kdePackages.colord-kde
   kdePackages.kscreenlocker
+  #kdePackages.qtvirtualkeyboard
 
   kdePackages.filelight
   kdePackages.plasma-browser-integration
@@ -564,6 +638,7 @@ in{
 
   #System
   mlocate
+  powertop
   pciutils
   xorg.xhost
   translate-shell
@@ -629,31 +704,88 @@ in{
   powerManagement.resumeCommands = ''
   ${pkgs.kmod}/bin/modprobe -r psmouse
   ${pkgs.kmod}/bin/modprobe psmouse
-'';
+  '';
 
   #--> TLP enabling
   services.tlp = lib.mkForce {
     enable = true;
     settings = {
+      WOL_DISABLE="Y"; #? disable wake on LAN
 
-    USB_AUTOSUSPEND=0;
+      USB_AUTOSUSPEND=1;
+      USB_BLACKLIST_WWAN=1;
+      USB_BLACKLIST_BTUSB=0;
+      USB_BLACKLIST_PHONE=0;
 
-    # Disable turbo boost on battery
-    CPU_BOOST_ON_BAT = "0";       # 0 = Disable turbo boost when on battery
-    CPU_BOOST_ON_AC = "1";        # 1 = Enable turbo boost when on AC
+      WIFI_PWR_ON_AC=0;   # no power saving on AC
+      WIFI_PWR_ON_BAT=5;  # Aggressive power saving on battery
 
-    RUNTIME_PM_ON_BAT = "on";
-    RUNTIME_PM_ON_AC = "on";
+      #? kernel NMI watchdog timer (0 = disabled/save power, 1=enabled). A value of 1 is relevant for kernel debugging and the watchdog daemon.
+      NMI_WATCHDOG=0;
 
-    CPU_SCALING_GOVERNOR_ON_AC = "performance";
-    CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+      #? Disable turbo boost on battery
+      CPU_BOOST_ON_AC = "0";        # 0 = Disable turbo boost when on AC
+      CPU_BOOST_ON_BAT = "0";       # 0 = Disable turbo boost when on battery
 
-    CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
-    CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+      RUNTIME_PM_ON_AC = "on";
+      RUNTIME_PM_ON_BAT = "on";
 
-    #! Optional helps save long term battery health
-    START_CHARGE_THRESH_BAT0 = 80;
-    STOP_CHARGE_THRESH_BAT0 = 100;
+      CPU_MIN_PERF_ON_AC=0;
+      CPU_MAX_PERF_ON_AC=80;
+      CPU_MIN_PERF_ON_BAT=0;
+      CPU_MAX_PERF_ON_BAT=70;
+
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+
+      #? Restore configured charge thresholds when AC is unplugged
+      TPACPI_ENABLE=1;
+      NATACPI_ENABLE=1;
+      TPSMAPI_ENABLE=1;
+      RESTORE_THRESHOLDS_ON_BAT=1;
+
+      #?Seconds laptop mode waits after the disk goes idle before syncing dirty cache blocks from RAM to disk again
+      DISK_IDLE_SECS_ON_AC=0;
+      DISK_IDLE_SECS_ON_BAT=2;
+
+      #? Timeout (in seconds) for writing unsaved/dirty data in file system buffers to disk.
+      MAX_LOST_WORK_SECS_ON_AC=15;
+      MAX_LOST_WORK_SECS_ON_BAT=60;
+
+      #? Runtime Power Management for AHCI controllers and disks:
+      AHCI_RUNTIME_PM_ON_AC="on";
+      AHCI_RUNTIME_PM_ON_BAT="on";
+
+      #? Seconds of inactivity before disk/controller is suspended
+      AHCI_RUNTIME_PM_TIMEOUT=15;
+
+      #? PCI Express Active State Power Management (PCIe ASPM):
+      #   default, performance, powersave
+      PCIE_ASPM_ON_AC="performance";
+      PCIE_ASPM_ON_BAT="powersave";
+
+      #? Enable audio power saving for Intel HDA, AC97 devices (timeout in secs).
+      # A value of 0 disables, >=1 enables power saving.
+      SOUND_POWER_SAVE_ON_AC=0;
+      SOUND_POWER_SAVE_ON_BAT=1;
+
+      # Power off optical drive in UltraBay/MediaBay: 0=disable, 1=enable.
+      # Drive can be powered on again by releasing (and reinserting) the eject lever
+      # or by pressing the disc eject button on newer models.
+      # Note: an UltraBay/MediaBay hard disk is never powered off.
+      BAY_POWEROFF_ON_AC=0;
+      BAY_POWEROFF_ON_BAT=1;
+
+      RUNTIME_PM_ALL = "1";                # Enable runtime power management for all PCI(e) bus devices
+      RUNTIME_PM_DRIVER_BLACKLIST="amdgpu nouveau nvidia radeon";
+      #RUNTIME_PM_BLACKLIST = "i2c_adapter:i2c-12 i2c_adapter:i2c-3 i2c_adapter:i2c-10 i2c_adapter:i2c-1 i2c_adapter:i2c-8 i2c_adapter:i2c-0 i2c_adapter:i2c-6 i2c_adapter:i2c-11 i2c_adapter:i2c-4 i2c_adapter:i2c-2 i2c_adapter:i2c-9 i2c_adapter:i2c-7 i2c_adapter:i2c-5 pci:v00008086d000015b8 pci:v00008086d00001575 pci:v00008086d000015b5 pci:v00008086d000015b1 pci:v00008086d000015b3 pci:v00008086d000015c8 pci:v00008086d00001903 pci:v00008086d0000156b pci:v00001002d00006821";
+
+      ETHERNET_WOL_DISABLE = "Y";                         # Disable Wake-on-LAN
+      DEVICES_TO_DISABLE_ON_BAT = "ethernet";             # Disable ethernet on battery if you don't need it
+      DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "ethernet";  # Disable when not in use on battery
     };
   };
 
@@ -749,18 +881,19 @@ in{
     dataDir = "/home/masrkai";
     configDir = "/home/masrkai/Documents/.config/syncthing";
 
-  overrideDevices = true; #! Overrides devices added or deleted through the WebUI
-  overrideFolders = true; #! Overrides folders added or deleted through the WebUI
+  overrideDevices = false; #! Overrides devices added or deleted through the WebUI
+  overrideFolders = false; #! Overrides folders added or deleted through the WebUI
 
   settings = {
     devices = {
       "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
       "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
+      "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
     };
       folders = {
         "College_shit" = {
           path = "~/Documents/College/Current/";
-          devices = [ "A71" "Tablet" ];
+          devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
         };
         "Forbidden_Knowledge" = {
           path = "~/Documents/Books/";
@@ -815,7 +948,7 @@ in{
           dns_resolver = {
             enable = true;
             use_system_resolver = false;  # Disable system resolver
-            resolver_address = "127.0.0.1:8053";  # Point to Stubby
+            resolver_address = "127.0.0.1:53";  # Point to Stubby
           };
         };
         cache = {
@@ -851,7 +984,7 @@ in{
       #->Kitty terminal
       environment.etc."xdg/kitty/kitty.conf".text = ''
       # Basic settings
-      font_family Iosevka Fixed Hv Ex Obl
+      font_family  Iosevka Fixed Hv Ex Obl
       font_size 13
 
       # Adjust this value as needed
@@ -864,7 +997,7 @@ in{
       mouse_wheel_scroll yes
 
       # Use additional symbols from Material Design Icons
-      symbol_map U+E000-U+E7C5 Material Design Icons
+      symbol_map U+E000-U+E7C5 Iosevka Nerd Font
 
       clipboard_control write-clipboard read-clipboard
       GLFW_IM_MODULE=ibus
