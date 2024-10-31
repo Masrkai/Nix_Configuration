@@ -9,9 +9,9 @@
     #-> Enable NTFS Support for windows files systems
     supportedFilesystems = [ "ntfs" ];
 
-    extraModprobeConfig =''
-    options cfg80211 ieee80211_regdom="EG"
-    '';
+    # extraModprobeConfig =''
+    # options cfg80211 ieee80211_regdom="EG"
+    # '';
 
     #? Loader
     loader = {
@@ -20,7 +20,7 @@
       efi.canTouchEfiVariables = true;
       };
 
-    kernelPackages = pkgs.linuxPackages_latest;
+    # kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
     #rtl8188eus-aircrack
     #acpi_call
@@ -28,26 +28,35 @@
     #tp_smapi
     ];
 
-    kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "hp_wmi" "drivetemp"
-                       "cpufreq_ondemand" "cpufreq_conservative"   #? CPU governores
-                     ];
+    kernelModules = [
+    "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "hp_wmi" "drivetemp"
+    "cpufreq_ondemand" "cpufreq_conservative"   # CPU governors
+    "acpi-cpufreq"                              # Enable ACPI CPU frequency driver
+    ];
 
-    kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1"                                                      #? AMD GPU driver
-                       "radeon.si_support=0" "radeon.cik_support=0"                                                      #? Disabling Radeon GPU
-                       "intel_pstate=active" "intel_pstate=no_hwp" "intel_iommu=on" "iommu=pt"                           #? Intel Specific
-                       "pci_pm_async=0" "pcie_aspm=force" "i915.enable_dc=2" "i915.enable_fbc=1" "usbcore.autosuspend=1" #? Battery saving related
-                     ];
+    #! Kernel parameters
+    kernelParams = [
+    "amdgpu.si_support=1" "amdgpu.cik_support=1"                # AMD GPU driver
+    "radeon.si_support=0" "radeon.cik_support=0"                # Disable Radeon GPU
+    "intel_pstate=disable"                                      # Disable Intel P-state driver to use acpi-cpufreq
+    "intel_iommu=on" "iommu=pt"                                 # Intel IOMMU settings
+    "pci_pm_async=0" "pcie_aspm=force"                          # Power management
+    "usbcore.autosuspend=1"                                     # Enable USB autosuspend for power savings
+    ];
 
-    initrd = {
+  #! Initial RAM disk configuration
+  initrd = {
     kernelModules = [ "amdgpu" ];
     availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
-    };
+  };
 
     consoleLogLevel = 3;
 
     kernel.sysctl = {
-    "vm.dirty_writeback_centisecs" = 1500;
-    "vm.dirty_expire_centisecs" = 3000;
+      "vm.dirty_writeback_centisecs" = 1500;
+      "vm.dirty_expire_centisecs" = 3000;
+      "vm.laptop_mode" = 5;                             # Enable Laptop mode for disk spindown
+      "kernel.nmi_watchdog" = 0;                        # Disable NMI watchdog for power saving
     };
 
   };
@@ -83,7 +92,7 @@ services.fstrim = {
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   hardware = {
-      firmware = with pkgs; [ wireless-regdb ];
+      #firmware = with pkgs; [ wireless-regdb ];
       cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
       enableAllFirmware = true;
 
