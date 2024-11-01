@@ -5,10 +5,10 @@
 #*#########################
 {
   boot.kernel.sysctl = {
-    "net.ipv4.ip_forward" = 1;      #? For Hotspot
+    "net.ipv4.ip_forward" = 1;                           #? For Hotspot
 
     "net.ipv4.tcp_mtu_probing" = 1;                      #? MTU Probing
-    "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;     #? Set the initial MTU probe size (in bytes)
+    "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;        #? Set the initial MTU probe size (in bytes)
 
     "net.ipv4.tcp_timestamps" = lib.mkDefault 1;         #? TCP timestamps
     "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;  #? limit on the maximum segment size
@@ -75,6 +75,10 @@
         global = {
           #! Enable random MAC address for scanning (prevents exposure during scans)
           "wifi.scan-rand-mac-address" = true;
+        };
+        connection = {
+          "connection.llmnr" = 2;  # Disable LLMNR
+          "connection.mdns" = 2;   # Disable mDNS
         };
       };
       ensureProfiles = {
@@ -350,7 +354,7 @@
       # hide_identity = "true";   # Hides the identity of the resolver
       # hide_version = "true";    # Hides the version of the resolver
       #edns_client_subnet_private = 1;
-      #tls_ciphersuites = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
+      tls_ciphersuites = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
       upstream_recursive_servers = [
         {
           address_data = "1.1.1.1";
