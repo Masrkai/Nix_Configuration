@@ -718,7 +718,7 @@ in{
       USB_BLACKLIST_PHONE=0;
 
       WIFI_PWR_ON_AC=0;   # no power saving on AC
-      WIFI_PWR_ON_BAT=5;  # Aggressive power saving on battery
+      WIFI_PWR_ON_BAT=2;  # Aggressive power saving on battery
 
       #? kernel NMI watchdog timer (0 = disabled/save power, 1=enabled). A value of 1 is relevant for kernel debugging and the watchdog daemon.
       NMI_WATCHDOG=0;
@@ -735,11 +735,11 @@ in{
       CPU_MIN_PERF_ON_BAT=0;
       CPU_MAX_PERF_ON_BAT=70;
 
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_SCALING_GOVERNOR_ON_AC = "conservative";
+      CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
 
-      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+      # CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
+      # CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
       #? Restore configured charge thresholds when AC is unplugged
       TPACPI_ENABLE=1;
@@ -780,7 +780,7 @@ in{
       BAY_POWEROFF_ON_BAT=1;
 
       RUNTIME_PM_ALL = "1";                # Enable runtime power management for all PCI(e) bus devices
-      RUNTIME_PM_DRIVER_BLACKLIST="amdgpu nouveau nvidia radeon";
+      RUNTIME_PM_DRIVER_BLACKLIST="amdgpu nouveau nvidia radeon iwlwifi ";
       #RUNTIME_PM_BLACKLIST = "i2c_adapter:i2c-12 i2c_adapter:i2c-3 i2c_adapter:i2c-10 i2c_adapter:i2c-1 i2c_adapter:i2c-8 i2c_adapter:i2c-0 i2c_adapter:i2c-6 i2c_adapter:i2c-11 i2c_adapter:i2c-4 i2c_adapter:i2c-2 i2c_adapter:i2c-9 i2c_adapter:i2c-7 i2c_adapter:i2c-5 pci:v00008086d000015b8 pci:v00008086d00001575 pci:v00008086d000015b5 pci:v00008086d000015b1 pci:v00008086d000015b3 pci:v00008086d000015c8 pci:v00008086d00001903 pci:v00008086d0000156b pci:v00001002d00006821";
 
       ETHERNET_WOL_DISABLE = "Y";                         # Disable Wake-on-LAN
@@ -880,24 +880,36 @@ in{
     user = "masrkai";
     dataDir = "/home/masrkai";
     configDir = "/home/masrkai/Documents/.config/syncthing";
-
-  overrideDevices = false; #! Overrides devices added or deleted through the WebUI
-  overrideFolders = false; #! Overrides folders added or deleted through the WebUI
-
-  settings = {
-    devices = {
-      "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
-      "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
-      "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
-    };
+    overrideDevices = true; #! Overrides devices added or deleted through the WebUI
+    overrideFolders = true; #! Overrides folders added or deleted through the WebUI
+    settings = {
+      devices = {
+        "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
+        "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
+        "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
+        };
       folders = {
         "College_shit" = {
           path = "~/Documents/College/Current/";
           devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
+          versioning = {
+            type = "simple";
+              params = {
+              keep = "5"; # Keep 5 versions
+              };
+          };
+        type = "sendonly"; # Make folder send-only
         };
         "Forbidden_Knowledge" = {
           path = "~/Documents/Books/";
           devices = [ "A71" ];
+          versioning = {
+            type = "simple";
+              params = {
+              keep = "5"; # Keep 5 versions
+              };
+          };
+        type = "sendonly"; # Make folder send-only
         };
     };
   };
