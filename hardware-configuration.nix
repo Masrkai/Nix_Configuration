@@ -20,7 +20,7 @@
       efi.canTouchEfiVariables = true;
       };
 
-    # kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
     #rtl8188eus-aircrack
     #acpi_call
@@ -53,8 +53,8 @@
     consoleLogLevel = 3;
 
     kernel.sysctl = {
-      "vm.dirty_writeback_centisecs" = 1500;
-      "vm.dirty_expire_centisecs" = 3000;
+      #"vm.dirty_writeback_centisecs" = 1500;
+      #"vm.dirty_expire_centisecs" = 3000;
       "vm.laptop_mode" = 5;                             # Enable Laptop mode for disk spindown
       "kernel.nmi_watchdog" = 0;                        # Disable NMI watchdog for power saving
     };
