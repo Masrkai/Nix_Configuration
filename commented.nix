@@ -60,4 +60,20 @@
     }
   '';
 
+
+      # kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "hp_wmi" "drivetemp"
+    #                    "cpufreq_ondemand" "cpufreq_conservative"   #? CPU governores
+    #                  ];
+
+    # kernelParams   = [ "amdgpu.si_support=1" "amdgpu.cik_support=1"                                                      #? AMD GPU driver
+    #                    "radeon.si_support=0" "radeon.cik_support=0"                                                      #? Disabling Radeon GPU
+    #                    "intel_pstate=passive" "intel_pstate=no_hwp" "intel_iommu=on" "iommu=pt"                           #? Intel Specific
+    #                    "pci_pm_async=0" "pcie_aspm=force" "i915.enable_dc=2" "i915.enable_fbc=1" "usbcore.autosuspend=1" #? Battery saving related
+    #                  ];
+
+    # initrd = {
+    # kernelModules = [ "amdgpu" ];
+    # availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
+    # };
+
 }
