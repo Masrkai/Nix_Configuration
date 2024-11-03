@@ -43,16 +43,19 @@
       firewall = {
       enable = true;
       allowedTCPPorts = [
-                          587 #? outlook.office365.com Mail server
-                          853 #?DNSoverTLS
-                          6881 #? Qbittorrent
-                          16509 #? libvirt
+                          587        #? outlook.office365.com Mail server
+                          853        #?DNSoverTLS
+                          1234       #? NTS Time server
+                          6881       #? Qbittorrent
+                          16509      #? libvirt
                           8384 22000 #? Syncthing
-                          443 8888 18081 ];
+                          443 8888 18081 
+                        ];
       allowedUDPPorts = [
-                          6881 #? Qbittorrent
+                          6881  #? Qbittorrent
+                          18081
                           21027 #? Syncthing
-                          443 18081 ];
+                        ];
       #--> Ranges
       allowedTCPPortRanges = [
                             { from = 1714; to = 1764; }  #? KDEconnect
@@ -344,7 +347,7 @@
     dns_transport_list = [ "GETDNS_TRANSPORT_TLS" ];
     tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
     tls_query_padding_blocksize = 128;
-    idle_timeout = 20000;
+    idle_timeout = 5000;
     round_robin_upstreams = 0;
     tls_min_version = "GETDNS_TLS1_3";
     dnssec = "GETDNS_EXTENSION_TRUE";
@@ -413,11 +416,17 @@
     };
   };
 
-  # Enable Chrony NTS service
-  services.chrony = lib.mkForce {
+    # Make sure time synchronization is properly handled
+    services.timesyncd.enable = false;  # Disable systemd-timesyncd to avoid conflicts
+    time.hardwareClockInLocalTime = false;  # Use UTC for hardware clock
+
+    services.chrony = {
     enable = true;
     enableNTS = true;
-    servers = [ "time.cloudflare.com" ];
-  };
+    enableMemoryLocking = true;
+    servers = [
+      "time.cloudflare.com"  # NTS port
+      ];
+    };
 
 }
