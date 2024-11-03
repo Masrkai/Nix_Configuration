@@ -76,4 +76,30 @@
     # availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
     # };
 
+    # TODO ---> Nginx
+    # services.nginx = {
+    #   enable = true;
+    #   virtualHosts."localhost" = {
+    #     listen = [{ addr = "127.0.0.1"; port = 443; ssl = true; }];
+    #     sslCertificate = secrets.Nginx-ssl-Certificate;
+    #     sslCertificateKey = secrets.Nginx-ssl-Certificate-Key;
+    #     locations."/" = {
+    #       proxyPass = "http://127.0.0.1:8888";
+    #     };
+    #   };
+    # };
+
+      #--> journald
+    # systemd.journald = {
+    #   SystemMaxUse = "100M";  # Adjust size if needed
+    #   MaxRetentionSec = 2 * 24 * 60 * 60;  # Logs older than 2 days (in seconds) will be cleared
+    # };
+    # #--> journald
+    # services.journald = {
+    #   settings = {
+    #   SystemMaxUse = "100M";    #? Adjust size if needed
+    #   MaxRetentionSec = "2d";   #? Keep logs only for the last 2 days
+    #   };
+    # };
+
 }
