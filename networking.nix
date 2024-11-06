@@ -113,6 +113,7 @@
             connection = {
               id = "Nix_Hotspot";
               type = "wifi";
+              autoconnect = false;
               interface-name = "wlan0";
             };
             wifi = {
