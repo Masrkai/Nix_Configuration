@@ -26,6 +26,7 @@ let
 in{
     imports = [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      #./Programs/custom/fan2go.nix
       ./networking.nix
       ./security.nix
       ./bash.nix
@@ -33,6 +34,8 @@ in{
 
   #! Experimental Features
   nix.settings.experimental-features = [ "nix-command" ];
+
+  systemd.enableEmergencyMode = false;
 
   #? Set your time zone.
   time.timeZone = "Africa/Cairo";
@@ -63,26 +66,28 @@ in{
   # Enable KDE Plasma 6 Desktop Environment
   services.desktopManager.plasma6 = {
     enable = true;
-    # Qt5 integration is typically not needed for Plasma 6
-    enableQt5Integration = false;
+    enableQt5Integration = false;     #? Qt5 integration is typically not needed for Plasma 6
   };
 
-  # Configure X11 server (needed for some Wayland compositors)
-  services.xserver = {
-    enable = false;  # This should be true even for Wayland
+  # Configure X11 server
+  services.xserver = lib.mkForce {
+    enable = false;
     xkb.layout = "us";
     xkb.variant = "";
     videoDrivers = [ "intel" "amdgpu" ];
   };
 
-  # Set default session to Wayland
-  services.displayManager={
-    defaultSession = "plasma";
-    sddm = {
-    enable = true;
-    wayland.enable = true;
+    # Set default session to Wayland
+    services.displayManager={
+      defaultSession = "plasma";
+      sddm = {
+        enable = true;
+          wayland = {
+                enable = true;
+                compositor = "kwin";
+          };
+        };
     };
-  };
   # Enable Wayland-specific services
   programs.xwayland.enable = true;
 
@@ -211,26 +216,6 @@ in{
   #! Diable flatpack
   services.flatpak.enable = lib.mkForce false;
 
-  #-> Fonts
-  # fonts = {
-  # packages = with pkgs; [
-
-  #   #* First Class
-  #   iosevka-bin
-  #   material-design-icons
-
-  #     #> Second Class
-  #     noto-fonts
-  #     dejavu_fonts
-  #     noto-fonts-cjk
-  #     liberation_ttf
-  #     ];
-
-  #       fontconfig.defaultFonts.emoji = [
-  #       "Noto Color Emoji"
-  #       ];
-  # };
-
   fonts = {
     packages = with pkgs; [
 
@@ -276,6 +261,7 @@ in{
   #customPackages.custom-httrack
 
   fan2go
+  virtualbox
   lm_sensors
 
   searxng
@@ -294,19 +280,17 @@ in{
   bat
   eza
   git
+  acpi
   wget
   less
   most
   kitty
   unzip
   xterm
-  weylus
-  gparted
+  #gparted #!has issues
   glxinfo
   git-lfs
   hw-probe
-  thermald
-  efibootmgr
   unrar-wrapper
   rustdesk-flutter
   (lowPrio bash-completion)
@@ -332,6 +316,7 @@ in{
         scapy
         numpy
         pandas
+        openai
         pylint
         pyvips
         sqlite
@@ -345,6 +330,8 @@ in{
         setuptools
         matplotlib
         markdown-it-py
+        python-dotenv
+
 
         #-> Juniper/jupter
         notebook
@@ -543,25 +530,12 @@ in{
                                                           version = "0.6.11";
                                                           hash = "sha256-NdU8J0rkrH5dFcLs8p4n/j2VpSP/X7eSz2j4CMDiYJM=";
                                                         }
-                                                        # {
-                                                        #   name = "cpptools";
-                                                        #   publisher = "ms-vscode";
-                                                        #   version = "1.22.2";  # Check for the latest version
-                                                        #   hash = "sha256-ek4WBr9ZJ87TXlKQowA68YNt3WNOXymLcVfz1g+Be2o=";
-                                                        # }
                                                         {
                                                           #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
                                                           name = "pylint";
                                                           publisher = "ms-python";
                                                           version = "2023.11.13481007";  # Check for the latest version
                                                           hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";
-                                                        }
-                                                        {
-                                                          #https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-office
-                                                          name = "vscode-office";
-                                                          publisher = "cweijan";
-                                                          version = "3.4.1";  # Check for the latest version
-                                                          hash = "sha256-UNjU+DEeq8aoJuTOWpPg1WAUBwGpxdOrnsMBW7xddzw=";
                                                         }
                                                         {
                                                           #https://marketplace.visualstudio.com/items?itemName=darkriszty.markdown-table-prettify
@@ -815,18 +789,6 @@ in{
       package = pkgs.wireshark;
     };
 
-  #--> journald
-    # systemd.journald = {
-    #   SystemMaxUse = "100M";  # Adjust size if needed
-    #   MaxRetentionSec = 2 * 24 * 60 * 60;  # Logs older than 2 days (in seconds) will be cleared
-    # };
-    # #--> journald
-    # services.journald = {
-    #   settings = {
-    #   SystemMaxUse = "100M";    #? Adjust size if needed
-    #   MaxRetentionSec = "2d";   #? Keep logs only for the last 2 days
-    #   };
-    # };
 
   #--> KDE connect Specific
     programs.kdeconnect = lib.mkForce {
@@ -865,7 +827,7 @@ in{
         };
       };
     };
-    services.spice-vdagentd.enable = true;
+    services.spice-vdagentd.enable = false;
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
 
@@ -914,19 +876,6 @@ in{
     };
   };
 };
-
-  # TODO ---> Nginx
-  # services.nginx = {
-  #   enable = true;
-  #   virtualHosts."localhost" = {
-  #     listen = [{ addr = "127.0.0.1"; port = 443; ssl = true; }];
-  #     sslCertificate = secrets.Nginx-ssl-Certificate;
-  #     sslCertificateKey = secrets.Nginx-ssl-Certificate-Key;
-  #     locations."/" = {
-  #       proxyPass = "http://127.0.0.1:8888";
-  #     };
-  #   };
-  # };
 
   #---> SearXNG
   services.searx = {
