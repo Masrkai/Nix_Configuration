@@ -1,3 +1,4 @@
+
 { config, lib, pkgs, modulesPath, ... }:
 
 {
@@ -29,7 +30,7 @@
     ];
 
     kernelModules = [
-    "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "hp_wmi" "drivetemp"
+    "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
     "cpufreq_ondemand" "cpufreq_conservative"   # CPU governors
     "acpi-cpufreq"                              # Enable ACPI CPU frequency driver
     ];
@@ -53,10 +54,10 @@
     consoleLogLevel = 3;
 
     kernel.sysctl = {
-      #"vm.dirty_writeback_centisecs" = 1500;
-      #"vm.dirty_expire_centisecs" = 3000;
-      "vm.laptop_mode" = 5;                             # Enable Laptop mode for disk spindown
+      "vm.laptop_mode" = 1;                             # Enable Laptop mode for disk spindown
       "kernel.nmi_watchdog" = 0;                        # Disable NMI watchdog for power saving
+      "vm.dirty_writeback_centisecs" = 1500;
+      "vm.dirty_expire_centisecs" = 3000;
     };
 
   };
@@ -80,6 +81,7 @@
 fileSystems."/boot" =
 { device = "/dev/disk/by-uuid/45FF-32D8";
   fsType = "vfat";
+  options = [  "rw" ];
 };
 
 services.fstrim = {
@@ -88,6 +90,7 @@ services.fstrim = {
 };
 
   swapDevices = [ ];
+  zramSwap.enable = false;  # Also disable zram swap
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
@@ -101,42 +104,7 @@ services.fstrim = {
         enable = true;
         powerOnBoot = false;
       };
-
-    sensor.iio.enable = true;
-    sensor.hddtemp.enable =true;
-    sensor.hddtemp.drives = ["/dev/sda"];
-
-    fancontrol = {
-      enable = false;
-      config =
-      ''
-      INTERVAL=5  # Polling interval in seconds
-
-      # Define path to the fan control and CPU temperature sensor
-      DEVPATH=/dev/hwmon_coretemp
-      DEVNAME=coretemp
-
-      # Map PWM control to CPU temperature
-      FCTEMPS=/dev/hwmon_coretemp/pwm1=/dev/hwmon_coretemp/temp1_input
-      FCFANS=/dev/hwmon_coretemp/pwm1=/dev/hwmon_coretemp/fan1_input
-
-      # Set temperature thresholds and fan speed
-      MINTEMP=/dev/hwmon_coretemp/pwm1=45  # Fan off below 45°C
-      MAXTEMP=/dev/hwmon_coretemp/pwm1=85  # Full speed at 85°C
-      MINSTART=/dev/hwmon_coretemp/pwm1=50 # Minimum PWM speed to start the fan
-      MINSTOP=/dev/hwmon_coretemp/pwm1=30  # PWM speed to stop the fan
-      '';
-    };
-  };
-
-  # #! For persistant Sensors names
-  services.udev.enable = true;
-  services.udev.extraRules = lib.mkForce ''
-    # Persistent names for hwmon devices
-    SUBSYSTEM=="hwmon", ATTR{name}=="amdgpu", SYMLINK+="hwmon_amdgpu"
-    SUBSYSTEM=="hwmon", ATTR{name}=="hp", SYMLINK+="hwmon_hp"
-    SUBSYSTEM=="hwmon", ATTR{name}=="coretemp", SYMLINK+="hwmon_coretemp"
-    SUBSYSTEM=="hwmon", ATTR{name}=="acpitz", SYMLINK+="hwmon_acpitz"
-  '';
+   };
+   services.blueman.enable = false;  # Disable Blueman
 
 }
