@@ -3,26 +3,42 @@
 
 {
   imports = [
-      (modulesPath + "/installer/scan/not-detected.nix")
+      #(modulesPath + "/installer/scan/not-detected.nix")
     ];
+
+    #services.systemd-oomd.enable = true;
+
+    systemd.oomd = {
+    enable = true;                        # Enable systemd-oomd
+
+    enableRootSlice = true;               # Manage memory pressure for root processes
+    enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
+    enableUserSlices = true;              # Manage memory for user sessions, reducing per-user memory pressure
+
+    # Additional configuration to fine-tune `systemd-oomd` behavior
+    # extraConfig = ''
+    #   MemoryPressureDurationSec=1min      # Minimum time memory pressure should exist before triggering
+    #   SwapUsedLimitPercent=80             # Trigger when swap usage exceeds 80% to avoid heavy swapping
+    #   DefaultMemoryPressureThresholdPercent=60  # Start reclaiming memory when usage reaches 60%
+    #   '';
+    };
+
 
   boot = {
     #-> Enable NTFS Support for windows files systems
     supportedFilesystems = [ "ntfs" ];
 
-    # extraModprobeConfig =''
-    # options cfg80211 ieee80211_regdom="EG"
-    # '';
-
     #? Loader
     loader = {
       timeout = 5;
       systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
+      efi.canTouchEfiVariables = false;
       };
+
 
     kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
+    virtualbox
     #rtl8188eus-aircrack
     #acpi_call
     #hpuefi-mod
@@ -33,6 +49,7 @@
     "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
     "cpufreq_ondemand" "cpufreq_conservative"   # CPU governors
     "acpi-cpufreq"                              # Enable ACPI CPU frequency driver
+    "vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
     ];
 
     #! Kernel parameters
@@ -47,17 +64,28 @@
 
   #! Initial RAM disk configuration
   initrd = {
-    kernelModules = [ "amdgpu" ];
-    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
+    kernelModules = [
+    "amdgpu"
+    "iwlwifi"
+    "cpufreq_ondemand"
+    "cpufreq_conservative"
+    "acpi-cpufreq"
+    ];
+    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod"
+    "iwlwifi"
+    ];
   };
 
     consoleLogLevel = 3;
 
     kernel.sysctl = {
+      "scaling_governor" = "conservative";
+
       "vm.laptop_mode" = 1;                             # Enable Laptop mode for disk spindown
       "kernel.nmi_watchdog" = 0;                        # Disable NMI watchdog for power saving
-      "vm.dirty_writeback_centisecs" = 1500;
-      "vm.dirty_expire_centisecs" = 3000;
+      "vm.dirty_bytes" = 16777216;                      # 16MB write threshold
+      "vm.dirty_background_bytes" = 8388608;            # 8MB background threshold
+      "usbcore.autosuspend_delay_ms" = 2000;            # 2-second delay, balances power and responsiveness
     };
 
   };
