@@ -207,7 +207,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "vboxusers" ];
   };
 
   # Managing unfree packages
@@ -261,7 +261,6 @@ in{
   #customPackages.custom-httrack
 
   fan2go
-  virtualbox
   lm_sensors
 
   searxng
@@ -635,6 +634,7 @@ in{
   dig
   mdk4
   tmux
+  nmap
   hping
   stubby
   getdns
@@ -644,6 +644,7 @@ in{
   linssid
   dnsmasq
   tcpdump
+  arp-scan
   lighttpd
   ettercap
   bettercap
@@ -709,8 +710,8 @@ in{
       CPU_MIN_PERF_ON_BAT=0;
       CPU_MAX_PERF_ON_BAT=70;
 
-      CPU_SCALING_GOVERNOR_ON_AC = "conservative";
-      CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
+      # CPU_SCALING_GOVERNOR_ON_AC = "conservative";
+      # CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
 
       # CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
       # CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
@@ -806,8 +807,14 @@ in{
       package   = pkgs.mlocate;
     };
 
-  #--> Qemu KVM
+  #--> Qemu KVM & VirtualBox
     virtualisation = lib.mkForce {
+
+    # Enable VirtualBox kernel modules
+    virtualbox.host.enable = true;
+    # Optionally, enable the VirtualBox extension pack (for USB 2.0/3.0 support, etc.)
+    virtualbox.host.enableExtensionPack = true;
+
     spiceUSBRedirection.enable = true;
       libvirtd = {
         enable = true;
@@ -830,6 +837,7 @@ in{
     services.spice-vdagentd.enable = false;
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
+
 
   # Ensure USB storage is not automatically mounted
   services.udev.extraRules = ''
