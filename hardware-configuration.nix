@@ -49,7 +49,7 @@
     "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
     "cpufreq_ondemand" "cpufreq_conservative"   # CPU governors
     "acpi-cpufreq"                              # Enable ACPI CPU frequency driver
-    "vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
+    #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
     ];
 
     #! Kernel parameters
@@ -66,7 +66,6 @@
   initrd = {
     kernelModules = [
     "amdgpu"
-    "iwlwifi"
     "cpufreq_ondemand"
     "cpufreq_conservative"
     "acpi-cpufreq"
