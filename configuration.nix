@@ -207,7 +207,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "vboxusers" ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge"  ];
   };
 
   # Managing unfree packages
@@ -564,6 +564,7 @@ in{
 #?#############
 #? User-Daily:
 #?#############
+  fzf
   btop
   kooha
   brave
@@ -574,7 +575,7 @@ in{
   fastfetch
   syncthing
   noisetorch
-  qbittorrent
+  #qbittorrent
   authenticator
   mission-center
   signal-desktop
@@ -595,10 +596,11 @@ in{
   kdePackages.plasma-browser-integration
 
   #Productivity
-  gnome.gnome-disk-utility
-  thunderbird-bin
+  blender-hip
   libreoffice-qt
+  thunderbird-bin
   gimp-with-plugins
+  gnome.gnome-disk-utility
 
   #Gaming
   heroic
@@ -706,11 +708,6 @@ in{
       RUNTIME_PM_ON_AC = "on";
       RUNTIME_PM_ON_BAT = "on";
 
-      CPU_MIN_PERF_ON_AC=0;
-      CPU_MAX_PERF_ON_AC=80;
-      CPU_MIN_PERF_ON_BAT=0;
-      CPU_MAX_PERF_ON_BAT=70;
-
       # CPU_SCALING_GOVERNOR_ON_AC = "conservative";
       # CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
 
@@ -726,10 +723,6 @@ in{
       #?Seconds laptop mode waits after the disk goes idle before syncing dirty cache blocks from RAM to disk again
       DISK_IDLE_SECS_ON_AC=0;
       DISK_IDLE_SECS_ON_BAT=2;
-
-      #? Timeout (in seconds) for writing unsaved/dirty data in file system buffers to disk.
-      MAX_LOST_WORK_SECS_ON_AC=15;
-      MAX_LOST_WORK_SECS_ON_BAT=60;
 
       #? Runtime Power Management for AHCI controllers and disks:
       AHCI_RUNTIME_PM_ON_AC="on";
@@ -811,10 +804,10 @@ in{
   #--> Qemu KVM & VirtualBox
     virtualisation = lib.mkForce {
 
-    # Enable VirtualBox kernel modules
-    virtualbox.host.enable = true;
-    # Optionally, enable the VirtualBox extension pack (for USB 2.0/3.0 support, etc.)
-    virtualbox.host.enableExtensionPack = true;
+    # # Enable VirtualBox kernel modules
+    # virtualbox.host.enable = true;
+    # # Optionally, enable the VirtualBox extension pack (for USB 2.0/3.0 support, etc.)
+    # virtualbox.host.enableExtensionPack = true;
 
     spiceUSBRedirection.enable = true;
       libvirtd = {
@@ -996,6 +989,14 @@ in{
       map ctrl+shift+v paste_from_clipboard
       map ctrl+shift+t new_tab
       map ctrl+shift+q close_tab
+
+      # Search key mappings
+      map ctrl+shift+f launch --type=overlay --stdin-source=@screen_scrollback /bin/sh -c 'fzf --ansi --no-sort --no-mouse --exact -i --tac --preview "echo {} | bat --color=always --plain --language=sh" --preview-window=right:50%:wrap | kitty +kitten clipboard'
+      map ctrl+shift+/ show_scrollback
+      map ctrl+shift+g show_last_command_output
+
+      # Alternative search with bat highlighting
+      map ctrl+shift+b launch --type=overlay --stdin-source=@screen_scrollback /bin/sh -c 'bat --color=always --plain | fzf --ansi --no-sort --no-mouse --exact -i --tac | kitty +kitten clipboard'
 
       # Initial zoom level (optional)
       initial_zoom_level 0.75
