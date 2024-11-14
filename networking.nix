@@ -43,13 +43,14 @@
       firewall = {
       enable = true;
       allowedTCPPorts = [
+                          53         #? DNS
                           587        #? outlook.office365.com Mail server
                           853        #?DNSoverTLS
                           1234       #? NTS Time server
                           6881       #? Qbittorrent
                           16509      #? libvirt
                           8384 22000 #? Syncthing
-                          443 8888 18081 
+                          443 8888 18081
                         ];
       allowedUDPPorts = [
                           6881  #? Qbittorrent
@@ -109,25 +110,37 @@
                 };
             };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-          "Nix_Hotspot" = {
+          Nix_Hotspot = {
             connection = {
-              id = "Nix_Hotspot";
+              id = "Hotspot";
               type = "wifi";
               autoconnect = false;
-              interface-name = "wlan0";
+              #interface-name = "wlan0";
+              permissions = "";  # Empty string means only root can modify
             };
             wifi = {
               mode = "ap";
-              ssid = "Nix_Hotspot";
+              ssid = "Nixed";
+              hidden = false;  # Hide SSID for better security
+              band = "bg";    # 2.4GHz band for better range
+              powersave = 2;  # Enable power saving
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
-              psk = "\${AFafAfaf_psk}";  # This will be replaced by the value from the environment file
+              psk = "\${AFafAfaf_psk}";
+              group = "ccmp";        # Use only strong encryption
+              pairwise = "ccmp";     # Use only strong encryption
+              proto = "rsn";         # Use WPA2/RSN only
+              pmf = 2;              # Enable Protected Management Frames
             };
             ipv4 = {
               method = "shared";
+              dns = "127.0.0.1";     # Use local DNS server
+              dns-search = "";       # Disable DNS search
+              ignore-auto-dns = true;
             };
-            ipv6.method = "ignore";
+            ipv6.method = "disabled";
+            #proxy = {};
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           AfafAfaf = {
@@ -407,7 +420,7 @@
     wantedBy = [ "multi-user.target" ];
   };
 
-  # Create a systemd timer to run the service every 5 minutes
+  # Create a systemd timer to run the check-internet service every 5 minutes
   systemd.timers.check-internet = {
     description = "Run check-internet every 5 minutes";
     wantedBy = [ "timers.target" ];
