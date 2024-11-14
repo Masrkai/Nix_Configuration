@@ -177,7 +177,6 @@ in{
       ];
     in builtins.concatStringsSep ":" libDirs;
 
-
       #? Add Vulkan ICDs for Graphics
       AMD_VULKAN_ICD = "RADV";
       VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
@@ -302,7 +301,6 @@ in{
   scrcpy
   android-tools
 
-
   nodePackages.katex
 
   #-> Python
@@ -330,7 +328,6 @@ in{
         matplotlib
         markdown-it-py
         python-dotenv
-
 
         #-> Juniper/jupter
         notebook
