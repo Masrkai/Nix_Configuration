@@ -38,7 +38,7 @@
 
     kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
-    virtualbox
+    #virtualbox
     #rtl8188eus-aircrack
     #acpi_call
     #hpuefi-mod
@@ -47,8 +47,9 @@
 
     kernelModules = [
     "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
-    "cpufreq_ondemand" "cpufreq_conservative"   # CPU governors
-    "acpi-cpufreq"                              # Enable ACPI CPU frequency driver
+    "cpufreq_ondemand" "cpufreq_conservative"    # CPU governors
+    "acpi-cpufreq"                               # Enable ACPI CPU frequency driver
+    "iwlwifi"                                    # for the wireless card
     #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
     ];
 
@@ -70,9 +71,7 @@
     "cpufreq_conservative"
     "acpi-cpufreq"
     ];
-    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod"
-    "iwlwifi"
-    ];
+    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod"  ];
   };
 
     consoleLogLevel = 3;
