@@ -26,52 +26,59 @@
 
   boot = {
     #-> Enable NTFS Support for windows files systems
-    supportedFilesystems = [ "ntfs" ];
+    supportedFilesystems = [ "ntfs" "ntfs-3g" ];
 
     #? Loader
     loader = {
+        systemd-boot = {
+          enable = true;
+          consoleMode = "max";  # Better resolution for boot menu
+          editor = false;       # Disable boot entry editing for security
+        };
       timeout = 5;
-      systemd-boot.enable = true;
       efi.canTouchEfiVariables = false;
       };
 
 
     kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
-    #virtualbox
     #rtl8188eus-aircrack
-    #acpi_call
-    #hpuefi-mod
-    #tp_smapi
+    #virtualbox
     ];
 
     kernelModules = [
     "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
-    "cpufreq_ondemand" "cpufreq_conservative"    # CPU governors
+    "cpufreq_conservative"    # CPU governors
+    #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
     "acpi-cpufreq"                               # Enable ACPI CPU frequency driver
     "iwlwifi"                                    # for the wireless card
-    #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
+    "amdgpu"                                     #? For AMD graphics
     ];
 
     #! Kernel parameters
     kernelParams = [
-    "amdgpu.si_support=1" "amdgpu.cik_support=1"                # AMD GPU driver
-    "radeon.si_support=0" "radeon.cik_support=0"                # Disable Radeon GPU
-    "intel_pstate=disable"                                      # Disable Intel P-state driver to use acpi-cpufreq
-    "intel_iommu=on" "iommu=pt"                                 # Intel IOMMU settings
-    "pci_pm_async=0" "pcie_aspm=force"                          # Power management
-    "usbcore.autosuspend=1"                                     # Enable USB autosuspend for power savings
+    "amdgpu.si_support=0" "amdgpu.cik_support=1" "amdgpu.dpm=1"   # AMD GPU driver
+    "radeon.si_support=0" "radeon.cik_support=0"                  # Disable Radeon GPU
+    "pci_pm_async=0" "pcie_aspm=force"                            # Power management
+    "intel_iommu=on" "iommu=pt"                                   # Intel IOMMU settings
+    "usbcore.autosuspend=1"                                       # Enable USB autosuspend for power savings
+    "intel_pstate=disable"                                        # Disable Intel P-state driver to use acpi-cpufreq
+    "splash"                                                      # show logo of your system
     ];
 
   #! Initial RAM disk configuration
   initrd = {
     kernelModules = [
-    "amdgpu"
-    "cpufreq_ondemand"
-    "cpufreq_conservative"
-    "acpi-cpufreq"
+    #"cpufreq_conservative" "acpi-cpufreq"  #? Important for CPU
+    #"amdgpu"                               #? For AMD graphics
     ];
-    availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod"  ];
+      availableKernelModules = [ 
+        "xhci_pci"    # USB 3.0 controller
+        "ehci_pci"    # USB 2.0 controller
+        "ahci"        # SATA controller
+        "usb_storage" # USB storage devices
+        "sd_mod"      # SCSI disk support
+      ];
   };
 
     consoleLogLevel = 3;
@@ -99,7 +106,7 @@
     "space_cache=v2"    # Better space cache
     "compress=zstd:1"   # Efficient compression
     "ssd"               # Optimize for SSD
-    "autodefrag"        # Automatic defragmentation
+    #"autodefrag"       #! Automatic defragmentation, why? it can increase write amplification on SSDs. If you aren't frequently modifying large files, you can disable this.
   ];
 };
 
