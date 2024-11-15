@@ -37,6 +37,9 @@
     sec(){
         fwupdmgr get-devices && fwupdmgr refresh && fwupdmgr get-updates && fwupdmgr update
     }
+    clearlogs(){
+        sudo journalctl --rotate && sudo journalctl --vacuum-time=1s
+    }
 
     #--> yt-dlp
     # Function to download a playlist with a specified resolution
