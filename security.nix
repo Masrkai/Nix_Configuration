@@ -98,6 +98,9 @@ services.fwupd ={
   };
 };
 
+#--> Kwallet
+security.pam.services.sddm.kwallet.enable = false;
+
 #--> CalmAV
   # services.clamav = {
   #   daemon = {
