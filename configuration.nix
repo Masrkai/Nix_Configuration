@@ -154,33 +154,36 @@ in{
   };
 
   environment={
-    #? Set up environment variables for colored man pages
-    variables = {
-    MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
-    LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
-    LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
-    MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
+      #? Set up environment variables for colored man pages
+      variables = {
+      MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
+      LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
+      LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
+      MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
 
-    CPLUS_INCLUDE_PATH = let
-      includeDirs = [
-        "${pkgs.eigen}/include/eigen3"
-        "${pkgs.nlohmann_json}/include"
-        "${pkgs.boost185.dev}/include/"
-      ];
-    in builtins.concatStringsSep ":" includeDirs;
+      CPLUS_INCLUDE_PATH = let
+        includeDirs = [
+          "${pkgs.eigen}/include/eigen3"
+          "${pkgs.nlohmann_json}/include"
+          "${pkgs.boost185.dev}/include/"
+        ];
+      in builtins.concatStringsSep ":" includeDirs;
 
-    LIBRARY_PATH = let
-      libDirs = [
-        "${pkgs.eigen}/lib"
-        "${pkgs.nlohmann_json}/lib"
-        "${pkgs.boost185}/lib"
-      ];
-    in builtins.concatStringsSep ":" libDirs;
+      LIBRARY_PATH = let
+        libDirs = [
+          "${pkgs.eigen}/lib"
+          "${pkgs.nlohmann_json}/lib"
+          "${pkgs.boost185}/lib"
+        ];
+      in builtins.concatStringsSep ":" libDirs;
+
+      QT_SSL_FORCE_TLSV1_3 = "1";  # Enforce TLS 1.3 for Qt applications
+      QT_SSL_FORCE_TLSV1_2 = "0";  # Disable TLS 1.2 (set to "1" if compatibility is required)
 
       #? Add Vulkan ICDs for Graphics
       AMD_VULKAN_ICD = "RADV";
       VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
-    };
+     };
 
     # Set environment variables for Wayland
     sessionVariables = {
@@ -206,7 +209,25 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge"  ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" ];
+  };
+
+  services.journald = {
+    # Controls repeated message filtering
+    rateLimitInterval = "30s";
+    rateLimitBurst = "10000";
+    extraConfig = ''
+      # Compress logs to save space
+      Compress=yes
+      
+      # Specific settings for repeated message handling
+      SuppressRepeatedMessages=yes
+      SuppressRepeatedSplitFields=_BOOT_ID,_PID,_COMM
+      
+      # Optional: Set max log size and retention
+      SystemMaxUse=2G
+      MaxRetentionSec=1month
+    '';
   };
 
   # Managing unfree packages
