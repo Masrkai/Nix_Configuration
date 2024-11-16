@@ -12,15 +12,13 @@
     enable = true;                        # Enable systemd-oomd
 
     enableRootSlice = true;               # Manage memory pressure for root processes
-    enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
     enableUserSlices = true;              # Manage memory for user sessions, reducing per-user memory pressure
+    enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
 
-    # Additional configuration to fine-tune `systemd-oomd` behavior
-    # extraConfig = ''
-    #   MemoryPressureDurationSec=1min      # Minimum time memory pressure should exist before triggering
-    #   SwapUsedLimitPercent=80             # Trigger when swap usage exceeds 80% to avoid heavy swapping
-    #   DefaultMemoryPressureThresholdPercent=60  # Start reclaiming memory when usage reaches 60%
-    #   '';
+    extraConfig = {
+      MemoryPressureDurationSec="10s";             # Faster response to memory issues
+      DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
+    };
     };
 
 
@@ -48,8 +46,8 @@
 
     kernelModules = [
     "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
-    "cpufreq_conservative"    # CPU governors
     #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
+    "cpufreq_conservative"                       # CPU governor
     "acpi-cpufreq"                               # Enable ACPI CPU frequency driver
     "iwlwifi"                                    # for the wireless card
     "amdgpu"                                     #? For AMD graphics
@@ -57,13 +55,31 @@
 
     #! Kernel parameters
     kernelParams = [
+    #? AMD GPU drivers
     "amdgpu.si_support=0" "amdgpu.cik_support=1" "amdgpu.dpm=1"   # AMD GPU driver
-    "radeon.si_support=0" "radeon.cik_support=0"                  # Disable Radeon GPU
+    "radeon.si_support=0" "radeon.cik_support=0"                  # Disable Radeon GPU driver
+
     "pci_pm_async=0" "pcie_aspm=force"                            # Power management
-    "intel_iommu=on" "iommu=pt"                                   # Intel IOMMU settings
-    "usbcore.autosuspend=1"                                       # Enable USB autosuspend for power savings
     "intel_pstate=disable"                                        # Disable Intel P-state driver to use acpi-cpufreq
     "splash"                                                      # show logo of your system
+
+    "usbcore.autosuspend=1"                                       # Enable USB autosuspend for power savings
+
+    "intel_iommu=on" "iommu=pt"                                   #? Intel IOMMU security
+
+    #! Memory security
+    "page_alloc.shuffle=1"                                        # Helps detect memory issues earlier + Major security Gain
+    "init_on_free=1"                                              # Fill freed pages and heap objects with zeroes.
+    "vsyscall=none"                                               # Disables legacy system call interface
+    "slab_nomerge" "slub_debug=FZ"                                # Disables the merging of slabs of similar sizes & Enables sanity checks (F) and redzoning (Z).
+
+    #? GPU powersaving
+    "i915.enable_dc=1"                                            # Enable intel's iGPU deep power-saving states
+    "i915.enable_psr=1"                                           # Enable intel's iGPU Panel Self Refresh for screens
+    "i915.enable_fbc=1"                                           # Enable intel's iGPU Frame Buffer Compression
+    "i915.enable_rc6=1"                                           # Enable intel's iGPU power-saving modes
+
+    "acpi_osi=Linux"                                              # Ensuring best behavior
     ];
 
   #! Initial RAM disk configuration
@@ -72,7 +88,7 @@
     #"cpufreq_conservative" "acpi-cpufreq"  #? Important for CPU
     #"amdgpu"                               #? For AMD graphics
     ];
-      availableKernelModules = [ 
+      availableKernelModules = [
         "xhci_pci"    # USB 3.0 controller
         "ehci_pci"    # USB 2.0 controller
         "ahci"        # SATA controller
@@ -91,6 +107,9 @@
       "vm.dirty_bytes" = 16777216;                      # 16MB write threshold
       "vm.dirty_background_bytes" = 8388608;            # 8MB background threshold
       "usbcore.autosuspend_delay_ms" = 2000;            # 2-second delay, balances power and responsiveness
+
+      "vm.memory_failure_recovery" = 1;                 # enables the kernel's memory failure recovery mechanism
+      "vm.memory_failure_early_kill" = 1;               # If a process is using memory pages that are failing, this parameter makes the kernel kill that process early
     };
 
   };
@@ -123,7 +142,7 @@ services.fstrim = {
 };
 
   swapDevices = [ ];
-  zramSwap.enable = false;  # Also disable zram swap
+  zramSwap.enable = false;  # disable zram swap
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
