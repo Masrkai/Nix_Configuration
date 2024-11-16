@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  #unstable = import <unstable> {config.allowUnfree = true;};
+  unstable = import <unstable> {config.allowUnfree = true;};
   secrets = import ./Sec/secrets.nix;
 
   customPackages = {
@@ -589,7 +589,7 @@ in{
   fastfetch
   syncthing
   noisetorch
-  #qbittorrent
+  unstable.qbittorrent
   authenticator
   mission-center
   signal-desktop
