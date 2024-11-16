@@ -212,21 +212,17 @@ in{
     extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" ];
   };
 
-  services.journald = {
+    services.journald = {
     # Controls repeated message filtering
     rateLimitInterval = "30s";
-    rateLimitBurst = "10000";
+    rateLimitBurst =  10000;
     extraConfig = ''
       # Compress logs to save space
       Compress=yes
-      
-      # Specific settings for repeated message handling
-      SuppressRepeatedMessages=yes
-      SuppressRepeatedSplitFields=_BOOT_ID,_PID,_COMM
-      
+
       # Optional: Set max log size and retention
       SystemMaxUse=2G
-      MaxRetentionSec=1month
+      MaxRetentionSec=1week
     '';
   };
 
