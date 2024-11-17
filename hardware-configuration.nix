@@ -4,100 +4,98 @@
 {
   imports = [
       #(modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  ];
 
-    #services.systemd-oomd.enable = true;
-
-    systemd.oomd = {
+  systemd.oomd = {
     enable = true;                        # Enable systemd-oomd
-
     enableRootSlice = true;               # Manage memory pressure for root processes
     enableUserSlices = true;              # Manage memory for user sessions, reducing per-user memory pressure
     enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
-
-    extraConfig = {
-      MemoryPressureDurationSec="10s";             # Faster response to memory issues
-      DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
-    };
-    };
+      extraConfig = {
+        MemoryPressureDurationSec="10s";             # Faster response to memory issues
+        DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
+      };
+  };
 
 
   boot = {
-    #-> Enable NTFS Support for windows files systems
-    supportedFilesystems = [ "ntfs" "ntfs-3g" ];
+    consoleLogLevel = 3;
 
-    #? Loader
+    supportedFilesystems = [              #-> Enable NTFS Support for windows files systems
+                             "ntfs"       #-> Windows Filesystem
+                             "ntfs-3g"    #-> Additional windows support
+    ];
+
+    #? boot Loader
     loader = {
         systemd-boot = {
           enable = true;
           consoleMode = "max";  # Better resolution for boot menu
           editor = false;       # Disable boot entry editing for security
         };
-      timeout = 5;
+      timeout = 7;
       efi.canTouchEfiVariables = false;
-      };
-
+    };
 
     kernelPackages = pkgs.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [
-    #rtl8188eus-aircrack
-    #virtualbox
+                                                            #rtl8188eus-aircrack
+                                                            #virtualbox
     ];
 
     kernelModules = [
-    "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
-    #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
-    "cpufreq_conservative"                       # CPU governor
-    "acpi-cpufreq"                               # Enable ACPI CPU frequency driver
-    "iwlwifi"                                    # for the wireless card
-    "amdgpu"                                     #? For AMD graphics
+                      "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
+                      #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
+                      "cpufreq_conservative"                       # CPU governor
+                      "acpi-cpufreq"                               # Enable ACPI CPU frequency driver
+                      "iwlwifi"                                    # for the wireless card
+                      "amdgpu"                                     #? For AMD graphics
     ];
 
     #! Kernel parameters
     kernelParams = [
-    #? AMD GPU drivers
-    "amdgpu.si_support=0" "amdgpu.cik_support=1" "amdgpu.dpm=1"   # AMD GPU driver
-    "radeon.si_support=0" "radeon.cik_support=0"                  # Disable Radeon GPU driver
+                    #? AMD GPU drivers
+                    "amdgpu.si_support=0" "amdgpu.cik_support=1" "amdgpu.dpm=1"   #* AMD GPU driver
+                    "radeon.si_support=0" "radeon.cik_support=0"                  #! Disable Radeon GPU driver
 
-    "pci_pm_async=0" "pcie_aspm=force"                            # Power management
-    "intel_pstate=disable"                                        # Disable Intel P-state driver to use acpi-cpufreq
-    "splash"                                                      # show logo of your system
+                    "pci_pm_async=0" "pcie_aspm=force"                            #? Power management
+                    "intel_pstate=disable"                                        #! Disable Intel P-state driver to use acpi-cpufreq
+                    "splash"                                                      #* show logo of your system
 
-    "usbcore.autosuspend=1"                                       # Enable USB autosuspend for power savings
+                    "usbcore.autosuspend=1"                                       #* Enable USB autosuspend for power savings
 
-    "intel_iommu=on" "iommu=pt"                                   #? Intel IOMMU security
+                    "intel_iommu=sm_on" "iommu=pt"                                #* Intel IOMMU security
 
-    #! Memory security
-    "page_alloc.shuffle=1"                                        # Helps detect memory issues earlier + Major security Gain
-    "init_on_free=1"                                              # Fill freed pages and heap objects with zeroes.
-    "vsyscall=none"                                               # Disables legacy system call interface
-    "slab_nomerge" "slub_debug=FZ"                                # Disables the merging of slabs of similar sizes & Enables sanity checks (F) and redzoning (Z).
+                    #! Memory security
+                    "page_alloc.shuffle=1"                                        #* Helps detect memory issues earlier + Major security Gain
+                    "init_on_free=1"                                              #* Fill freed pages and heap objects with zeroes.
+                    "vsyscall=none"                                               #! Disables legacy system call interface
+                    "slab_nomerge" "slub_debug=FZ"                                #! Disables the merging of slabs of similar sizes & Enables sanity checks (F) and redzoning (Z).
 
-    #? GPU powersaving
-    "i915.enable_dc=1"                                            # Enable intel's iGPU deep power-saving states
-    "i915.enable_psr=1"                                           # Enable intel's iGPU Panel Self Refresh for screens
-    "i915.enable_fbc=1"                                           # Enable intel's iGPU Frame Buffer Compression
-    "i915.enable_rc6=1"                                           # Enable intel's iGPU power-saving modes
+                    #? GPU powersaving
+                    #"i915.enable_dc=1"                                           #* Enable intel's iGPU deep power-saving states
+                    "i915.enable_psr=1"                                           #* Enable intel's iGPU Panel Self Refresh for screens
+                    "i915.enable_fbc=1"                                           #* Enable intel's iGPU Frame Buffer Compression
+                    #"i915.enable_rc6=1"                                          #* Enable intel's iGPU power-saving modes
 
-    "acpi_osi=Linux"                                              # Ensuring best behavior
+                    "acpi_osi=Linux"                                              #* Ensuring best behavior
+                    "nowatchdog"                                                  #* Disable watchdog //no use for it in my case
     ];
 
-  #! Initial RAM disk configuration
-  initrd = {
-    kernelModules = [
-    #"cpufreq_conservative" "acpi-cpufreq"  #? Important for CPU
-    #"amdgpu"                               #? For AMD graphics
-    ];
-      availableKernelModules = [
-        "xhci_pci"    # USB 3.0 controller
-        "ehci_pci"    # USB 2.0 controller
-        "ahci"        # SATA controller
-        "usb_storage" # USB storage devices
-        "sd_mod"      # SCSI disk support
+    #! Initial RAM disk configuration
+    initrd = {
+      kernelModules = [
+                        #"cpufreq_conservative" "acpi-cpufreq"  #! Important for CPU
+                        #"amdgpu"                               #! For AMD graphics
       ];
-  };
-
-    consoleLogLevel = 3;
+      availableKernelModules = [
+                                "xhci_pci"                      #? USB 3.0 controller
+                                "ehci_pci"                      #? USB 2.0 controller
+                                "ahci"                          #? SATA controller
+                                "usb_storage"                   #? USB storage devices
+                                "sd_mod"                        #? SCSI disk support
+      ];
+    };
 
     kernel.sysctl = {
       "scaling_governor" = "conservative";
