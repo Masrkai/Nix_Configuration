@@ -107,7 +107,7 @@
       "usbcore.autosuspend_delay_ms" = 2000;            # 2-second delay, balances power and responsiveness
 
       "vm.memory_failure_recovery" = 1;                 # enables the kernel's memory failure recovery mechanism
-      "vm.memory_failure_early_kill" = 1;               # If a process is using memory pages that are failing, this parameter makes the kernel kill that process early
+      "vm.memory_failure_early_kill" = 0;               # If a process is using memory pages that are failing, this parameter makes the kernel kill that process early
     };
 
   };

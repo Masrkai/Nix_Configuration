@@ -226,8 +226,6 @@ in{
     '';
   };
 
-  # Managing unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   #! Diable flatpack
   services.flatpak.enable = lib.mkForce false;
@@ -257,6 +255,14 @@ in{
           emoji = [ "Noto Color Emoji" ];
         };
       };
+  };
+
+  nixpkgs.config= {
+  allowUnfree = true;
+      permittedInsecurePackages = [
+      "electron-27.3.11"
+      "qbittorrent-4.6.4"
+      ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -583,13 +589,14 @@ in{
   kooha
   brave
   yt-dlp
+  logseq
   haruna
   jackett
   ani-cli
   fastfetch
   syncthing
   noisetorch
-  unstable.qbittorrent
+  qbittorrent
   authenticator
   mission-center
   signal-desktop
@@ -627,7 +634,6 @@ in{
 
   #System
   mlocate
-  powertop
   pciutils
   xorg.xhost
   translate-shell
@@ -771,6 +777,12 @@ in{
       DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "ethernet";  # Disable when not in use on battery
     };
   };
+
+  # powerManagement = {
+  #   enable = true;
+  #   powertop.enable = true;  # Optional but recommended for power management
+  #   scsiLinkPolicy = "med_power_with_dipm";  # Enables SATA power management
+  # };
 
   #--> Enable thermald (only necessary if on Intel CPUs)
     services.thermald.enable = true;
