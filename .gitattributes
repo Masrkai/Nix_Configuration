@@ -2,12 +2,13 @@
 *.nix linguist-detectable=true
 
 # YAML Configuration
-*.yaml linguist-detectable=true
 *.yml linguist-detectable=true
+*.yaml linguist-detectable=true
 
 # Markdown Documentation
-*.md linguist-detectable=true
 *.md merge=union
+*.md linguist-detectable=true
+*.md linguist-documentation=false
 
 # Bash Scripts
 *.sh linguist-detectable=true
@@ -15,9 +16,9 @@
 *.bashrc linguist-detectable=true
 
 # C++ Source Code
+*.h linguist-detectable=true
 *.cpp linguist-detectable=true
 *.hpp linguist-detectable=true
-*.h linguist-detectable=true
 
 # Python Scripts
 *.py linguist-detectable=true
