@@ -244,3 +244,66 @@
   #   SUBSYSTEM=="hwmon", ATTR{name}=="coretemp", SYMLINK+="hwmon_coretemp"
   #   SUBSYSTEM=="hwmon", ATTR{name}=="acpitz", SYMLINK+="hwmon_acpitz"
   # '';
+
+
+
+    # DNSCrypt-proxy configuration
+  # services.dnscrypt-proxy2 = {
+  #   enable = false;
+  #   settings = {
+  #     listen_addresses = [ "127.0.0.1:53" ];
+  #     server_names = [ "cloudflare" ];
+  #     forwarding_rules = "forwards.txt";
+
+  #     log_level = 2;  # 0: none, 1: error, 2: info, 3: debug
+  #     log_file = "/var/log/dnscrypt-proxy.log";
+  #   };
+  # };
+
+  # # Create forwarding rules for DNSCrypt-proxy
+  # environment.etc."dnscrypt-proxy/forwards.txt" = {
+  #   text = ''
+  #     * 127.0.0.1:5353
+  #   '';
+  #   mode = "0644";
+  # };
+
+
+
+  # services.unbound = {
+  #   enable = true;
+  #   resolveLocalQueries = false;
+  #   stateDir = "/var/lib/unbound" ;
+  #   settings = {
+  #       server = {
+  #         interface = [ "127.0.0.1" ];
+  #         forward-zone = [                      # Forward to Stubby for encrypted DNS resolution
+  #             {
+  #               name = ".";
+  #               forward-addr = "127.0.0.1@53";
+  #             }
+  #         ];
+
+  #         # Performance and privacy settings
+  #         prefetch = "yes";
+  #         prefetch-key = "yes";
+  #         hide-identity = "yes";
+  #         hide-version = "yes";
+
+  #         # Security settings
+  #         val-log-level = 2;
+  #         val-clean-additional = "yes";
+
+  #         # Cache settings
+  #         cache-max-ttl = 86400;
+  #         cache-min-ttl = 3600;
+
+  #         # DNSSEC
+  #         module-config = "validator iterator";
+  #         val-permissive-mode = "no";
+  #       };
+  #   };
+  # };
+
+
+  # systemd.services.unbound.after = [ "stubby.service" ];
