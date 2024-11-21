@@ -6,15 +6,18 @@
       #(modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  systemd.oomd = {
-    enable = true;                        # Enable systemd-oomd
-    enableRootSlice = true;               # Manage memory pressure for root processes
-    enableUserSlices = true;              # Manage memory for user sessions, reducing per-user memory pressure
-    enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
-      extraConfig = {
-        MemoryPressureDurationSec="10s";             # Faster response to memory issues
-        DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
-      };
+  systemd = {
+    enableEmergencyMode = true;
+    oomd = {
+      enable = true;                        # Enable systemd-oomd
+      enableRootSlice = true;               # Manage memory pressure for root processes
+      enableUserSlices = true;              # Manage memory for user sessions, reducing per-user memory pressure
+      enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
+        extraConfig = {
+          MemoryPressureDurationSec="10s";             # Faster response to memory issues
+          DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
+        };
+    };
   };
 
 
