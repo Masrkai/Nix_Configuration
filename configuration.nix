@@ -6,7 +6,7 @@ let
 
   customPackages = {
     #? .Nix
-    airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
+    #airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
     wifi-honey = pkgs.callPackage ./Programs/Packages/wifi-honey.nix {};
     hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
@@ -35,11 +35,7 @@ in{
   #! Experimental Features
   nix.settings.experimental-features = [ "nix-command" ];
 
-  systemd.enableEmergencyMode = false;
-
-  #? Set your time zone.
-  time.timeZone = "Africa/Cairo";
-
+  time.timeZone = "Africa/Cairo";   #? Set your time zone.
   i18n={
     #? Select internationalisation properties.
     defaultLocale = "en_US.UTF-8";
@@ -69,27 +65,20 @@ in{
     enableQt5Integration = false;     #? Qt5 integration is typically not needed for Plasma 6
   };
 
-  # Configure X11 server
-  services.xserver = lib.mkForce {
-    enable = false;
-    xkb.layout = "us";
-    xkb.variant = "";
-    videoDrivers = [ "intel" "amdgpu" ];
-  };
-
-    # Set default session to Wayland
-    services.displayManager={
-      defaultSession = "plasma";
-      sddm = {
-        enable = true;
+  # Set default session to Wayland
+  services.displayManager={
+  defaultSession = "plasma";
+    sddm = {
+      enable = true;
           wayland = {
                 enable = true;
                 compositor = "kwin";
           };
-        };
-    };
+      };
+  };
   # Enable Wayland-specific services
   programs.xwayland.enable = true;
+  services.xserver.enable = false;
 
   xdg.portal = {
     enable = true;
@@ -125,8 +114,8 @@ in{
 
   #? Weylus
   programs.weylus = {
-    enable = true;
-    openFirewall = true;
+    enable = false;
+    openFirewall = false;
   };
 
 #!###############
@@ -177,6 +166,7 @@ in{
         ];
       in builtins.concatStringsSep ":" libDirs;
 
+      QT_QPA_PLATFORM="wayland";
       QT_SSL_FORCE_TLSV1_3 = "1";  # Enforce TLS 1.3 for Qt applications
       QT_SSL_FORCE_TLSV1_2 = "0";  # Disable TLS 1.2 (set to "1" if compatibility is required)
 
@@ -257,12 +247,33 @@ in{
       };
   };
 
-  nixpkgs.config= {
-  allowUnfree = true;
-      permittedInsecurePackages = [
-      "electron-27.3.11"
-      "qbittorrent-4.6.4"
-      ];
+  nixpkgs = {
+    overlays = [
+      (self: super: {
+        filterOutX11 = super.lib.filterAttrs (name: pkg:
+          !(self.lib.strings.contains "libX11" (toString pkg))) super;
+
+        # gtk3 = super.gtk3.override {
+        #   enableX11 = false;  # Disable X11 support for GTK3
+        # };
+
+        # qtbase = super.qtbase.override {
+        #   enableX11 = false;  # Disable X11 support for Qt
+        # };
+
+        # sdl2 = super.sdl2.override {
+        #   enableX11 = false;  # Disable X11 in SDL
+        # };
+      })
+    ];
+    #-------------------------------------------------------------------->
+    config= {
+    allowUnfree = true;
+        permittedInsecurePackages = [
+        "electron-27.3.11"
+        "qbittorrent-4.6.4"
+        ];
+    };
   };
 
   environment.systemPackages = with pkgs; [
@@ -275,11 +286,11 @@ in{
   customPackages.MD-PDF
   customPackages.backup
   customPackages.setupcpp
-  customPackages.airgeddon
   customPackages.wifi-honey
   customPackages.hostapd-wpe
   customPackages.logisim-evolution
   customPackages.super-productivity
+  #customPackages.airgeddon
   #customPackages.custom-httrack
 
   fan2go
@@ -307,7 +318,7 @@ in{
   most
   kitty
   unzip
-  xterm
+  #xterm
   #gparted #!has issues
   glxinfo
   git-lfs
@@ -598,7 +609,7 @@ in{
   logseq
   haruna
   jackett
-  ani-cli
+  powertop
   fastfetch
   syncthing
   noisetorch
@@ -606,6 +617,7 @@ in{
   authenticator
   mission-center
   signal-desktop
+  unstable.ani-cli
 
   #-> Archivers
   xz
@@ -641,7 +653,6 @@ in{
   #System
   mlocate
   pciutils
-  xorg.xhost
   translate-shell
 
   #Spell_check
@@ -705,11 +716,6 @@ in{
   #!#################
   #! POWER services:
   #!#################
-  powerManagement.resumeCommands = ''
-  ${pkgs.kmod}/bin/modprobe -r psmouse
-  ${pkgs.kmod}/bin/modprobe psmouse
-  '';
-
   #--> TLP enabling
   services.tlp = lib.mkForce {
     enable = true;
@@ -788,6 +794,10 @@ in{
   #   enable = true;
   #   powertop.enable = true;  # Optional but recommended for power management
   #   scsiLinkPolicy = "med_power_with_dipm";  # Enables SATA power management
+  #  resumeCommands = ''
+  # ${pkgs.kmod}/bin/modprobe -r psmouse
+  # ${pkgs.kmod}/bin/modprobe psmouse
+  # '';
   # };
 
   #--> Enable thermald (only necessary if on Intel CPUs)
