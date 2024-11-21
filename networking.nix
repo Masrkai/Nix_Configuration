@@ -329,27 +329,6 @@
   };
 
   #> DNS-over-TLS
-    # DNSCrypt-proxy configuration
-  services.dnscrypt-proxy2 = {
-    enable = false;
-    settings = {
-      listen_addresses = [ "127.0.0.1:53" ];
-      server_names = [ "cloudflare" ];
-      forwarding_rules = "forwards.txt";
-
-      log_level = 2;  # 0: none, 1: error, 2: info, 3: debug
-      log_file = "/var/log/dnscrypt-proxy.log";
-    };
-  };
-
-  # Create forwarding rules for DNSCrypt-proxy
-  environment.etc."dnscrypt-proxy/forwards.txt" = {
-    text = ''
-      * 127.0.0.1:5353
-    '';
-    mode = "0644";
-  };
-
   services.resolved.enable = lib.mkForce false;
   services.stubby = lib.mkForce {
     enable = true;
@@ -357,21 +336,21 @@
     listen_addresses = [ "127.0.0.1@53"
                         #"0::1@5353"           #! ::1 cause error, use 0::1 instead
                        ];
+    idle_timeout = 10000;
+    round_robin_upstreams = 1;
+    edns_client_subnet_private = 1;
+    tls_query_padding_blocksize = 256;
+    dnssec = "GETDNS_EXTENSION_TRUE";
+    tls_min_version = "GETDNS_TLS1_3";
+    appdata_dir = "/var/cache/stubby";
     resolution_type = "GETDNS_RESOLUTION_STUB";
+    dnssec_return_status = "GETDNS_EXTENSION_TRUE";
     dns_transport_list = [ "GETDNS_TRANSPORT_TLS" ];
     tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
-    tls_query_padding_blocksize = 128;
-    idle_timeout = 5000;
-    round_robin_upstreams = 0;
-    tls_min_version = "GETDNS_TLS1_3";
-    dnssec = "GETDNS_EXTENSION_TRUE";
-    dnssec_return_status = "GETDNS_EXTENSION_TRUE";
-    appdata_dir = "/var/cache/stubby";
-      # prefetch = "true";
-      # hide_identity = "true";   # Hides the identity of the resolver
-      # hide_version = "true";    # Hides the version of the resolver
-      #edns_client_subnet_private = 1;
-      tls_ciphersuites = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
+    tls_ciphersuites = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
+    # prefetch = "true";
+    # hide_identity = "true";   # Hides the identity of the resolver
+    # hide_version = "true";    # Hides the version of the resolver
       upstream_recursive_servers = [
         {
           address_data = "1.1.1.1";
@@ -392,7 +371,6 @@
       ];
     };
   };
-
 
   # Define the network check script
   environment.etc."check-internet.sh" = {
