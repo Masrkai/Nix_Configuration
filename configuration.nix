@@ -352,6 +352,12 @@ in{
         markdown-it-py
         python-dotenv
 
+        #-> Ai
+        pydub
+        torch
+        librosa
+        soundfile
+
         #-> Juniper/jupter
         notebook
         jupyterlab
@@ -728,10 +734,10 @@ in{
       RUNTIME_PM_ON_AC = "on";
       RUNTIME_PM_ON_BAT = "on";
 
-      # CPU_SCALING_GOVERNOR_ON_AC = "conservative";
-      # CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
 
-      # CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
       # CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
       #? Restore configured charge thresholds when AC is unplugged
@@ -901,50 +907,79 @@ in{
           };
         type = "sendonly"; # Make folder send-only
         };
+      };
     };
   };
-};
 
   #---> SearXNG
   services.searx = {
-  enable = true;
-  package = pkgs.searxng;  # Ensure you're using the correct package
-  settings = {
-        server = {
-          port = 8888;
-          bind_address = "127.0.0.1";
-          base_url     = "http://localhost/";
-          secret_key   = secrets.searx-secret-key;
-        };
-        ui = {
-          default_locale = "en";
-          default_theme  = "simple";
-        };
-        search = {
-          safe_search = 0;  # 0: None, 1: Moderate, 2: Strict
-          default_lang = "en";
-          autocomplete = "duckduckgo";
-        };
-        engines = [
-          { name = "google"; engine = "google"; disabled = false; }
-          { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
-          { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
-        ];
-        outgoing = {
-          request_timeout = 6.0;
-          max_request_timeout = 8.0;
-          # Add these lines to ensure Searx uses Stubby for DNS
-          dns_resolver = {
-            enable = true;
-            use_system_resolver = false;  # Disable system resolver
-            resolver_address = "127.0.0.1:53";  # Point to Stubby
-          };
-        };
-        cache = {
-          cache_dir = "/var/cache/searx";
+    enable = true;
+    package = pkgs.searxng;
+    settings = {
+      server = {
+        port = 8888;
+        bind_address = "127.0.0.1";
+        base_url = "http://localhost/";
+        secret_key = secrets.searx-secret-key;
+        limiter = true;  # Enable rate limiting
+        ratelimit_low = 30;
+        ratelimit_high = 50;
+      };
+      ui = {
+        default_locale = "en";
+        default_theme = "simple";
+        query_in_title = true;
+        infinite_scroll = true;
+        engine_shortcuts = true;  # Show engine icons
+        expand_results = true;    # Show result thumbnails
+        theme_args = {
+          style = "auto";  # Supports dark/light mode
         };
       };
+      search = {
+        safe_search = 0;
+        default_lang = "en";
+        autocomplete = "duckduckgo";
+        suspend_on_unavailable = true;
+          result_extras = {
+          favicon = true;          # Enable website icons
+          thumbnail = true;        # Enable result thumbnails
+          thumbnail_proxy = true;  # Use a proxy for thumbnails
+          };
+      };
+      engines = [
+        { name = "google"; engine = "google"; disabled = false; }
+        { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
+        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
+        { name = "bing"; engine = "bing"; disabled = false; }
+        { name = "brave"; engine = "brave"; disabled = false; }
+      ];
+      outgoing = {
+        request_timeout = 6.0;
+        max_request_timeout = 8.0;
+        pool_connections = 10;  # Increased connection pool
+        pool_maxsize = 15;      # Maximum concurrent connections
+        dns_resolver = {
+          enable = true;
+          use_system_resolver = false;
+          resolver_address = "127.0.0.1:53";
+        };
+      };
+      cache = {
+        cache_dir = "/var/cache/searx";
+        cache_max_age = 1440;  # Cache for 24 hours
+        cache_disabled_plugins = [];
+      };
+      privacy = {
+        preferences = {
+          disable_web_search = false;
+          disable_image_search = false;
+          disable_map_search = true;
+        };
+        http_header_anonymization = true;
+      };
     };
+  };
 
   #---> Colord
   services.colord.enable = true;
