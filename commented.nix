@@ -35,30 +35,30 @@
   #   internalInterfaces = [ "wlan0" "wlan1" ];
   # };
 
-    # WebRTC leak prevention for Chromium-based browsers
-  environment.etc."chromium/policies/managed/policies.json".text = ''
-    {
-      "WebRtcIPHandlingPolicy": "disable_non_proxied_udp",
-      "WebRtcUDPPortRange": "10000-10010",
-      "WebRtcLocalIpsAllowedUrls": [""],
-      "WebRtcAllowLegacyTLSProtocols": false
-    }
-  '';
+  #   # WebRTC leak prevention for Chromium-based browsers
+  # environment.etc."chromium/policies/managed/policies.json".text = ''
+  #   {
+  #     "WebRtcIPHandlingPolicy": "disable_non_proxied_udp",
+  #     "WebRtcUDPPortRange": "10000-10010",
+  #     "WebRtcLocalIpsAllowedUrls": [""],
+  #     "WebRtcAllowLegacyTLSProtocols": false
+  #   }
+  # '';
 
-  # WebRTC leak prevention for Firefox
-  environment.etc."firefox/policies/policies.json".text = ''
-    {
-      "policies": {
-        "DisableWebRTC": true,
-        "Preferences": {
-          "media.peerconnection.enabled": false,
-          "media.peerconnection.ice.default_address_only": true,
-          "media.peerconnection.ice.no_host": true,
-          "media.peerconnection.ice.proxy_only": true
-        }
-      }
-    }
-  '';
+  # # WebRTC leak prevention for Firefox
+  # environment.etc."firefox/policies/policies.json".text = ''
+  #   {
+  #     "policies": {
+  #       "DisableWebRTC": true,
+  #       "Preferences": {
+  #         "media.peerconnection.enabled": false,
+  #         "media.peerconnection.ice.default_address_only": true,
+  #         "media.peerconnection.ice.no_host": true,
+  #         "media.peerconnection.ice.proxy_only": true
+  #       }
+  #     }
+  #   }
+  # '';
 
 
       # kernelModules  = [ "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "hp_wmi" "drivetemp"
@@ -305,5 +305,58 @@
   #   };
   # };
 
+  # powerManagement = {
+  #   enable = true;
+  #   powertop.enable = true;  # Optional but recommended for power management
+  #   scsiLinkPolicy = "med_power_with_dipm";  # Enables SATA power management
+  #  resumeCommands = ''
+  # ${pkgs.kmod}/bin/modprobe -r psmouse
+  # ${pkgs.kmod}/bin/modprobe psmouse
+  # '';
+  # };
 
   # systemd.services.unbound.after = [ "stubby.service" ];
+
+
+
+
+
+
+
+
+
+
+      # # Create a script to handle DNS redirection
+      # extraPackages = [ pkgs.iproute2 pkgs.bash ];
+      
+      # preCommands = ''
+      #   # Flush existing DNS redirection rules
+      #   nft flush chain ip nat dns_redirect 2>/dev/null || true
+        
+      #   # Create a new chain for DNS redirection if it doesn't exist
+      #   nft add chain ip nat dns_redirect 2>/dev/null || true
+        
+      #   # Create DNS redirect base chain if it doesn't exist
+      #   nft "add chain ip nat prerouting { type nat hook prerouting priority -100 ; }" 2>/dev/null || true
+        
+      #   # Add jump to dns_redirect chain
+      #   nft add rule ip nat prerouting jump dns_redirect 2>/dev/null || true
+      # '';
+      
+      # extraCommands = ''
+      #   # Get all interfaces in AP/hotspot mode
+      #   for iface in $(nmcli -g DEVICE,TYPE connection show --active | grep ":wifi" | cut -d: -f1); do
+      #     # Check if interface is in AP mode
+      #     if [ "$(iwconfig "$iface" 2>/dev/null | grep "Mode:Master")" ]; then
+      #       # Add DNS redirection rules for this interface
+      #       nft add rule ip nat dns_redirect iifname "$iface" udp dport 53 redirect to :53
+      #       nft add rule ip nat dns_redirect iifname "$iface" tcp dport 53 redirect to :53
+      #     fi
+      #   done
+      # '';
+      
+      # # Clean up rules when stopping the firewall
+      # extraStopCommands = ''
+      #   nft flush chain ip nat dns_redirect 2>/dev/null || true
+      #   nft delete chain ip nat dns_redirect 2>/dev/null || true
+      # '';

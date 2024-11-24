@@ -102,16 +102,6 @@ in{
     libsForQt5.qt5.qtvirtualkeyboard
     ];
 
-  #! Enable touchpad support
-  services.libinput = {
-  enable = true;
-  touchpad.disableWhileTyping = false;
-    touchpad = {
-    accelSpeed = "0.3";
-    naturalScrolling = true;
-    };
-  };
-
   #? Weylus
   programs.weylus = {
     enable = false;
@@ -249,9 +239,9 @@ in{
 
   nixpkgs = {
     overlays = [
-      (self: super: {
-        filterOutX11 = super.lib.filterAttrs (name: pkg:
-          !(self.lib.strings.contains "libX11" (toString pkg))) super;
+     (self: super: {
+      filterOutX11 = super.lib.filterAttrs (name: pkg:
+        !(self.lib.strings.contains "libX11" (toString pkg) || self.lib.strings.contains "xset" (toString pkg) || self.lib.strings.contains "x11-utils" (toString pkg) )) super;
 
         # gtk3 = super.gtk3.override {
         #   enableX11 = false;  # Disable X11 support for GTK3
@@ -299,7 +289,6 @@ in{
   searxng
   nix-prefetch-git
   nixos-generators
-
 
   #-> General
     #-! GNS3 Specific Bullshit
@@ -720,31 +709,24 @@ in{
   services.tlp = lib.mkForce {
     enable = true;
     settings = {
-      WOL_DISABLE="Y"; #? disable wake on LAN
+      USB_AUTOSUSPEND="1";
+      USB_BLACKLIST_WWAN="1";
+      USB_BLACKLIST_BTUSB="0";
+      USB_BLACKLIST_PHONE="0";
 
-      USB_AUTOSUSPEND=1;
-      USB_BLACKLIST_WWAN=1;
-      USB_BLACKLIST_BTUSB=0;
-      USB_BLACKLIST_PHONE=0;
-
-      WIFI_PWR_ON_AC=0;   # no power saving on AC
-      WIFI_PWR_ON_BAT=2;  # Aggressive power saving on battery
-
-      #? kernel NMI watchdog timer (0 = disabled/save power, 1=enabled). A value of 1 is relevant for kernel debugging and the watchdog daemon.
-      NMI_WATCHDOG=0;
+      # Wireless Power Management
+      # WIFI_PWR_ON_AC = "1";      # Balanced power saving on AC
+      # WIFI_PWR_ON_BAT = "5";     # Maximum power saving on battery
 
       #? Disable turbo boost on battery
       CPU_BOOST_ON_AC = "0";        # 0 = Disable turbo boost when on AC
       CPU_BOOST_ON_BAT = "0";       # 0 = Disable turbo boost when on battery
 
-      RUNTIME_PM_ON_AC = "on";
-      RUNTIME_PM_ON_BAT = "on";
+      RUNTIME_PM_ON_AC = "off";   # Enable Runtime PM on AC
+      RUNTIME_PM_ON_BAT = "auto";  # Enable Runtime PM on battery
 
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
-
-      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
-      # CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
       #? Restore configured charge thresholds when AC is unplugged
       TPACPI_ENABLE=1;
@@ -752,53 +734,42 @@ in{
       TPSMAPI_ENABLE=1;
       RESTORE_THRESHOLDS_ON_BAT=1;
 
-      #?Seconds laptop mode waits after the disk goes idle before syncing dirty cache blocks from RAM to disk again
-      DISK_IDLE_SECS_ON_AC=0;
-      DISK_IDLE_SECS_ON_BAT=2;
+      #? SATA Power Management
+      SATA_LINKPWR_ON_AC = "med_power_with_dipm";
+      SATA_LINKPWR_ON_BAT = "min_power";
 
-      #? Runtime Power Management for AHCI controllers and disks:
-      AHCI_RUNTIME_PM_ON_AC="on";
-      AHCI_RUNTIME_PM_ON_BAT="on";
+      #? Seconds laptop mode waits after the disk goes idle before syncing dirty cache blocks from RAM to disk again
+      DISK_IDLE_SECS_ON_AC="0";
+      DISK_IDLE_SECS_ON_BAT="2";
 
       #? Seconds of inactivity before disk/controller is suspended
-      AHCI_RUNTIME_PM_TIMEOUT=15;
+      AHCI_RUNTIME_PM_TIMEOUT="15";
+
+      #? Runtime Power Management for AHCI controllers and disks:
+      AHCI_RUNTIME_PM_ON_AC="off";
+      AHCI_RUNTIME_PM_ON_BAT="auto";
 
       #? PCI Express Active State Power Management (PCIe ASPM):
-      #   default, performance, powersave
       PCIE_ASPM_ON_AC="performance";
       PCIE_ASPM_ON_BAT="powersave";
 
-      #? Enable audio power saving for Intel HDA, AC97 devices (timeout in secs).
-      # A value of 0 disables, >=1 enables power saving.
-      SOUND_POWER_SAVE_ON_AC=0;
-      SOUND_POWER_SAVE_ON_BAT=1;
+      #? Enable audio power saving for Intel HDA, AC97 devices (timeout in secs), A value of 0 disables, >=1 enables power saving.
+      SOUND_POWER_SAVE_ON_AC="0";
+      SOUND_POWER_SAVE_ON_BAT="1";
 
-      # Power off optical drive in UltraBay/MediaBay: 0=disable, 1=enable.
-      # Drive can be powered on again by releasing (and reinserting) the eject lever
-      # or by pressing the disc eject button on newer models.
-      # Note: an UltraBay/MediaBay hard disk is never powered off.
-      BAY_POWEROFF_ON_AC=0;
-      BAY_POWEROFF_ON_BAT=1;
+      #? Power off optical drive in UltraBay/MediaBay: 0=disable, 1=enable.
+      BAY_POWEROFF_ON_AC="0";
+      BAY_POWEROFF_ON_BAT="1";
 
       RUNTIME_PM_ALL = "1";                # Enable runtime power management for all PCI(e) bus devices
       RUNTIME_PM_DRIVER_BLACKLIST="amdgpu nouveau nvidia radeon iwlwifi ";
       #RUNTIME_PM_BLACKLIST = "i2c_adapter:i2c-12 i2c_adapter:i2c-3 i2c_adapter:i2c-10 i2c_adapter:i2c-1 i2c_adapter:i2c-8 i2c_adapter:i2c-0 i2c_adapter:i2c-6 i2c_adapter:i2c-11 i2c_adapter:i2c-4 i2c_adapter:i2c-2 i2c_adapter:i2c-9 i2c_adapter:i2c-7 i2c_adapter:i2c-5 pci:v00008086d000015b8 pci:v00008086d00001575 pci:v00008086d000015b5 pci:v00008086d000015b1 pci:v00008086d000015b3 pci:v00008086d000015c8 pci:v00008086d00001903 pci:v00008086d0000156b pci:v00001002d00006821";
 
       ETHERNET_WOL_DISABLE = "Y";                         # Disable Wake-on-LAN
-      DEVICES_TO_DISABLE_ON_BAT = "ethernet";             # Disable ethernet on battery if you don't need it
-      DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "ethernet";  # Disable when not in use on battery
+      #DEVICES_TO_DISABLE_ON_BAT = "ethernet";            # Disable ethernet on battery if you don't need it
+      #DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "ethernet"; # Disable when not in use on battery
     };
   };
-
-  # powerManagement = {
-  #   enable = true;
-  #   powertop.enable = true;  # Optional but recommended for power management
-  #   scsiLinkPolicy = "med_power_with_dipm";  # Enables SATA power management
-  #  resumeCommands = ''
-  # ${pkgs.kmod}/bin/modprobe -r psmouse
-  # ${pkgs.kmod}/bin/modprobe psmouse
-  # '';
-  # };
 
   #--> Enable thermald (only necessary if on Intel CPUs)
     services.thermald.enable = true;
@@ -958,20 +929,20 @@ in{
           };
       };
       engines = [
-        { name = "google"; engine = "google"; disabled = false; }
-        { name = "wikipedia"; engine = "wikipedia"; disabled = false; }
-        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; }
-        { name = "bing"; engine = "bing"; disabled = false; }
-        { name = "brave"; engine = "brave"; disabled = false; }
+        { name = "bing"; engine = "bing"; disabled = false; timeout = 6.0; }
+        { name = "brave"; engine = "brave"; disabled = false; timeout = 6.0; }
+        { name = "google"; engine = "google"; disabled = false; timeout = 6.0; }
+        { name = "wikipedia"; engine = "wikipedia"; disabled = false; timeout = 6.0; }
+        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; timeout = 6.0; }
       ];
       outgoing = {
-        request_timeout = 6.0;
-        max_request_timeout = 8.0;
-        pool_connections = 10;  # Increased connection pool
-        pool_maxsize = 15;      # Maximum concurrent connections
+        request_timeout = 10.0;
+        max_request_timeout = 15.0;
+        pool_connections = 100;  # Increased connection pool
+        pool_maxsize = 20;       # Maximum concurrent connections
         dns_resolver = {
           enable = true;
-          use_system_resolver = false;
+          use_system_resolver = true;
           resolver_address = "127.0.0.1:53";
         };
       };
@@ -990,6 +961,7 @@ in{
       };
     };
   };
+
 
   #---> Colord
   services.colord.enable = true;
