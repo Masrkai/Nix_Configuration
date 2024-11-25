@@ -48,11 +48,13 @@
 
     kernelModules = [
                       "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
-                      #"vboxdrv" "vboxnetadp" "vboxnetflt"         # Virtual box
-                      "cpufreq_conservative"                       # CPU governor
-                      "acpi-cpufreq"                               # Enable ACPI CPU frequency driver
-                      "iwlwifi"                                    # for the wireless card
-                      "amdgpu"                                     #? For AMD graphics
+                      "hid_multitouch" "i2c_hid" "i2c_hid_acpi" "i2c_hid_core" "psmouse"              #? Common touchpad drivers
+                      #"vboxdrv" "vboxnetadp" "vboxnetflt"                                            #? Virtual box
+                      "cpufreq_conservative"                                                          #? CPU governor
+                      "acpi-cpufreq"                                                                  #? Enable ACPI CPU frequency driver
+                      "iwlwifi"                                                                       #? for the wireless card
+                      "amdgpu"                                                                        #? For AMD graphics
+
     ];
 
     #! Kernel parameters
@@ -61,10 +63,14 @@
                     "amdgpu.si_support=0" "amdgpu.cik_support=1" "amdgpu.dpm=1"   #* AMD GPU driver
                     "radeon.si_support=0" "radeon.cik_support=0"                  #! Disable Radeon GPU driver
 
-                    "pci_pm_async=0" "pcie_aspm=force"                            #? Power management
+                    "i8042.reset"                                                 #! Help with input device recovery after suspend
+
+                    "pci_pm_async=1" "pcie_aspm=force"                            #? Power management
+                    #"intel_idle.max_cstate=0"                                    #? C-state of CPU
                     "intel_pstate=disable"                                        #! Disable Intel P-state driver to use acpi-cpufreq
                     "splash"                                                      #* show logo of your system
 
+                    #"ahci.mobile_lpm_policy=1"                                   #* Enable medium power management for AHCI devices
                     "usbcore.autosuspend=1"                                       #* Enable USB autosuspend for power savings
 
                     "intel_iommu=sm_on" "iommu=pt"                                #* Intel IOMMU security
@@ -76,13 +82,17 @@
                     "slab_nomerge" "slub_debug=FZ"                                #! Disables the merging of slabs of similar sizes & Enables sanity checks (F) and redzoning (Z).
 
                     #? GPU powersaving
-                    #"i915.enable_dc=1"                                           #* Enable intel's iGPU deep power-saving states
+                    "i915.enable_dc=1"                                            #* Enable intel's iGPU deep power-saving states
                     "i915.enable_psr=1"                                           #* Enable intel's iGPU Panel Self Refresh for screens
                     "i915.enable_fbc=1"                                           #* Enable intel's iGPU Frame Buffer Compression
-                    #"i915.enable_rc6=1"                                          #* Enable intel's iGPU power-saving modes
+                    "i915.enable_rc6=1"                                           #* Enable intel's iGPU power-saving modes
 
                     "acpi_osi=Linux"                                              #* Ensuring best behavior
                     "nowatchdog"                                                  #* Disable watchdog //no use for it in my case
+                    #"libata.force=slumber"                                        #* SATA link powersaving
+
+                    "nospectre_v1" "nospectre_v2" "nospectre_v3"                 #! disable spectre mitigations as they don't affect 5th gen intel CPUs
+                    "nopti"                                                      #! Disable Downfall mitigation as it doesn't affect 5th gen intel CPUs
     ];
 
     #! Initial RAM disk configuration
@@ -100,14 +110,21 @@
       ];
     };
 
-    kernel.sysctl = {
-      "scaling_governor" = "conservative";
 
-      "vm.laptop_mode" = 1;                             # Enable Laptop mode for disk spindown
+
+    kernel.sysctl = {
       "kernel.nmi_watchdog" = 0;                        # Disable NMI watchdog for power saving
+      "scaling_governor" = "conservative";
+      "usbcore.autosuspend_delay_ms" = 2000;            # 2-second delay, balances power and responsiveness
+
+      #? Enable power management for audio devices:
+      "snd_hda_intel.power_save" = 1;
+      "snd_hda_intel.power_save_controller" = 1;
+
+      "vm.laptop_mode" = 2;                             # Enable Laptop mode for disk spindown
       "vm.dirty_bytes" = 16777216;                      # 16MB write threshold
       "vm.dirty_background_bytes" = 8388608;            # 8MB background threshold
-      "usbcore.autosuspend_delay_ms" = 2000;            # 2-second delay, balances power and responsiveness
+      "vm.dirty_writeback_centisecs" = 1500;            # Set to 15 seconds
 
       "vm.memory_failure_recovery" = 1;                 # enables the kernel's memory failure recovery mechanism
       "vm.memory_failure_early_kill" = 0;               # If a process is using memory pages that are failing, this parameter makes the kernel kill that process early
