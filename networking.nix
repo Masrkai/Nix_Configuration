@@ -1,24 +1,24 @@
-{ lib, ... }:
+{ config, lib, pkgs, modulesPath, ... }:
 
 #*#########################
 #* Networking-Configration:
 #*#########################
 {
   boot.kernel.sysctl = {
-    "net.ipv4.ip_forward" = 1;                           #? For Hotspot
+    "net.ipv4.ip_forward" = lib.mkDefault 1;                           #? For Hotspot
 
-    "net.ipv4.tcp_mtu_probing" = 1;                      #? MTU Probing
-    "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;        #? Set the initial MTU probe size (in bytes)
+    "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
+    "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
 
-    "net.ipv4.tcp_timestamps" = lib.mkDefault 1;         #? TCP timestamps
-    "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;  #? limit on the maximum segment size
+    "net.ipv4.tcp_timestamps" = lib.mkDefault 1;                       #? TCP timestamps
+    "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;                #? limit on the maximum segment size
 
     #? Enable BBR congestion control algorithm
-    "net.core.default_qdisc" = "fq";
-    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.default_qdisc" = lib.mkDefault "fq";
+    "net.ipv4.tcp_congestion_control" = lib.mkDefault "bbr";
   };
 
-  networking = lib.mkForce {
+  networking = {
       useDHCP = false;
       hostName = "NixOS";                        #* Defining hostname.
       enableIPv6 = false;                        #* Disabling IPV6 to decrease attack surface for good
@@ -69,16 +69,21 @@
       logRefusedConnections = true;
       };
 
-      networkmanager = {
+      networkmanager = lib.mkDefault {
       dns = "none";  #-> Disable NetworkManager's DNS management
       enable = true;
       logLevel = "INFO";
       ethernet.macAddress = "random";  #? Enable random MAC during Ethernet_Connection
+
+      wifi.powersave = true;
       wifi.scanRandMacAddress = true;  #? Enable random MAC during scanning
+
       settings = {
         global = {
+        };
+        wifi= {
           #! Enable random MAC address for scanning (prevents exposure during scans)
-          "wifi.scan-rand-mac-address" = true;
+          "wifi.scan-rand-mac-address" = "2";
         };
         connection = {
           "connection.llmnr" = 2;  # Disable LLMNR
@@ -89,13 +94,14 @@
         environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
         profiles = {
 #?//////////////////////////////////////////////////////////////////////////////   Networks
-            "WiredConnection" = {
+            "Ethernet" = {
                 connection = {
-                id = "WiredConnection";
+                id = "Ethernet";
                 type = "ethernet";
                 permissions = "";
                 interface-name = "eth0";              # Specify the interface name
                 autoconnect = true;
+                permanent = true;  # This makes the profile persistent
                 };
                 ethernet = {
                   mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
@@ -106,41 +112,39 @@
                   ignore-auto-dns = true;  #? Ignore DNS provided by DHCP
                 };
                 ipv6 = {
-                  method = "ignore";       #? Disable IPv6
+                  method = "disabled";      #? Disable IPv6
                 };
             };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-          Nix_Hotspot = {
+          "Nix_Hotspot" = {
             connection = {
-              id = "Hotspot";
+              id = "Nix_Hotspot";
               type = "wifi";
               autoconnect = false;
-              #interface-name = "wlan0";
-              permissions = "";  # Empty string means only root can modify
+              permissions = "";
             };
             wifi = {
               mode = "ap";
-              ssid = "Nixed";
-              hidden = false;  # Hide SSID for better security
-              band = "bg";    # 2.4GHz band for better range
-              powersave = 2;  # Enable power saving
+              ssid = "Nix_Hotspot";
+              hidden = true;  # Changed to true for better security
+              band = "bg";
+              powersave = 2;
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
               psk = "\${AFafAfaf_psk}";
-              group = "ccmp";        # Use only strong encryption
-              pairwise = "ccmp";     # Use only strong encryption
-              proto = "rsn";         # Use WPA2/RSN only
-              pmf = 2;              # Enable Protected Management Frames
+              group = "ccmp";
+              pairwise = "ccmp";
+              proto = "rsn";
+              pmf = 2;
             };
             ipv4 = {
-              method = "shared";
-              dns = "127.0.0.1";     # Use local DNS server
-              dns-search = "";       # Disable DNS search
-              ignore-auto-dns = true;
+              method = "shared";         # Use shared mode for hotspot
+              # dns = "127.0.0.1";         # Use local Stubby instance
+              dns-search = "";           # Disable DNS search
+              ignore-auto-dns = true;    # Ignore DNS from DHCP
             };
             ipv6.method = "disabled";
-            #proxy = {};
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           AfafAfaf = {
@@ -300,7 +304,7 @@
               autoconnect-priority = 2;  #! Higher means more priority priority
             };
             wifi = {
-              hidden = true;            #! Specify if the network is hidden
+              hidden = false;            #! Specify if the network is hidden
               ssid = "Study";
               mode = "infrastructure";
               bssid = "A4:B2:39:9C:EC:C0";
@@ -321,7 +325,33 @@
             };
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+          "GU-WiFi" = {
+            connection = {
+              id = "GU-WiFi";
+              type = "wifi";
+              permissions = "";
+              autoconnect = false;
+              autoconnect-priority = 2;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = false;            #! Specify if the network is hidden
+              ssid = "GU-WiFi";
+              mode = "infrastructure";
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+            };
+            wifi-security = {
+              key-mgmt = "none";  # Changed from "wpa-psk"
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           # You can add more profiles here following the same structure
         };
       };
@@ -334,6 +364,7 @@
     enable = true;
     settings = {
     listen_addresses = [ "127.0.0.1@53"
+                        #"172.20.0.1@53"       #? Listen on the default NetworkManager shared subnet
                         #"0::1@5353"           #! ::1 cause error, use 0::1 instead
                        ];
     idle_timeout = 10000;
@@ -404,7 +435,7 @@
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = "1min";   # First run 1 minute after boot
-      OnUnitActiveSec = "5min";  # Run every 5 minutes
+      OnUnitActiveSec = "1min";  # Run every 5 minutes
     };
   };
 
