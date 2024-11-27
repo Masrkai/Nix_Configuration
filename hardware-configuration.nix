@@ -20,6 +20,8 @@
     };
   };
 
+  #services.acpid.enable = true;
+
 
   boot = {
     consoleLogLevel = 3;
@@ -48,7 +50,7 @@
 
     kernelModules = [
                       "kvm-intel" "uinput" "vfio" "vfio_iommu_type1" "vfio_pci" "hp_wmi" "drivetemp"
-                      "hid_multitouch" "i2c_hid" "i2c_hid_acpi" "i2c_hid_core" "psmouse"              #? Common touchpad drivers
+                      "hid_multitouch" "psmouse"                                                      #? Common touchpad drivers
                       #"vboxdrv" "vboxnetadp" "vboxnetflt"                                            #? Virtual box
                       "cpufreq_conservative"                                                          #? CPU governor
                       "acpi-cpufreq"                                                                  #? Enable ACPI CPU frequency driver
@@ -63,7 +65,7 @@
                     "amdgpu.si_support=0" "amdgpu.cik_support=1" "amdgpu.dpm=1"   #* AMD GPU driver
                     "radeon.si_support=0" "radeon.cik_support=0"                  #! Disable Radeon GPU driver
 
-                    "i8042.reset"                                                 #! Help with input device recovery after suspend
+                    #"i8042.reset"                                                #! Help with input device recovery after suspend
 
                     "pci_pm_async=1" "pcie_aspm=force"                            #? Power management
                     #"intel_idle.max_cstate=0"                                    #? C-state of CPU
@@ -73,7 +75,7 @@
                     #"ahci.mobile_lpm_policy=1"                                   #* Enable medium power management for AHCI devices
                     "usbcore.autosuspend=1"                                       #* Enable USB autosuspend for power savings
 
-                    "intel_iommu=sm_on" "iommu=pt"                                #* Intel IOMMU security
+                    "intel_iommu=on"                                              #* Intel IOMMU
 
                     #! Memory security
                     "page_alloc.shuffle=1"                                        #* Helps detect memory issues earlier + Major security Gain
