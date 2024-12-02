@@ -10,7 +10,7 @@ in
 #--> $BASH
 programs.bash = {
   enableLsColors = true;
-  enableCompletion = true;
+  completion.enable = true;
   promptInit = '' PS1='\[\e[36;1m\]>>>>>>Hi Masrkai!\[\e[0m\] \[\e[1m\]\w\n\[\e[38;5;160m\]\t\[\e[39m\][\[\e[36m\]\u\[\e[38;5;240m\]_\[\e[38;5;208m\]\H\[\e[39m\]]\$\[\e[0m\] ' '';
   interactiveShellInit =  /* bash */ ''
 
