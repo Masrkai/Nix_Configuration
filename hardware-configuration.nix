@@ -18,10 +18,16 @@
           DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
         };
     };
+    services.touchpad-restart = {
+    description = "Restart touchpad driver after suspend";
+    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+      script = ''
+        ${pkgs.kmod}/bin/modprobe -r psmouse
+        ${pkgs.kmod}/bin/modprobe psmouse
+      '';
+    };
   };
-
-  #services.acpid.enable = true;
-
 
   boot = {
     consoleLogLevel = 3;
@@ -66,6 +72,7 @@
                     "radeon.si_support=0" "radeon.cik_support=0"                  #! Disable Radeon GPU driver
 
                     #"i8042.reset"                                                #! Help with input device recovery after suspend
+                    "threadirqs"                                                  #? Improves IRQ handling for real-time tasks
 
                     "pci_pm_async=1" "pcie_aspm=force"                            #? Power management
                     #"intel_idle.max_cstate=0"                                    #? C-state of CPU
@@ -84,10 +91,10 @@
                     "slab_nomerge" "slub_debug=FZ"                                #! Disables the merging of slabs of similar sizes & Enables sanity checks (F) and redzoning (Z).
 
                     #? GPU powersaving
-                    "i915.enable_dc=1"                                            #* Enable intel's iGPU deep power-saving states
-                    "i915.enable_psr=1"                                           #* Enable intel's iGPU Panel Self Refresh for screens
-                    "i915.enable_fbc=1"                                           #* Enable intel's iGPU Frame Buffer Compression
-                    "i915.enable_rc6=1"                                           #* Enable intel's iGPU power-saving modes
+                    # "i915.enable_dc=1"                                            #* Enable intel's iGPU deep power-saving states
+                    # "i915.enable_psr=1"                                           #* Enable intel's iGPU Panel Self Refresh for screens
+                    # "i915.enable_fbc=1"                                           #* Enable intel's iGPU Frame Buffer Compression
+                    # "i915.enable_rc6=1"                                           #* Enable intel's iGPU power-saving modes
 
                     "acpi_osi=Linux"                                              #* Ensuring best behavior
                     "nowatchdog"                                                  #* Disable watchdog //no use for it in my case
