@@ -360,3 +360,25 @@
       #   nft flush chain ip nat dns_redirect 2>/dev/null || true
       #   nft delete chain ip nat dns_redirect 2>/dev/null || true
       # '';
+
+
+
+  # # Echo Cancellation and Noise Suppression for Microphone
+  # hardware.pipewire = {
+  #   spaPlugins = [ "support" "aec" "dsp" "webrtc-audio-processing" ]; # Enable advanced effects
+  # };
+
+    # services.system76-scheduler.settings.cfsProfiles.enable = true;
+
+  # programs.noisetorch.enable = true;
+
+  # #--> Enable sound with pipewire.
+  #   sound.enable = true;
+  #   security.rtkit.enable = true;
+  #   hardware.pulseaudio.enable = false;
+
+  #   services.pipewire = {
+  #     enable = true;
+  #     alsa.enable = true;
+  #     pulse.enable = true;
+  #   };
