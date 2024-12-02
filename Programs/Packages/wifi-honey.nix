@@ -1,4 +1,4 @@
-{ stdenv, lib, makeWrapper, screen, iproute, aircrack-ng, procps, kmod, utillinux, wirelesstools, fetchFromGitLab }:
+{ stdenv, lib, makeWrapper, screen, iproute2, aircrack-ng, procps, kmod, utillinux, wirelesstools, fetchFromGitLab }:
 
 stdenv.mkDerivation {
   name = "wifi-honey";
@@ -16,7 +16,7 @@ stdenv.mkDerivation {
     mkdir -p $out/bin
     sed 's;screen_wifi_honey.rc;/tmp/screen_wifi_honey.rc;' wifi_honey.sh | sed "s;wifi_honey_template.rc;$out/wifi_honey_template.rc;" > $out/wifi_honey.sh
     chmod +x $out/wifi_honey.sh
-    makeWrapper $out/wifi_honey.sh $out/bin/wifi-honey --set PATH "$PATH:${lib.makeBinPath [ aircrack-ng wirelesstools screen iproute procps kmod utillinux]}"
+    makeWrapper $out/wifi_honey.sh $out/bin/wifi-honey --set PATH "$PATH:${lib.makeBinPath [ aircrack-ng wirelesstools screen iproute2 procps kmod utillinux]}"
     cp wifi_honey_template.rc $out/
   '';
 }
