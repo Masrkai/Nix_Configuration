@@ -113,10 +113,9 @@ in{
 #!###############
 
   #! GPU drivers and Vulkan support
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    enable32Bit = true;
     extraPackages = with pkgs; [
       mesa
       vkd3d
@@ -127,8 +126,13 @@ in{
       vulkan-tools
       vulkan-loader
       intel-media-driver
-      rocm-opencl-icd
-      rocm-opencl-runtime
+
+      rocmPackages.clr.icd
+      rocmPackages.rocminfo
+      rocmPackages.rocm-smi
+
+      # rocm-opencl-icd
+      # rocm-opencl-runtime
     ];
   };
 
@@ -189,7 +193,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" "video" "audio" ];
   };
 
     services.journald = {
@@ -221,8 +225,8 @@ in{
       noto-fonts
       dejavu_fonts
       liberation_ttf
-      noto-fonts-cjk
       noto-fonts-emoji
+      noto-fonts-cjk-sans
       (nerdfonts.override { fonts = [ "Iosevka" ]; })
       ];
 
@@ -356,7 +360,9 @@ in{
         pydub
         torch
         librosa
+        streamlit
         soundfile
+        transformers
 
         #-> Juniper/jupter
         notebook
@@ -597,11 +603,11 @@ in{
   yt-dlp
   logseq
   haruna
+  webcord
   jackett
   powertop
   fastfetch
   syncthing
-  noisetorch
   qbittorrent
   authenticator
   mission-center
@@ -612,6 +618,11 @@ in{
   xz
   p7zip
   tarlz
+
+  #-> Audio
+  pamixer
+  alsa-tools
+  pavucontrol
 
   #-> KDE Specific
   kdePackages.kgamma
@@ -628,7 +639,7 @@ in{
   libreoffice-qt
   thunderbird-bin
   gimp-with-plugins
-  gnome.gnome-disk-utility
+  gnome-disk-utility
 
   #Gaming
   heroic
@@ -777,9 +788,6 @@ in{
   #--> Disabled Power-Profiles for TLP to take action.
     services.power-profiles-daemon.enable = false;
 
-  #--> Better scheduling for CPU cycles
-    services.system76-scheduler.settings.cfsProfiles.enable = true;
-
   #?########################
   #? Applications services:
   #?########################
@@ -803,9 +811,6 @@ in{
       enable = true;
       package =  pkgs.kdePackages.kdeconnect-kde;
     };
-
-  #--> NoiseTorch
-    programs.noisetorch.enable = true;
 
   #--> mlocate // "updatedb & locate"
     services.locate = {
@@ -844,6 +849,15 @@ in{
     services.spice-vdagentd.enable = false;
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
+
+
+    services.ollama = {
+        enable = true;
+        # home   = "/home/masrkai/Ollama/Home";
+        # models = "/home/masrkai/Ollama/Models";
+    };
+
+    services.nextjs-ollama-llm-ui.enable = true;
 
 
   # Ensure USB storage is not automatically mounted
@@ -887,6 +901,10 @@ in{
               };
           };
         type = "sendonly"; # Make folder send-only
+        };
+        "Music" = {
+          path = "~/Music/";
+          devices = [ "A71" ];
         };
       };
     };
@@ -976,16 +994,31 @@ in{
   #---> Enable CUPS to print documents.
     services.printing.enable = true;
 
-  #--> Enable sound with pipewire.
-    sound.enable = true;
-    security.rtkit.enable = true;
-    hardware.pulseaudio.enable = false;
+  #--> NoiseTorch: Real-Time Microphone Noise Suppression
+  programs.noisetorch.enable = true;
 
-    services.pipewire = {
-      enable = true;
-      alsa.enable = true;
-      pulse.enable = true;
-    };
+  #--> Better scheduling for better CPU cycles & audio performance
+  services.system76-scheduler = {
+    enable = true;
+    settings.cfsProfiles.enable = true; #? Enable CPU scheduling improvements for Audio
+  };
+
+  security.rtkit.enable = true;         #? Allow real-time priorities for audio tasks
+
+  # PipeWire Setup
+  services.pipewire = {
+    enable = true;
+    audio.enable = true;         # Makes PipeWire the primary sound server
+
+    wireplumber.enable =true;    # WirePlumber: Session Manager for PipeWire
+
+    #! compatibility / integration
+    alsa.enable = true;          # ALSA integration
+    pulse.enable = true;         # PulseAudio compatibility
+    jack.enable = true;          # JACK support for advanced audio workflows
+  };
+
+
 
       #->Kitty terminal
       environment.etc."xdg/kitty/kitty.conf".text = ''
@@ -1048,6 +1081,6 @@ in{
 #!###############
 #! NixOS Version:
 #!###############
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
 }
 
