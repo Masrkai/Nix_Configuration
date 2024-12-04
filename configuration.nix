@@ -127,6 +127,8 @@ in{
       vulkan-loader
       intel-media-driver
 
+
+      rocmPackages.clr
       rocmPackages.clr.icd
       rocmPackages.rocminfo
       rocmPackages.rocm-smi
@@ -143,6 +145,7 @@ in{
       LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
       LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
       MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
+
 
       CPLUS_INCLUDE_PATH = let
         includeDirs = [
@@ -166,6 +169,7 @@ in{
 
       #? Add Vulkan ICDs for Graphics
       AMD_VULKAN_ICD = "RADV";
+      ROC_ENABLE_PRE_VEGA = "1";
       VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
      };
 
