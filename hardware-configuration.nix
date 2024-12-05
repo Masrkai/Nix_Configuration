@@ -181,6 +181,7 @@ services.fstrim = {
       #! Enable bluetooth
       bluetooth = {
         enable = true;
+        package = pkgs.bluez;
         powerOnBoot = false;
       };
    };

@@ -98,6 +98,7 @@ in{
     libsForQt5.kwallet-pam
     libsForQt5.kwalletmanager
 
+    kdePackages.powerdevil
     kdePackages.kdeconnect-kde
     libsForQt5.qt5.qtvirtualkeyboard
     ];
@@ -197,7 +198,7 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" "video" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" "video" "audio" "power"];
   };
 
     services.journald = {
@@ -685,7 +686,7 @@ in{
   asleap
   openssl
   linssid
-  dnsmasq
+  # dnsmasq
   tcpdump
   iproute2
   arp-scan
