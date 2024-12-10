@@ -22,3 +22,7 @@
 
 # Python Scripts
 *.py linguist-detectable=true
+
+# CSV Data Files
+*.csv linguist-detectable=true
+*.csv linguist-language=CSV
