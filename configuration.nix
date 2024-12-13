@@ -198,7 +198,15 @@ in{
   users.users.masrkai = {
     isNormalUser = true;
     description = "Masrkai";
-    extraGroups = [ "networkmanager" "wheel" "qbittorrent" "jackett" "wireshark" "libvirtd" "kvm" "ubridge" "bluetooth" "video" "audio" "power"];
+    extraGroups = [
+                    "networkmanager" "bluetooth"
+                    "wheel"
+                    "qbittorrent" "jackett"
+                    "wireshark"
+                    "libvirtd" "kvm" "ubridge"
+                    "video" "audio" "power"
+                    "ollama"
+                  ];
   };
 
     services.journald = {
@@ -320,6 +328,7 @@ in{
   #gparted #!has issues
   glxinfo
   git-lfs
+  pciutils
   hw-probe
   unrar-wrapper
   rustdesk-flutter
@@ -496,7 +505,7 @@ in{
                             ms-vscode-remote.remote-ssh
                             github.vscode-pull-request-github
     ]
-++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+    ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
                                                         {
                                                           name = "remote-ssh-edit";
                                                           publisher = "ms-vscode-remote";
@@ -608,9 +617,11 @@ in{
   yt-dlp
   logseq
   haruna
+  amberol
   webcord
   jackett
   powertop
+  keepassxc
   fastfetch
   syncthing
   qbittorrent
@@ -632,19 +643,17 @@ in{
   #-> KDE Specific
   kdePackages.kgamma
   kdePackages.kscreen
+  kdePackages.filelight
   kdePackages.colord-kde
   kdePackages.kscreenlocker
-  #kdePackages.qtvirtualkeyboard
-
-  kdePackages.filelight
   kdePackages.plasma-browser-integration
 
   #Productivity
-  blender-hip
-  libreoffice-qt
+  blender
   thunderbird-bin
   gimp-with-plugins
   gnome-disk-utility
+  libreoffice-qt6-fresh
 
   #Gaming
   heroic
@@ -857,12 +866,16 @@ in{
 
 
     services.ollama = {
-        enable = true;
-        # home   = "/home/masrkai/Ollama/Home";
-        # models = "/home/masrkai/Ollama/Models";
+        enable = false;
+
+        user = null;
+        group = "ollama";
+
+        home   = "/home/masrkai/";
+        models = "/home/masrkai/Ollama/";
     };
 
-    services.nextjs-ollama-llm-ui.enable = true;
+    services.nextjs-ollama-llm-ui.enable = false;
 
 
   # Ensure USB storage is not automatically mounted
@@ -885,6 +898,7 @@ in{
         "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
         };
       folders = {
+
         "College_shit" = {
           path = "~/Documents/College/Current/";
           devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
@@ -896,6 +910,8 @@ in{
           };
         type = "sendonly"; # Make folder send-only
         };
+
+
         "Forbidden_Knowledge" = {
           path = "~/Documents/Books/";
           devices = [ "A71" ];
@@ -907,10 +923,29 @@ in{
           };
         type = "sendonly"; # Make folder send-only
         };
+
+
+
         "Music" = {
           path = "~/Music/";
           devices = [ "A71" ];
+          ignorePerms = false;
+          # Add ignore patterns here
+          ignorePaths = [
+          # Common patterns
+          "*.tmp"
+          "*.temp"
+          ".git"
+          "node_modules"
+          #? Music crap
+
+          "/Telegram"
+          ".thumbnails"
+          "/.thumbnails"
+          ];
         };
+
+
       };
     };
   };
