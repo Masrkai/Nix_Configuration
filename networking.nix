@@ -7,8 +7,11 @@
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = lib.mkDefault 1;                           #? For Hotspot
 
-    "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
     "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
+    "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
+
+    "net.ipv4.tcp_rmem" = "4096 87380 12582912";
+    "net.ipv4.tcp_wmem" = "4096 65536 12582912";
 
     "net.ipv4.tcp_timestamps" = lib.mkDefault 1;                       #? TCP timestamps
     "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;                #? limit on the maximum segment size
