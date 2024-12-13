@@ -18,14 +18,110 @@
           DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
         };
     };
-    services.touchpad-restart = {
-    description = "Restart touchpad driver after suspend";
-    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
-    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
-      script = ''
-        ${pkgs.kmod}/bin/modprobe -r psmouse
-        ${pkgs.kmod}/bin/modprobe psmouse
-      '';
+
+    services = {
+      touchpad-restart = {
+        description = "Restart touchpad drivers after suspend";
+        after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        script = ''
+          # Unload drivers
+          ${pkgs.kmod}/bin/modprobe -r psmouse
+          ${pkgs.kmod}/bin/modprobe -r rmi_smbus
+
+          # Small delay to ensure complete unload
+          sleep 1
+
+          # Reload drivers in correct order
+          ${pkgs.kmod}/bin/modprobe rmi_smbus
+          ${pkgs.kmod}/bin/modprobe psmouse
+        '';
+      };
+
+      # Example of a systemd service override for NetworkManager
+      NetworkManager = {
+        serviceConfig = {
+            # Isolation fundamentals - creating a secure execution environment
+            PrivateTmp = true;
+            ProtectHome = true;
+            NoNewPrivileges = true;
+            ProtectSystem = "strict";
+
+            # Enhanced process isolation
+            PrivateUsers = true;        # Isolate user namespace
+            ProtectClock = true;        # Prevent clock manipulation
+            ProtectHostname = true;     # Prevent hostname changes
+            LockPersonality = true;     # Lock down ABI personality
+            ProcSubset = "pid";         # Restrict /proc visibility
+            ProtectProc = "invisible";  # Further /proc hardening
+
+            # Device and kernel protection layers
+            ProtectKernelLogs = true;
+            ProtectKernelModules = true;
+            ProtectControlGroups = true;
+            ProtectKernelTunables = true;
+
+            # Strategic exception for network devices while maintaining isolation
+            PrivateDevices = false;  # NetworkManager needs direct device access
+
+            # Capability bounding set - principle of least privilege in action
+            CapabilityBoundingSet = [
+                "CAP_NET_RAW"          # Required for ping, DHCP, and network diagnostics
+                "CAP_NET_ADMIN"        # Essential for interface configuration
+                "CAP_SYS_MODULE"       # Required for loading network drivers
+                "CAP_AUDIT_WRITE"      # For security logging
+                "CAP_NET_BIND_SERVICE" # Needed for privileged ports
+            ];
+
+            # Network protocol stack access control
+            RestrictAddressFamilies = [
+                "AF_UNIX"      # Local socket communication
+                "AF_INET"      # IPv4 support
+                "AF_INET6"     # IPv6 support
+                "AF_PACKET"    # Raw packet manipulation
+                "AF_NETLINK"   # Kernel networking communications
+                "AF_BLUETOOTH" # Bluetooth support
+            ];
+
+            # Refined system call filter - allowing necessary privileged operations
+            SystemCallFilter = [
+                "@process"         # Process management
+                "@network-io"      # Network operations
+                "@privileged"      # Required privileged operations
+                "@file-system"     # Filesystem operations
+                "@system-service"  # Base system service calls
+
+                "~@swap"           # Block swap operations
+                "~@clock"          # Block unnecessary clock manipulation
+                "~@debug"          # Block debugging
+                "~@mount"          # Block mount operations
+                "~@raw-io"         # Block raw I/O
+                "~@reboot"         # Block reboot calls
+                "~@obsolete"       # Block deprecated calls
+                "~@resources"      # Block resource management
+                "~@cpu-emulation"  # Block CPU emulation
+            ];
+
+            # Network security controls
+            IPAddressDeny = "any";      # Default deny
+            IPAddressAllow = [          # Allow only necessary
+                "localhost"
+                "link-local"
+                "multicast"
+            ];
+
+            # Additional security hardening
+            RestrictRealtime = true;             # Prevent scheduling interference
+            RestrictSUIDSGID = true;             # Prevent privilege escalation
+            RestrictNamespaces = "~user ~mnt ~cgroup ~ipc ~uts";  # Allow only network/pid namespaces
+
+            MemoryDenyWriteExecute = true;       # Prevent code injection
+            SystemCallArchitectures = "native";  # Prevent architecture-based attacks
+
+            # File system and execution protections
+            UMask = "0027";            # Restrictive file permissions
+        };
+      };
     };
   };
 
@@ -120,7 +216,6 @@
     };
 
 
-
     kernel.sysctl = {
       "kernel.nmi_watchdog" = 0;                        # Disable NMI watchdog for power saving
       "scaling_governor" = "conservative";
@@ -141,17 +236,18 @@
 
   };
 
-  fileSystems."/" = {
+fileSystems."/" = {
   device = "/dev/disk/by-uuid/c2973410-4dd5-4c19-a859-e2e1db7ec9b2";
   fsType = "btrfs";
   options = [
-    "subvol=@"
+    "ssd"               # Optimize for SSD
     "noatime"
+    "subvol=@"
     "nodiratime"
+    "commit=120"        # Longer commit interval for better performance
     "discard=async"     # Instead of just "discard"
     "space_cache=v2"    # Better space cache
     "compress=zstd:1"   # Efficient compression
-    "ssd"               # Optimize for SSD
     #"autodefrag"       #! Automatic defragmentation, why? it can increase write amplification on SSDs. If you aren't frequently modifying large files, you can disable this.
   ];
 };
@@ -169,7 +265,13 @@ services.fstrim = {
 };
 
   swapDevices = [ ];
-  zramSwap.enable = false;  # disable zram swap
+  zramSwap = {
+  enable = true;
+    priority = 100;                            # Higher priority than disk swap
+    swapDevices = 2;                           # Adjust based on number of CPU cores
+    algorithm = "zstd";                        # Efficient compression
+    memoryPercent = 50;                        # Use up to 50% of RAM
+  };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
@@ -178,13 +280,34 @@ services.fstrim = {
       cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
       enableAllFirmware = true;
 
+      acpilight.enable = true;
+
       #! Enable bluetooth
       bluetooth = {
         enable = true;
         package = pkgs.bluez;
         powerOnBoot = false;
+
+        settings = {
+        # Enforce stronger encryption and authentication
+        # ControllerMode = "dual";            # Support both BR/EDR and LE
+        # Privacy = "device";                 # Device-specific privacy
+          General = {
+            Privacy = true;                    # Enable privacy features
+            Experimental = false;              # Enable experimental security features
+            RandomAddress = true;              # Use random MAC addresses
+            FastConnectable = false;           # Disable fast connectable mode for better security
+            JustWorksRepairing = "always";     # Enforce secure pairing
+          };
+          Policy = {
+            AutoEnable = false;                # Prevent automatic enabling of controllers
+            ReconnectAttempts = 3;             # Limit reconnection attempts
+            ReconnectIntervals = "1,2,4,8,16"; # Progressive backoff for reconnections
+          };
+        };
       };
    };
+   services.acpid.enable = true;
    services.blueman.enable = false;  # Disable Blueman
 
 }
