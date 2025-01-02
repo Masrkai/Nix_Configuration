@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ lib, ... }:
 
 #*#########################
 #* Networking-Configration:

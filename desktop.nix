@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ lib, pkgs, ... }:
 {
   # Enable KDE Plasma 6 Desktop Environment
   services.desktopManager.plasma6 = {
@@ -29,7 +29,6 @@
 
     };
   };
-
 
   # Enable Wayland-specific services
   programs.xwayland.enable = true;

@@ -83,7 +83,6 @@ in
       LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
       LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
       MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
-      # localBinInPath = true;
 
       CPLUS_INCLUDE_PATH = let
         includeDirs = [
@@ -101,16 +100,6 @@ in
         ];
       in builtins.concatStringsSep ":" libDirs;
      };
-
-      # sessionVariables = {
-      #   NIXOS_OZONE_WL = "1";
-      #   XDG_SESSION_TYPE = "wayland";
-      #   XDG_RUNTIME_DIR = "/run/user/$UID";
-
-      #   #QT_QPA_PLATFORM = "wayland";
-      #   GDK_BACKEND = "wayland";
-      #   WLR_NO_HARDWARE_CURSORS = "1";
-      # };
     };
 
   programs.less = {
