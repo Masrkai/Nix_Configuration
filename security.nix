@@ -48,7 +48,7 @@ with lib;
       };
       #?> Restrict kernel log p2
       consoleLogLevel = mkOverride 500 3;
-};
+ };
 
 
   boot.blacklistedKernelModules = mkForce [

@@ -118,6 +118,27 @@
                   method = "disabled";      #? Disable IPv6
                 };
             };
+            "USB" = {
+                connection = {
+                id = "USB";
+                type = "ethernet";
+                permissions = "";
+                interface-name = "eth1";              # Specify the interface name
+                autoconnect = true;
+                permanent = true;  # This makes the profile persistent
+                };
+                ethernet = {
+                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                };
+                ipv4 = {
+                  method = "auto";         #? Use DHCP for IPv4
+                  dns = "127.0.0.1";       #? Local DNS resolver
+                  ignore-auto-dns = true;  #? Ignore DNS provided by DHCP
+                };
+                ipv6 = {
+                  method = "disabled";      #? Disable IPv6
+                };
+            };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           "Nix_Hotspot" = {
             connection = {
@@ -266,6 +287,36 @@
             };
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "Custom" = {
+            connection = {
+              id = "Custom";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 4;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = true;            #! Specify if the network is hidden
+              ssid = "Hello";
+              mode = "infrastructure";
+              mac-address-randomization = 0;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+              cloned-mac-address= "\${Hello_device_mac}";
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = "\${Hello_psk}";
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           "RN-Meemoo" = {
             connection = {
               id = "RN-Meemoo";
@@ -328,6 +379,35 @@
             };
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "GU-Dorms" = {
+            connection = {
+              id = "GU-Dorms";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 2;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = false;            #! Specify if the network is hidden
+              ssid = "GU-Dorms";
+              mode = "infrastructure";
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = "\${GU_DORMS_PSK}";
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           "GU-WiFi" = {
             connection = {
               id = "GU-WiFi";
@@ -367,6 +447,7 @@
     enable = true;
     settings = {
     listen_addresses = [ "127.0.0.1@53"
+                         "0.0.0.0@53"
                         #"172.20.0.1@53"       #? Listen on the default NetworkManager shared subnet
                         #"0::1@5353"           #! ::1 cause error, use 0::1 instead
                        ];

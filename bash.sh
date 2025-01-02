@@ -160,7 +160,59 @@ fi
 }
 IFS=$SAVEIFS
 
+#--------------------------------------------------------------------------------------------------! Compression function
+SAVEIFS=$IFS
+IFS="$(printf '\n\t')"
 
+function compress {
+    if [ $# -lt 2 ]; then
+        echo "Usage: compress <compression_level> <path/file_name> [path/file_name_2] [path/file_name_3]"
+        echo "Compression level: 1-9 for zip/gz/bz2, 0-22 for zst, 0-9 for 7z"
+        return 1
+    fi
+
+    level=$1
+    shift
+
+    for n in "$@"; do
+        if [ ! -f "$n" ] && [ ! -d "$n" ]; then
+            echo "'$n' - file/directory doesn't exist"
+            continue
+        fi
+
+        case "$level" in
+            ''|*[!0-9]*) 
+                echo "Invalid compression level. Must be a number."
+                return 1
+                ;;
+        esac
+
+        filename=$(basename "$n")
+        
+        # Adjust compression levels for different formats
+        zip_level=$((level > 9 ? 9 : level))
+        zst_level=$((level > 22 ? 22 : level))
+        sz_level=$((level > 9 ? 9 : level))
+
+        echo "Compressing '$n'..."
+        
+        # For maximum compression:
+        # zip: -9 with deflate64
+        # 7z: -mx=9 -m0=lzma2
+        # zstd: -19 --ultra
+        if [ "$level" -ge 9 ]; then
+            7z a -t7z -m0=lzma2 -mx="$sz_level" "${filename}.7z" "$n"
+        elif [ "$level" -ge 7 ]; then
+            zip -"$zip_level" -Z deflate64 "${filename}.zip" "$n"
+        elif [ "$level" -ge 5 ]; then
+            tar cf - "$n" | zstd -"$zst_level" > "${filename}.tar.zst"
+        else
+            zip -"$zip_level" "${filename}.zip" "$n"
+        fi
+    done
+}
+
+IFS=$SAVEIFS
 
 #------------------------------------------------------------------------------------------! Journald errors:
 function journalctle() {

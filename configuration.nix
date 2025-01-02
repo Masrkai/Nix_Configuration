@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, modulesPath, ... }:
 
 let
   unstable = import <unstable> {config.allowUnfree = true;};
@@ -23,28 +23,31 @@ let
 
   };
 
-in{
-    imports = [ # Include the results of the hardware scan.
+in
+
+{
+    imports = [
       ./hardware-configuration.nix
-      #./Programs/custom/fan2go.nix
+      ./virtualisation.nix
       ./networking.nix
+      ./graphics.nix
       ./security.nix
+      ./systemd.nix
+      ./desktop.nix
       ./bash.nix
     ];
 
-  #! Experimental Features
-  nix.settings.experimental-features = [ "nix-command" ];
 
   time.timeZone = "Africa/Cairo";   #? Set your time zone.
   i18n={
     #? Select internationalisation properties.
     defaultLocale = "en_US.UTF-8";
       supportedLocales = [
-      "en_US.UTF-8/UTF-8"
       "C.UTF-8/UTF-8"
+      "en_US.UTF-8/UTF-8"
       "ru_RU.UTF-8/UTF-8"
       "ar_EG.UTF-8/UTF-8"
-      "de_DE.UTF-8/UTF-8"  # Added German locale
+      "de_DE.UTF-8/UTF-8"
       ];
 
     extraLocaleSettings = {
@@ -59,94 +62,28 @@ in{
     LC_IDENTIFICATION = "en_US.UTF-8";
   }; };
 
-  # Enable KDE Plasma 6 Desktop Environment
-  services.desktopManager.plasma6 = {
-    enable = true;
-    enableQt5Integration = false;     #? Qt5 integration is typically not needed for Plasma 6
-  };
-
-  # Set default session to Wayland
-  services.displayManager={
-  defaultSession = "plasma";
-    sddm = {
-      enable = true;
-          wayland = {
-                enable = true;
-                compositor = "kwin";
-          };
+    users.users.masrkai = {
+        isNormalUser = true;
+        description = "Masrkai";
+        extraGroups = [
+                        "networkmanager" "bluetooth"
+                        "wheel"
+                        "qbittorrent" "jackett"
+                        "wireshark"
+                        "libvirtd" "kvm" "ubridge"
+                        "video" "audio" "power"
+                        "ollama"
+                      ];
       };
-  };
-  # Enable Wayland-specific services
-  programs.xwayland.enable = true;
-  services.xserver.enable = false;
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      kdePackages.xdg-desktop-portal-kde
-    ];
-  };
-
-  #! What to not install on KDE
-  environment.plasma6.excludePackages = with pkgs; [
-    #? Kate
-    libsForQt5.kate
-    kdePackages.kate
-
-    #? Kwallet
-    libsForQt5.kwallet
-    libsForQt5.kwallet-pam
-    libsForQt5.kwalletmanager
-
-    kdePackages.powerdevil
-    kdePackages.kdeconnect-kde
-    libsForQt5.qt5.qtvirtualkeyboard
-    ];
-
-  #? Weylus
-  programs.weylus = {
-    enable = false;
-    openFirewall = false;
-  };
-
-#!###############
-#! AMD-Graphics:
-#!###############
-
-  #! GPU drivers and Vulkan support
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-    extraPackages = with pkgs; [
-      mesa
-      vkd3d
-      libva
-      amdvlk
-      dxvk_2
-      vaapiIntel
-      vulkan-tools
-      vulkan-loader
-      intel-media-driver
-
-
-      rocmPackages.clr
-      rocmPackages.clr.icd
-      rocmPackages.rocminfo
-      rocmPackages.rocm-smi
-
-      # rocm-opencl-icd
-      # rocm-opencl-runtime
-    ];
-  };
-
-  environment={
+    environment={
       #? Set up environment variables for colored man pages
       variables = {
       MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
       LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
       LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
       MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
-
+      # localBinInPath = true;
 
       CPLUS_INCLUDE_PATH = let
         includeDirs = [
@@ -163,29 +100,18 @@ in{
           "${pkgs.boost185}/lib"
         ];
       in builtins.concatStringsSep ":" libDirs;
-
-      QT_QPA_PLATFORM="wayland";
-      QT_SSL_FORCE_TLSV1_3 = "1";  # Enforce TLS 1.3 for Qt applications
-      QT_SSL_FORCE_TLSV1_2 = "0";  # Disable TLS 1.2 (set to "1" if compatibility is required)
-
-      #? Add Vulkan ICDs for Graphics
-      AMD_VULKAN_ICD = "RADV";
-      ROC_ENABLE_PRE_VEGA = "1";
-      VULKAN_ICD_FILENAMES = "${pkgs.amdvlk}/share/vulkan/icd.d/amd_icd64.json:${pkgs.intel-compute-runtime}/share/vulkan/icd.d/intel_icd.x86_64.json";
      };
 
-    # Set environment variables for Wayland
-    sessionVariables = {
-      NIXOS_OZONE_WL = "1";
-      XDG_SESSION_TYPE = "wayland";
-      XDG_RUNTIME_DIR = "/run/user/$UID";
+      # sessionVariables = {
+      #   NIXOS_OZONE_WL = "1";
+      #   XDG_SESSION_TYPE = "wayland";
+      #   XDG_RUNTIME_DIR = "/run/user/$UID";
 
-      #QT_QPA_PLATFORM = "wayland";
-      GDK_BACKEND = "wayland";
-      WLR_NO_HARDWARE_CURSORS = "1";
+      #   #QT_QPA_PLATFORM = "wayland";
+      #   GDK_BACKEND = "wayland";
+      #   WLR_NO_HARDWARE_CURSORS = "1";
+      # };
     };
-   localBinInPath = true;
-  };
 
   programs.less = {
     enable = true;
@@ -194,20 +120,6 @@ in{
     };
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.masrkai = {
-    isNormalUser = true;
-    description = "Masrkai";
-    extraGroups = [
-                    "networkmanager" "bluetooth"
-                    "wheel"
-                    "qbittorrent" "jackett"
-                    "wireshark"
-                    "libvirtd" "kvm" "ubridge"
-                    "video" "audio" "power"
-                    "ollama"
-                  ];
-  };
 
     services.journald = {
     # Controls repeated message filtering
@@ -254,23 +166,43 @@ in{
       };
   };
 
+  nix = {
+  settings = {
+      # Enable sandboxing if not already enabled (it helps isolate builds).
+      sandbox = true;
+
+      # Limit the number of parallel build jobs (default: all available cores).
+      max-jobs = 2;
+
+      # Optionally limit CPU usage by controlling core availability.
+      cores = 0; # Restrict builds to use only 4 cores.
+
+      system-features = [ "big-parallel" "cuda" "kvm" ];
+
+      # substituters = [
+      #   "https://cuda-maintainers.cachix.org"
+      # ];
+      # trusted-public-keys = [
+      #   "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+      # ];
+    };
+  };
+
   nixpkgs = {
     overlays = [
      (self: super: {
       filterOutX11 = super.lib.filterAttrs (name: pkg:
         !(self.lib.strings.contains "libX11" (toString pkg) || self.lib.strings.contains "xset" (toString pkg) || self.lib.strings.contains "x11-utils" (toString pkg) )) super;
 
-        # gtk3 = super.gtk3.override {
-        #   enableX11 = false;  # Disable X11 support for GTK3
-        # };
+      jax = super.python312Packages.jax.override {
+        torch = super.python312Packages.torchWithCuda;
+      };
 
-        # qtbase = super.qtbase.override {
-        #   enableX11 = false;  # Disable X11 support for Qt
-        # };
+      torchWithCuda = super.python312Packages.torchWithCuda.override {
+        magma = super.magma-cuda;
+      };
 
-        # sdl2 = super.sdl2.override {
-        #   enableX11 = false;  # Disable X11 in SDL
-        # };
+      realtime-stt = super.python311Packages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
       })
     ];
     #-------------------------------------------------------------------->
@@ -280,10 +212,16 @@ in{
         "electron-27.3.11"
         "qbittorrent-4.6.4"
         ];
+        # packageOverrides = pkgs: {
+        #  xorg = null;
+        # };
     };
   };
 
-  environment.systemPackages = with pkgs; [
+
+
+
+ environment.systemPackages = with pkgs; [
   #*############
   #*Development:
   #*############
@@ -325,7 +263,7 @@ in{
   kitty
   unzip
   #xterm
-  #gparted #!has issues
+  gparted #!has issues
   glxinfo
   git-lfs
   pciutils
@@ -345,38 +283,61 @@ in{
   nodePackages.katex
 
   #-> Python
-    (python311.withPackages (pk: with pk; [
+    (python312.withPackages (pk: with pk; [
+        #> Basics
         pip
-        nltk
-        fire
+        pylint
+        python-dotenv
+        terminaltables
+        pyinstaller-versionfile
+
+        h5py
         lxml
         tqdm
         scapy
+        curio
         numpy
         pandas
-        openai
-        pylint
         pyvips
         sqlite
         netaddr
+        openusd
         networkx
+        openpyxl
         requests
         colorama
         netifaces
         markdown2
+        matplotlib
         weasyprint
         setuptools
-        matplotlib
         markdown-it-py
-        python-dotenv
 
         #-> Ai
-        pydub
-        torch
-        librosa
-        streamlit
-        soundfile
-        transformers
+        nltk
+        # pydub
+        datasets
+        # speechbrain
+        # transformers
+        opencv-python
+
+        # jax
+        # torchWithCuda
+        # tensorflow-bin
+
+          #> UI
+          # gradio
+          streamlit
+
+          #> Platforms
+          openai
+          huggingface-hub
+          # google-cloud-texttospeech
+
+          #> speechrecognition
+          soundfile
+          realtime-stt
+          arabic-reshaper
 
         #-> Juniper/jupter
         notebook
@@ -387,10 +348,7 @@ in{
         ipython-genutils
 
         beautifulsoup4
-        terminaltables
-        huggingface-hub
         types-beautifulsoup4
-        pyinstaller-versionfile
         ]
       )
     )
@@ -398,9 +356,14 @@ in{
   #-> C++
   #? Builders
   cmake
+  ninja
   gnumake
   cppcheck
   pkg-config
+
+  qtcreator
+  kdePackages.qtbase
+  kdePackages.qttools
 
   #? Libraries
   eigen
@@ -410,7 +373,7 @@ in{
   (hiPrio boost185)
 
   #! Compilers + Extras
-  gdb
+  (lowPrio gdb)
   (hiPrio gcc)
 
   clang-tools
@@ -436,6 +399,7 @@ in{
   alejandra
 
   direnv
+  nix-tree
   nix-direnv
   nix-output-monitor
 
@@ -540,13 +504,13 @@ in{
                                                           version = "1.6.6";
                                                           hash = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
                                                         }
-                                                        {
-                                                          #https://open-vsx.org/extension/TabNine/tabnine-vscode
-                                                          name = "tabnine-vscode";
-                                                          publisher = "TabNine";
-                                                          version = "3.132.0";
-                                                          hash = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
-                                                        }
+                                                        # {
+                                                        #   #https://open-vsx.org/extension/TabNine/tabnine-vscode
+                                                        #   name = "tabnine-vscode";
+                                                        #   publisher = "TabNine";
+                                                        #   version = "3.132.0";
+                                                        #   hash = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
+                                                        # }
                                                         {
                                                           #https://open-vsx.org/extension/ultram4rine/vscode-choosealicense
                                                           name = "vscode-choosealicense";
@@ -603,6 +567,13 @@ in{
                                                           version = "0.1.2";  # Check for the latest version
                                                           hash = "sha256-dcxtgUfn2GhVVyTxd+6mC0bhwMeLUxB6T9mPBUbgxbA=";
                                                         }
+                                                        # {
+                                                        #   #https://marketplace.visualstudio.com/items?itemName=shellscape.shellscape-rackets
+                                                        #   name = "shellscape-brackets";
+                                                        #   publisher = "shellscape";
+                                                        #   version = "0.1.2";  # Check for the latest version
+                                                        #   hash = "sha256-dcxtgUfn2GhVVyTxd+6mC0bhwMeLUxB6T9mPBUbgxbA=";
+                                                        # }
     ];
   }
 )
@@ -610,6 +581,10 @@ in{
 #?#############
 #? User-Daily:
 #?#############
+  lmstudio
+  # koboldcpp
+
+
   fzf
   btop
   kooha
@@ -645,21 +620,24 @@ in{
   kdePackages.kscreen
   kdePackages.filelight
   kdePackages.colord-kde
+  kdePackages.breeze-icons
   kdePackages.kscreenlocker
   kdePackages.plasma-browser-integration
 
   #Productivity
+  gimp
   blender
   thunderbird-bin
-  gimp-with-plugins
   gnome-disk-utility
   libreoffice-qt6-fresh
 
   #Gaming
   heroic
+  lutris
   bottles
   winetricks
-  wineWowPackages.full
+  # unstable.proton-ge-bin
+  wineWow64Packages.waylandFull
 
   #Games
   mindustry-wayland
@@ -705,102 +683,8 @@ in{
   traceroute
   aircrack-ng
   linux-wifi-hotspot
-
-#>################
-#> Virtualization:
-#>################
-  qemu_full
-  qemu-utils
-
-  virt-viewer
-  virt-manager
-
-  spice
-  spice-protocol
-
-  win-spice
-  win-virtio
 ];
 
-#>#################
-#>Listing services:
-#>#################
-
-
-  #!#################
-  #! POWER services:
-  #!#################
-  #--> TLP enabling
-  services.tlp = lib.mkForce {
-    enable = true;
-    settings = {
-      USB_AUTOSUSPEND="1";
-      USB_BLACKLIST_WWAN="1";
-      USB_BLACKLIST_BTUSB="0";
-      USB_BLACKLIST_PHONE="0";
-
-      # Wireless Power Management
-      # WIFI_PWR_ON_AC = "1";      # Balanced power saving on AC
-      # WIFI_PWR_ON_BAT = "5";     # Maximum power saving on battery
-
-      #? Disable turbo boost on battery
-      CPU_BOOST_ON_AC = "0";        # 0 = Disable turbo boost when on AC
-      CPU_BOOST_ON_BAT = "0";       # 0 = Disable turbo boost when on battery
-
-      RUNTIME_PM_ON_AC = "off";   # Enable Runtime PM on AC
-      RUNTIME_PM_ON_BAT = "auto";  # Enable Runtime PM on battery
-
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
-
-      #? Restore configured charge thresholds when AC is unplugged
-      TPACPI_ENABLE=1;
-      NATACPI_ENABLE=1;
-      TPSMAPI_ENABLE=1;
-      RESTORE_THRESHOLDS_ON_BAT=1;
-
-      #? SATA Power Management
-      SATA_LINKPWR_ON_AC = "med_power_with_dipm";
-      SATA_LINKPWR_ON_BAT = "min_power";
-
-      #? Seconds laptop mode waits after the disk goes idle before syncing dirty cache blocks from RAM to disk again
-      DISK_IDLE_SECS_ON_AC="0";
-      DISK_IDLE_SECS_ON_BAT="2";
-
-      #? Seconds of inactivity before disk/controller is suspended
-      AHCI_RUNTIME_PM_TIMEOUT="15";
-
-      #? Runtime Power Management for AHCI controllers and disks:
-      AHCI_RUNTIME_PM_ON_AC="off";
-      AHCI_RUNTIME_PM_ON_BAT="auto";
-
-      #? PCI Express Active State Power Management (PCIe ASPM):
-      PCIE_ASPM_ON_AC="performance";
-      PCIE_ASPM_ON_BAT="powersave";
-
-      #? Enable audio power saving for Intel HDA, AC97 devices (timeout in secs), A value of 0 disables, >=1 enables power saving.
-      SOUND_POWER_SAVE_ON_AC="0";
-      SOUND_POWER_SAVE_ON_BAT="1";
-
-      #? Power off optical drive in UltraBay/MediaBay: 0=disable, 1=enable.
-      BAY_POWEROFF_ON_AC="0";
-      BAY_POWEROFF_ON_BAT="1";
-
-      RUNTIME_PM_ALL = "1";                # Enable runtime power management for all PCI(e) bus devices
-      RUNTIME_PM_DRIVER_BLACKLIST="amdgpu nouveau nvidia radeon iwlwifi ";
-      #RUNTIME_PM_BLACKLIST = "i2c_adapter:i2c-12 i2c_adapter:i2c-3 i2c_adapter:i2c-10 i2c_adapter:i2c-1 i2c_adapter:i2c-8 i2c_adapter:i2c-0 i2c_adapter:i2c-6 i2c_adapter:i2c-11 i2c_adapter:i2c-4 i2c_adapter:i2c-2 i2c_adapter:i2c-9 i2c_adapter:i2c-7 i2c_adapter:i2c-5 pci:v00008086d000015b8 pci:v00008086d00001575 pci:v00008086d000015b5 pci:v00008086d000015b1 pci:v00008086d000015b3 pci:v00008086d000015c8 pci:v00008086d00001903 pci:v00008086d0000156b pci:v00001002d00006821";
-
-      ETHERNET_WOL_DISABLE = "Y";                         # Disable Wake-on-LAN
-      #DEVICES_TO_DISABLE_ON_BAT = "ethernet";            # Disable ethernet on battery if you don't need it
-      #DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "ethernet"; # Disable when not in use on battery
-    };
-  };
-
-  #--> Enable thermald (only necessary if on Intel CPUs)
-    services.thermald.enable = true;
-
-  #--> Disabled Power-Profiles for TLP to take action.
-    services.power-profiles-daemon.enable = false;
 
   #?########################
   #? Applications services:
@@ -833,122 +717,6 @@ in{
       package   = pkgs.mlocate;
     };
 
-  #--> Qemu KVM & VirtualBox
-    virtualisation = lib.mkForce {
-
-    # # Enable VirtualBox kernel modules
-    # virtualbox.host.enable = true;
-    # # Optionally, enable the VirtualBox extension pack (for USB 2.0/3.0 support, etc.)
-    # virtualbox.host.enableExtensionPack = true;
-
-    spiceUSBRedirection.enable = true;
-      libvirtd = {
-        enable = true;
-        allowedBridges = [ "virbr0"];
-        qemu = {
-          package = pkgs.qemu_full;
-          runAsRoot = true;
-          swtpm.enable = true;
-
-          ovmf = {
-            enable = true;
-            packages = [(pkgs.OVMFFull.override {
-            secureBoot = true;
-            tpmSupport = true;
-          }).fd];
-          };
-        };
-      };
-    };
-    services.spice-vdagentd.enable = false;
-    programs.virt-manager.enable   = true;
-    programs.dconf.enable = true;
-
-
-    services.ollama = {
-        enable = false;
-
-        user = null;
-        group = "ollama";
-
-        home   = "/home/masrkai/";
-        models = "/home/masrkai/Ollama/";
-    };
-
-    services.nextjs-ollama-llm-ui.enable = false;
-
-
-  # Ensure USB storage is not automatically mounted
-  services.udev.extraRules = ''
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6860", ENV{UDISKS_AUTO}="0"
-  '';
-
-  #---> Syncthing
-  services.syncthing = {
-    enable = true;
-    user = "masrkai";
-    dataDir = "/home/masrkai";
-    configDir = "/home/masrkai/Documents/.config/syncthing";
-    overrideDevices = true; #! Overrides devices added or deleted through the WebUI
-    overrideFolders = true; #! Overrides folders added or deleted through the WebUI
-    settings = {
-      devices = {
-        "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
-        "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
-        "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
-        };
-      folders = {
-
-        "College_shit" = {
-          path = "~/Documents/College/Current/";
-          devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
-          versioning = {
-            type = "simple";
-              params = {
-              keep = "5"; # Keep 5 versions
-              };
-          };
-        type = "sendonly"; # Make folder send-only
-        };
-
-
-        "Forbidden_Knowledge" = {
-          path = "~/Documents/Books/";
-          devices = [ "A71" ];
-          versioning = {
-            type = "simple";
-              params = {
-              keep = "5"; # Keep 5 versions
-              };
-          };
-        type = "sendonly"; # Make folder send-only
-        };
-
-
-
-        "Music" = {
-          path = "~/Music/";
-          devices = [ "A71" ];
-          ignorePerms = false;
-          # Add ignore patterns here
-          ignorePaths = [
-          # Common patterns
-          "*.tmp"
-          "*.temp"
-          ".git"
-          "node_modules"
-          #? Music crap
-
-          "/Telegram"
-          ".thumbnails"
-          "/.thumbnails"
-          ];
-        };
-
-
-      };
-    };
-  };
 
   #---> SearXNG
   services.searx = {
@@ -1021,8 +789,82 @@ in{
   };
 
 
-  #---> Colord
-  services.colord.enable = true;
+  #---> Syncthing
+  services.syncthing = {
+    guiAddress = "127.0.0.1:8384";
+    enable = true;
+    user = "masrkai";
+    dataDir = "/home/masrkai";
+    configDir = "/home/masrkai/Documents/.config/syncthing";
+    overrideDevices = true; #! Overrides devices added or deleted through the WebUI
+    overrideFolders = true; #! Overrides folders added or deleted through the WebUI
+    settings = {
+      devices = {
+        "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
+        "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
+        "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
+        };
+      folders = {
+
+        "College_shit" = {
+          path = "~/Documents/College/Current/";
+          devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
+          versioning = {
+            type = "simple";
+              params = {
+              keep = "5"; # Keep 5 versions
+              };
+          };
+          type = "sendonly"; # Make folder send-only
+          ignorePaths = [
+          ".venv"
+          ".**"
+          ".*"
+          ];
+        };
+
+
+        "Forbidden_Knowledge" = {
+          path = "~/Documents/Books/";
+          devices = [ "A71" ];
+          versioning = {
+            type = "simple";
+              params = {
+              keep = "5"; # Keep 5 versions
+              };
+          };
+          type = "sendonly"; # Make folder send-only
+        };
+
+
+
+        "Music" = {
+          path = "~/Music/";
+          devices = [ "A71" ];
+          ignorePerms = false;
+          # Add ignore patterns here
+          ignorePaths = [
+          # Common patterns
+          ".git"
+          "*.tmp"
+          "*.temp"
+          "node_modules"
+          #? Music crap
+
+          "/Telegram"
+          ".thumbnails"
+          "/.thumbnails"
+          ];
+        };
+
+
+      };
+    };
+  };
+
+
+  # #---> Colord
+  # services.colord.enable = true;
 
   #---> Qbit_torrent x Jackett
     services.jackett = {
@@ -1032,7 +874,7 @@ in{
     };
 
   #---> Enable CUPS to print documents.
-    services.printing.enable = true;
+  services.printing.enable = false;
 
   #--> NoiseTorch: Real-Time Microphone Noise Suppression
   programs.noisetorch.enable = true;
@@ -1058,7 +900,19 @@ in{
     jack.enable = true;          # JACK support for advanced audio workflows
   };
 
+  services.asusd= {
+    enable = true;
+    enableUserService = true;
 
+  };
+
+  services.udev.extraRules = ''
+  ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
+
+  # Disable XHC USB controllers from waking up the system
+  ACTION=="add", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/wakeup}="disabled"
+  ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
+  '';
 
       #->Kitty terminal
       environment.etc."xdg/kitty/kitty.conf".text = ''
@@ -1118,9 +972,6 @@ in{
       initial_zoom_level 0.75
     '';
 
-#!###############
-#! NixOS Version:
-#!###############
-  system.stateVersion = "24.11";
-}
+    system.stateVersion = "24.11";
 
+}
