@@ -5,8 +5,9 @@
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
-      vulkan-loader
+      egl-wayland
       vulkan-tools
+      vulkan-loader
       libva-vdpau-driver
      ];
   };
@@ -34,8 +35,11 @@
   # Add CUDA toolkit to system packages
   environment = lib.mkMerge[
     {
+
       systemPackages = with pkgs; [
+        libglvnd  # Added for EGL support
         magma-cuda
+        egl-wayland
         cudatoolkit  # Ensure this is installed system-wide
         cudaPackages.nccl
         cudaPackages.cudnn
@@ -70,12 +74,15 @@
         KWIN_DRM_USE_EGL_STREAMS = "1";
         __GLX_VENDOR_LIBRARY_NAME = "nvidia";  # Added for better compatibility
         GBM_BACKEND = "nvidia-drm";  # Added for better Wayland support
+        EGL_PLATFORM = "wayland";  # Added for explicit EGL platform selection
+
 
         PATH = lib.mkBefore [ "${pkgs.cudatoolkit}/bin" ];
         LD_LIBRARY_PATH = lib.mkBefore [
           "${pkgs.cudatoolkit}/lib64"
           "/run/opengl-driver/lib"
           "/run/opengl-driver-32/lib"
+          "${pkgs.libglvnd}/lib"  # Added for EGL libraries
         ];
       };
     }
