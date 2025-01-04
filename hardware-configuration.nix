@@ -68,7 +68,7 @@
     ];
 
   kernel.sysctl = {
-  "vm.swappiness" = 0;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
+  "vm.swappiness" = 10;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
   };
 
     # No extra module packages
@@ -83,7 +83,7 @@
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/43aedd8b-e362-4cb3-872b-da3ea71c02c2";
       fsType = "ext4";
-      # options = [ "noatime" "commit=5" "discard=async"  ];  # Optimize for SSD
+      options = [ "noatime" "commit=5"  ];  # Optimize for SSD
     };
 
   fileSystems."/boot" =
@@ -91,6 +91,14 @@
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
+  services.smartd = {
+    enable = true;
+    devices = [
+      {
+        device = "/dev/nvme0n1"; # FIXME: Change this to your actual disk; use lsblk to find the appropriate value
+      }
+    ];
+  };
 
   # Add zram-based swap since you have no swap configured
   zramSwap = {
