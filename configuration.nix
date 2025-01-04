@@ -20,6 +20,8 @@ let
     #? Python
     ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
     MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+    mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
+
 
   };
 
@@ -222,12 +224,12 @@ in
   customPackages.setupcpp
   customPackages.wifi-honey
   customPackages.hostapd-wpe
+  customPackages.mac-formatter
   customPackages.logisim-evolution
   customPackages.super-productivity
   #customPackages.airgeddon
   #customPackages.custom-httrack
 
-  fan2go
   lm_sensors
 
   searxng
@@ -624,8 +626,9 @@ in
   heroic
   lutris
   bottles
+
+  dxvk
   winetricks
-  # unstable.proton-ge-bin
   wineWow64Packages.waylandFull
 
   #Games
@@ -650,6 +653,17 @@ in
 #!####################
 #! Pentration-Testing:
 #!####################
+
+  #> Password cracking
+  crunch
+  hashcat
+  hcxtools
+  hcxdumptool
+  zip2hashcat
+  hashcat-utils
+
+
+
   iw
   dig
   mdk4
@@ -658,7 +672,6 @@ in
   hping
   stubby
   getdns
-  crunch
   asleap
   openssl
   linssid
