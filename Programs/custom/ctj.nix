@@ -1,7 +1,7 @@
 { pkgs }:
 
 let
-  pythonWithPackages = pkgs.python3.withPackages (ps: with ps; [
+  pythonWithPackages = pkgs.python312.withPackages (ps: with ps; [
     pyvips
   ]);
 in
