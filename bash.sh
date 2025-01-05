@@ -14,6 +14,13 @@ gens(){
 sudophone(){
     adb shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh
 }
+clearlogs(){
+    sudo journalctl --rotate && sudo journalctl --vacuum-time=1s
+}
+
+
+
+
 fixcode(){
     rm -rf ~/.config/VSCodium/GPUCache/
 }
@@ -32,9 +39,12 @@ fusb(){
 sec(){
     fwupdmgr get-devices && fwupdmgr refresh && fwupdmgr get-updates && fwupdmgr update
 }
-clearlogs(){
-    sudo journalctl --rotate && sudo journalctl --vacuum-time=1s
+
+fixkde(){
+    plasmashell --replace > /dev/null 2>&1 & disown
 }
+
+
 
 #--> yt-dlp
 # Function to download a playlist with a specified resolution
