@@ -280,6 +280,8 @@ in
         pylint
         python-dotenv
         terminaltables
+
+        pyinstaller
         pyinstaller-versionfile
 
         h5py
@@ -572,13 +574,18 @@ in
 #?#############
 #? User-Daily:
 #?#############
+  #>Content creation:
+  kooha
+  davinci-resolve
+
+  #>Ai
   lmstudio
   # koboldcpp
 
+  btop
+  powertop
 
   fzf
-  btop
-  kooha
   brave
   yt-dlp
   logseq
@@ -586,7 +593,6 @@ in
   amberol
   webcord
   jackett
-  powertop
   keepassxc
   fastfetch
   syncthing
