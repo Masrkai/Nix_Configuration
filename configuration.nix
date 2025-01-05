@@ -252,6 +252,9 @@ in
   less
   most
   kitty
+  ghostty
+
+
   unzip
   #xterm
   gparted #!has issues
@@ -621,7 +624,7 @@ in
   kdePackages.kscreenlocker
   kdePackages.plasma-browser-integration
 
-  #Productivity
+  #-> Productivity
   gimp
   blender
   thunderbird-bin
@@ -629,9 +632,9 @@ in
   libreoffice-qt6-fresh
 
   #Gaming
-  heroic
   lutris
   bottles
+  heroic-unwrapped
 
   dxvk
   winetricks
