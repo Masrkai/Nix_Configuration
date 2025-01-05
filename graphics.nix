@@ -5,6 +5,7 @@
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
+      mangohud
       egl-wayland
       vulkan-tools
       vulkan-loader
@@ -87,9 +88,4 @@
       };
     }
   ];
-
-
-
-
-
 }
