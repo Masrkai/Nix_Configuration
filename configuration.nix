@@ -350,6 +350,7 @@ in
     )
 
   #-> C++
+
   #? Builders
   cmake
   ninja
@@ -357,6 +358,9 @@ in
   cppcheck
   pkg-config
 
+  #? UIs
+  gtk3
+  gtk4
   qtcreator
   kdePackages.qtbase
   kdePackages.qttools
@@ -926,63 +930,125 @@ in
   '';
 
       #->Kitty terminal
-      environment.etc."xdg/kitty/kitty.conf".text = ''
-      # Basic settings
-      font_family  Iosevka Fixed Hv Ex Obl
-      font_size 13
+      environment ={
+      etc = {
+            "xdg/kitty/kitty.conf".text = ''
+            # Basic settings
+            font_family  Iosevka Fixed Hv Ex Obl
+            font_size 13
 
-      # Adjust this value as needed
-      modify_font cell_height 90%
-      adjust_column_width 0
-      disable_ligatures never
+            # Adjust this value as needed
+            modify_font cell_height 90%
+            adjust_column_width 0
+            disable_ligatures never
 
-      # Scroll settings
-      scrollback_lines 10000
-      mouse_wheel_scroll yes
+            # Scroll settings
+            scrollback_lines 10000
+            mouse_wheel_scroll yes
 
-      # Use additional symbols from Material Design Icons
-      symbol_map U+E000-U+E7C5 Iosevka Nerd Font
+            # Use additional symbols from Material Design Icons
+            symbol_map U+E000-U+E7C5 Iosevka Nerd Font
 
-      clipboard_control write-clipboard read-clipboard
-      GLFW_IM_MODULE=ibus
+            clipboard_control write-clipboard read-clipboard
+            GLFW_IM_MODULE=ibus
 
-      # Color scheme
-      background #000000
-      foreground #ffffff
-      cursor #93a1a1
+            # Color scheme
+            background #000000
+            foreground #ffffff
+            cursor #93a1a1
 
-      # Window layout
-      remember_window_size no
-      initial_window_width 177c
-      initial_window_height 36c
+            # Window layout
+            remember_window_size no
+            initial_window_width 177c
+            initial_window_height 36c
 
-      # Tab bar
-      tab_bar_edge bottom
-      tab_bar_style powerline
+            # Tab bar
+            tab_bar_edge bottom
+            tab_bar_style powerline
 
-      # Performance
-      repaint_delay 10
-      input_delay 3
-      sync_to_monitor yes
+            # Performance
+            repaint_delay 10
+            input_delay 3
+            sync_to_monitor yes
 
-      # Key mappings
-      map ctrl+shift+c copy_to_clipboard
-      map ctrl+shift+v paste_from_clipboard
-      map ctrl+shift+t new_tab
-      map ctrl+shift+q close_tab
+            # Key mappings
+            map ctrl+shift+c copy_to_clipboard
+            map ctrl+shift+v paste_from_clipboard
+            map ctrl+shift+t new_tab
+            map ctrl+shift+q close_tab
 
-      # Search key mappings
-      map ctrl+shift+f launch --type=overlay --stdin-source=@screen_scrollback /bin/sh -c 'fzf --ansi --no-sort --no-mouse --exact -i --tac --preview "echo {} | bat --color=always --plain --language=sh" --preview-window=right:50%:wrap | kitty +kitten clipboard'
-      map ctrl+shift+/ show_scrollback
-      map ctrl+shift+g show_last_command_output
+            # Search key mappings
+            map ctrl+shift+f launch --type=overlay --stdin-source=@screen_scrollback /bin/sh -c 'fzf --ansi --no-sort --no-mouse --exact -i --tac --preview "echo {} | bat --color=always --plain --language=sh" --preview-window=right:50%:wrap | kitty +kitten clipboard'
+            map ctrl+shift+/ show_scrollback
+            map ctrl+shift+g show_last_command_output
 
-      # Alternative search with bat highlighting
-      map ctrl+shift+b launch --type=overlay --stdin-source=@screen_scrollback /bin/sh -c 'bat --color=always --plain | fzf --ansi --no-sort --no-mouse --exact -i --tac | kitty +kitten clipboard'
+            # Alternative search with bat highlighting
+            map ctrl+shift+b launch --type=overlay --stdin-source=@screen_scrollback /bin/sh -c 'bat --color=always --plain | fzf --ansi --no-sort --no-mouse --exact -i --tac | kitty +kitten clipboard'
 
-      # Initial zoom level (optional)
-      initial_zoom_level 0.75
-    '';
+            # Initial zoom level (optional)
+            initial_zoom_level 0.75
+          '';
+
+
+          "xdg/ghostty/config".text = "
+            font-family = Iosevka Nerd Font
+            font-size = 14
+            theme = GruvboxDarkHard
+            shell-integration-features = no-cursor,sudo,no-title
+            cursor-style = block
+            adjust-cell-height = 35%
+            background-opacity = 0.55
+
+            mouse-hide-while-typing = true
+            mouse-scroll-multiplier = 2
+
+            window-padding-balance = true
+            window-save-state = always
+            background = 1C2021
+            # foreground = d4be98
+
+            # keybindings
+            keybind = cmd+s>r=reload_config
+            keybind = cmd+s>x=close_surface
+
+            keybind = cmd+s>n=new_window
+
+            # tabs 
+            keybind = cmd+s>c=new_tab
+            keybind = cmd+s>shift+l=next_tab
+            keybind = cmd+s>shift+h=previous_tab
+            keybind = cmd+s>comma=move_tab:-1
+            keybind = cmd+s>period=move_tab:1
+
+            # quick tab switch
+            keybind = cmd+s>1=goto_tab:1
+            keybind = cmd+s>2=goto_tab:2
+            keybind = cmd+s>3=goto_tab:3
+            keybind = cmd+s>4=goto_tab:4
+            keybind = cmd+s>5=goto_tab:5
+            keybind = cmd+s>6=goto_tab:6
+            keybind = cmd+s>7=goto_tab:7
+            keybind = cmd+s>8=goto_tab:8
+            keybind = cmd+s>9=goto_tab:9
+
+            # split
+            keybind = cmd+s>\=new_split:right
+            keybind = cmd+s>-=new_split:down
+
+            keybind = cmd+s>j=goto_split:bottom
+            keybind = cmd+s>k=goto_split:top
+            keybind = cmd+s>h=goto_split:left
+            keybind = cmd+s>l=goto_split:right
+
+            keybind = cmd+s>z=toggle_split_zoom
+
+            keybind = cmd+s>e=equalize_splits
+
+            # other
+            copy-on-select = clipboard
+           ";
+        };
+      };
 
     system.stateVersion = "24.11";
-
 }
