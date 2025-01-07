@@ -1,16 +1,29 @@
 { config, pkgs, lib, ... }:
 
 {
+
+  boot = lib.mkMerge [
+    {
+      initrd.kernelModules = [ "nvidia" ];
+
+      kernelModules = [
+      "nvidia" "nvidia_drm" "nvidia_modeset"
+      ];
+
+
+      # Blacklist specific kernel modules
+      blacklistedKernelModules = [
+      "nvidia_wmi_ec_backlight"
+      "nouveau"                    # Blacklist open-source NVIDIA driver
+      ];
+    }
+  ];
+
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
-    extraPackages = with pkgs; [
-      mangohud
-      egl-wayland
-      vulkan-tools
-      vulkan-loader
-      libva-vdpau-driver
-     ];
+    # extraPackages = with pkgs; [
+    #  ];
   };
 
   # Load nvidia driver for Xorg and Wayland
@@ -38,6 +51,14 @@
     {
 
       systemPackages = with pkgs; [
+
+        clinfo
+        mangohud
+        egl-wayland
+        vulkan-tools
+        vulkan-loader
+        libva-vdpau-driver
+
         libglvnd  # Added for EGL support
         magma-cuda
         egl-wayland

@@ -24,9 +24,9 @@
     initrd = {
       availableKernelModules = [
         "nvme"
+        "sd_mod"
         "xhci_pci"
         "usb_storage"
-        "sd_mod"
       ];
       kernelModules = [ ];
     };
@@ -35,14 +35,6 @@
     kernelModules = [
       "amd_pstate" "kvm-amd"
       "asus-nb-wmi" "asus_wmi"
-      "nvidia" "nvidia_drm" "nvidia_modeset"
-
-    ];
-
-    # Blacklist specific kernel modules
-    blacklistedKernelModules = [
-      "nvidia_wmi_ec_backlight"
-      "nouveau"                  # Blacklist open-source NVIDIA driver
     ];
 
     # Kernel parameters configuration
