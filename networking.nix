@@ -515,7 +515,7 @@
 
   # Create a systemd timer to run the check-internet service every 5 minutes
   systemd.timers.check-internet = {
-    description = "Run check-internet every 5 minutes";
+    description = "Run check-internet every 1 minute";
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = "1min";   # First run 1 minute after boot
