@@ -4,35 +4,69 @@
 
   boot = lib.mkMerge [
     {
-      initrd.kernelModules = [ "nvidia" ];
-
-      kernelModules = [
-      "nvidia" "nvidia_drm" "nvidia_modeset"
+      initrd.kernelModules = [
+      "nvidia"
+      "nvidia_drm"
+      "nvidia_uvm"
+      "nvidia_modeset"
       ];
 
+      kernelModules = [
+      "nvidia"
+      "nvidia_drm"
+      "nvidia_uvm"
+      "nvidia_modeset"
+      ];
+
+      kernelParams = [
+      "nvidia-drm.modeset=1"
+      "NVreg_PreserveVideoMemoryAllocations=1"
+      "nvidia.NVreg_TemporaryFilePath=/var/tmp"
+
+      # Additional parameters for better performance and stability
+      "nvidia.NVreg_UsePageAttributeTable=1"
+      # "nvidia.NVreg_EnablePCIeGen3=1"
+      "nvidia.NVreg_EnableResizableBAR=1"
+      ];
 
       # Blacklist specific kernel modules
       blacklistedKernelModules = [
-      "nvidia_wmi_ec_backlight"
       "nouveau"                    # Blacklist open-source NVIDIA driver
+      "nvidiafb"
+      "nvidia_wmi_ec_backlight"
       ];
     }
   ];
 
-  # Enable OpenGL
+  #! Enable OpenGL
   hardware.graphics = {
     enable = true;
-    # extraPackages = with pkgs; [
-    #  ];
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      ocl-icd
+      libglvnd
+      egl-wayland
+      vulkan-loader
+      nvidia-vaapi-driver
+    ];
+    #> Specific Vulkan packages for 32-bit support
+    extraPackages32 = with pkgs.pkgsi686Linux; [
+      vulkan-loader
+      vulkan-validation-layers
+    ];
   };
 
-  # Load nvidia driver for Xorg and Wayland
+  #> Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
 
   nixpkgs.config = lib.mkMerge[
     {
     cudaSupport = true;
-    cudaCapabilities = [ "8.9" ];
+    cudaCapabilities = [
+      "8.9"    # RTX 40 series
+      # "8.6"  # RTX 30 series
+      # "7.5"  # RTX 20 series
+    ];
     cudaForwardCompat = false;
     }
   ];
@@ -43,6 +77,7 @@
     modesetting.enable = true;
     dynamicBoost.enable = true;
     powerManagement.enable = true; # because there is no other GPU to handle desktop
+    forceFullCompositionPipeline = true;  # Better screen tearing prevention
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
@@ -51,21 +86,19 @@
     {
 
       systemPackages = with pkgs; [
-
         clinfo
+        glxinfo
+
         mangohud
-        egl-wayland
         vulkan-tools
-        vulkan-loader
         libva-vdpau-driver
 
-        libglvnd  # Added for EGL support
         magma-cuda
-        egl-wayland
         cudatoolkit  # Ensure this is installed system-wide
         cudaPackages.nccl
         cudaPackages.cudnn
         cudaPackages.libnpp
+        # cudaPackages.tensorrt  # Added for AI/ML acceleration
         cudaPackages.cuda_cccl
         cudaPackages.cuda_nvcc
         cudaPackages.cuda_cudart
@@ -86,27 +119,40 @@
         FCFLAGS = "-fPIC";
 
         # Additional linking flags
-        LDFLAGS = "-L${pkgs.cudatoolkit}/lib64 -L/run/opengl-driver/lib -Wl,-rpath,${pkgs.cudatoolkit}/lib64";
+        LDFLAGS = "-L${pkgs.cudatoolkit}/lib64 -L/run/opengl-driver/lib -Wl,-rpath,${pkgs.cudatoolkit}/lib64 -Wl,--as-needed";
 
         # CUDA-specific flags
         CUDA_CFLAGS = "-I${pkgs.cudatoolkit}/include";
-        CUDA_PATH_V12_4 = "${pkgs.cudatoolkit}";       # Adjust version as needed
+        NVCC_FLAGS = "-O3";  # Optimization for CUDA compilation
+
 
         # Wayland/KDE specific
         KWIN_DRM_USE_EGL_STREAMS = "1";
         __GLX_VENDOR_LIBRARY_NAME = "nvidia";  # Added for better compatibility
         GBM_BACKEND = "nvidia-drm";  # Added for better Wayland support
         EGL_PLATFORM = "wayland";  # Added for explicit EGL platform selection
+        WLR_NO_HARDWARE_CURSORS = "1";  # Added for better cursor handling
+        LIBVA_DRIVER_NAME = "nvidia";  # Added for VA-API support
 
+        PATH = lib.mkBefore [
+          "${pkgs.cudatoolkit}/bin"
+          "${pkgs.nvidia-vaapi-driver}/bin"
+        ];
 
-        PATH = lib.mkBefore [ "${pkgs.cudatoolkit}/bin" ];
-        LD_LIBRARY_PATH = lib.mkBefore [
+        LD_LIBRARY_PATH = lib.mkBefore ([
           "${pkgs.cudatoolkit}/lib64"
           "/run/opengl-driver/lib"
           "/run/opengl-driver-32/lib"
-          "${pkgs.libglvnd}/lib"  # Added for EGL libraries
-        ];
+          "${pkgs.libglvnd}/lib"
+          "${pkgs.nvidia-vaapi-driver}/lib"
+          "${pkgs.vaapiVdpau}/lib"
+        ] ++ (lib.splitString ":" (lib.makeLibraryPath [
+          pkgs.ocl-icd
+          pkgs.libvdpau
+        ])));
       };
+
+
     }
   ];
 }
