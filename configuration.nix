@@ -633,7 +633,7 @@ in
   blender
   thunderbird-bin
   gnome-disk-utility
-  libreoffice-qt6-fresh
+  libreoffice-qt6-still
 
   #Gaming
   lutris
