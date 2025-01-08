@@ -39,8 +39,6 @@
 
     # Kernel parameters configuration
     kernelParams = [
-      # GPU and display related
-      "NVreg_PreserveVideoMemoryAllocations=1" "nvidia.NVreg_TemporaryFilePath=/var/tmp" "nvidia-drm.modeset=1"
       "acpi_backlight=native" "acpi_osi=Linux"
 
 
