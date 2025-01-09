@@ -5,10 +5,9 @@
 
 {
   imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
+    [
+      (modulesPath + "/installer/scan/not-detected.nix")
     ];
-
-
 
   boot = {
     # Bootloader
@@ -62,9 +61,9 @@
       #"mem_sleep_default=deep" # Force deep sleep instead of s2idle
     ];
 
-  kernel.sysctl = {
-  "vm.swappiness" = 10;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
-  };
+    kernel.sysctl = {
+    "vm.swappiness" = 10;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
+    };
 
     # No extra module packages
     extraModulePackages = [ ];
