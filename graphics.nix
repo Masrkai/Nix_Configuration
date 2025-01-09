@@ -41,18 +41,21 @@
   #! Enable OpenGL
   hardware.graphics = {
     enable = true;
-    enable32Bit = true;
+    enable32Bit = false;
     extraPackages = with pkgs; [
-      ocl-icd
+      #! OpenCL
+      # ocl-icd
+      opencl-clhpp
+      opencl-headers
+      khronos-ocl-icd-loader
+
       libglvnd
       egl-wayland
+
+      #! Vulkan
+      vulkan-tools
       vulkan-loader
       nvidia-vaapi-driver
-    ];
-    #> Specific Vulkan packages for 32-bit support
-    extraPackages32 = with pkgs.pkgsi686Linux; [
-      vulkan-loader
-      vulkan-validation-layers
     ];
   };
 
@@ -63,9 +66,9 @@
     {
     cudaSupport = true;
     cudaCapabilities = [
-      "8.9"    # RTX 40 series
-      # "8.6"  # RTX 30 series
-      # "7.5"  # RTX 20 series
+      "8.9"    #? RTX 40 series
+      "8.6"    #? RTX 30 series
+      "7.5"    #? RTX 20 series
     ];
     cudaForwardCompat = false;
     }
@@ -147,7 +150,7 @@
           "${pkgs.nvidia-vaapi-driver}/lib"
           "${pkgs.vaapiVdpau}/lib"
         ] ++ (lib.splitString ":" (lib.makeLibraryPath [
-          pkgs.ocl-icd
+          pkgs.khronos-ocl-icd-loader
           pkgs.libvdpau
         ])));
       };
