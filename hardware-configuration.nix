@@ -37,6 +37,11 @@
       "asus-nb-wmi" "asus_wmi"
     ];
 
+    # Blacklist specific kernel modules
+    blacklistedKernelModules = [
+    "uvcvideo"
+    ];
+
     # Kernel parameters configuration
     kernelParams = [
       "acpi_backlight=native" "acpi_osi=Linux"
