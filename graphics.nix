@@ -1,5 +1,16 @@
 { config, pkgs, lib, ... }:
 
+let
+  libraries = with pkgs; [
+    cudatoolkit
+    libglvnd
+    nvidia-vaapi-driver
+    vaapiVdpau
+    khronos-ocl-icd-loader
+    libvdpau
+  ];
+in
+
 {
 
   boot = lib.mkMerge [
@@ -19,6 +30,8 @@
       ];
 
       kernelParams = [
+      "pci=realloc=on"
+
       "nvidia-drm.modeset=1"
       "NVreg_PreserveVideoMemoryAllocations=1"
       "nvidia.NVreg_TemporaryFilePath=/var/tmp"
@@ -153,6 +166,10 @@
           pkgs.khronos-ocl-icd-loader
           pkgs.libvdpau
         ])));
+
+        #  LD_LIBRARY_PATH = lib.mkAfter"${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH";
+
+
       };
 
 
