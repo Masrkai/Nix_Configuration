@@ -37,6 +37,8 @@ in
       ./systemd.nix
       ./desktop.nix
       ./bash.nix
+      ./dev-shells/collector.nix
+
     ];
 
 
@@ -90,7 +92,7 @@ in
         includeDirs = [
           "${pkgs.eigen}/include/eigen3"
           "${pkgs.nlohmann_json}/include"
-          "${pkgs.boost185.dev}/include/"
+          "${pkgs.boost185}/include/"
         ];
       in builtins.concatStringsSep ":" includeDirs;
 
@@ -124,7 +126,7 @@ in
       SystemMaxUse=2G
       MaxRetentionSec=1week
     '';
-  };
+    };
 
 
   #! Diable flatpack
@@ -177,6 +179,10 @@ in
       #   "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
       # ];
     };
+    extraOptions = ''
+    keep-outputs = true
+    keep-derivations = true
+    '';
   };
 
   nixpkgs = {
@@ -369,7 +375,6 @@ in
   eigen
   nlohmann_json
 
-  boost185.dev
   (hiPrio boost185)
 
   #! Compilers + Extras
@@ -405,6 +410,7 @@ in
 
   #-->UML
   mermerd
+  texliveMedium
 
 #*#########################
 #* Vscodium Configuration:
@@ -581,33 +587,33 @@ in
 #?#############
 #? User-Daily:
 #?#############
-  #>Content creation:
-  kooha
-  davinci-resolve
-
-  #>Ai
+  #-> Ai
   lmstudio
   # koboldcpp
 
+  #-> Monitoring
   btop
   powertop
+  dmidecode
+  mission-center
 
+  #-> Contrnt
   fzf
-  brave
   yt-dlp
-  logseq
   haruna
   amberol
-  webcord
   jackett
-  keepassxc
-  fastfetch
   syncthing
   qbittorrent
-  authenticator
-  mission-center
-  signal-desktop
   unstable.ani-cli
+
+  brave
+  logseq
+  webcord
+  keepassxc
+  fastfetch
+  authenticator
+  signal-desktop
 
   #-> Archivers
   xz
@@ -630,12 +636,14 @@ in
 
   #-> Productivity
   gimp
+  kooha
   blender
+  davinci-resolve
   thunderbird-bin
   gnome-disk-utility
   libreoffice-qt6-still
 
-  #Gaming
+  #-> Gaming
   lutris
   bottles
   heroic-unwrapped
@@ -699,7 +707,6 @@ in
   aircrack-ng
   linux-wifi-hotspot
 ];
-
 
   #?########################
   #? Applications services:
