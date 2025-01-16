@@ -43,12 +43,12 @@
 
     # Kernel parameters configuration
     kernelParams = [
-      "acpi_backlight=native" "acpi_osi=Linux"
+      "acpi_backlight=active" "acpi_osi=Linux"
 
 
       # CPU optimizations
       "amd_iommu=on"
-      "amd_pstate=active"  # Enable AMD P-State driver
+      "amd_pstate=passive"  # Enable AMD P-State driver
       "processor.max_cstate=5"  # Limit C-states for better response time
 
       # Memory security parameters
@@ -101,6 +101,14 @@
     memoryPercent = 20;  # Use up to 20% of RAM for zram swap
   };
 
+  hardware.cpu.amd = {
+  updateMicrocode = true;
+  sev.enable = true;  # Enable AMD SEV (Secure Encrypted Virtualization)
+  };
+
+  services.acpid.enable= true;
+
+  services.power-profiles-daemon.enable= true;
+
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
