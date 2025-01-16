@@ -1,55 +1,63 @@
 pylint 
+pyinstaller 
 python-dotenv 
 terminaltables 
-pyinstaller 
 pyinstaller-versionfile 
+
+
 h5py 
 lxml 
 tqdm 
 scapy 
 curio 
-numpy 
+# numpy 
 pandas 
 pyvips 
-sqlite 
-netaddr 
-openusd 
-networkx 
-openpyxl 
+pillow 
 requests 
-colorama 
-netifaces 
-markdown2 
-matplotlib 
-weasyprint 
-setuptools 
-markdown-it-py 
-nltk 
-datasets 
-opencv-python 
-streamlit 
-openai 
-huggingface-hub 
-soundfile 
-realtime-stt 
-arabic-reshaper 
-notebook 
-jupyterlab 
-ipykernel 
-ipython-sql 
-ipython-genutils 
-beautifulsoup4 
-types-beautifulsoup4 
-
-
-# ML/AI specific packages
 tensorflow 
-keras 
-pytorch-lightning 
-optuna 
-wandb 
-mlflow 
-ray[tune] 
-deepspeed 
-faster-whisper 
-bitsandbytes
+scikit-image 
+
+
+
+# sqlite 
+# netaddr 
+# openusd 
+# networkx 
+# openpyxl 
+# colorama 
+# netifaces 
+# markdown2 
+# matplotlib 
+# weasyprint 
+# setuptools 
+# markdown-it-py 
+# nltk 
+# datasets 
+# opencv-python 
+# streamlit 
+# openai 
+# huggingface-hub 
+# soundfile 
+# realtime-stt 
+# arabic-reshaper 
+# notebook 
+# jupyterlab 
+# ipykernel 
+# ipython-sql 
+# ipython-genutils 
+# beautifulsoup4 
+# types-beautifulsoup4 
+
+
+# # ML/AI specific packages
+# tensorflow 
+# keras 
+# pytorch-lightning 
+# optuna 
+# wandb 
+# mlflow 
+# ray[tune] 
+# deepspeed 
+# faster-whisper 
+# bitsandbytes
