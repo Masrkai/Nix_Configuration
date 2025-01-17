@@ -17,7 +17,20 @@
     };
 
     # Use the latest kernel packages
-    kernelPackages = pkgs.linuxPackages_latest;
+
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_12; #* FOR LATEST pkgs.linuxPackages_latest
+
+    # kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
+    #   argsOverride = rec {
+    #     version = "6.12.8";
+    #     modDirVersion = "6.12.8";
+    #       src = pkgs.fetchurl {
+    #                   url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
+    #                   sha256 = "sha256-IpHaBlygS3Fcie5QNirsPwIadBS8lj8bVnNmgsgSKXk=";
+    #       };
+    #     };
+    #   }
+    # );
 
     # Configure initial ramdisk modules
     initrd = {
@@ -38,31 +51,72 @@
 
     # Blacklist specific kernel modules
     blacklistedKernelModules = [
+    #! Camera drivers
+    "mc"
     "uvcvideo"
+    "videodev"
+    "videobuf2_v4l2"
+    "videobuf2_common"
+    "videobuf2_vmalloc"
+
+    #! AMDGPU drivers
+    "amdgpu" "radeon"
     ];
 
     # Kernel parameters configuration
     kernelParams = [
       "acpi_backlight=active" "acpi_osi=Linux"
 
-
       # CPU optimizations
       "amd_iommu=on"
-      "amd_pstate=passive"  # Enable AMD P-State driver
-      "processor.max_cstate=5"  # Limit C-states for better response time
+      "mitigations=on"
+      "amd_pstate=passive"      # Enable AMD P-State driver
+      "processor.max_cstate=7"  # Limit C-states for better response time
+
+      # Remove
+      "nmi_watchdog=0"
+      "intel_pstate=disable"
 
       # Memory security parameters
-      "page_alloc.shuffle=1"    # Helps detect memory issues earlier + Major security gain
-      "init_on_free=1"          # Fill freed pages and heap objects with zeroes
-      "vsyscall=none"           # Disables legacy system call interface
       "slab_nomerge"            # Disables merging of slabs of similar sizes
+      "vsyscall=none"           # Disables legacy system call interface
       "slub_debug=FZ"           # Enables sanity checks (F) and redzoning (Z)
+      "init_on_free=1"          # Fill freed pages and heap objects with zeroes
+      "page_alloc.shuffle=1"    # Helps detect memory issues earlier + Major security gain
 
-      #"mem_sleep_default=deep" # Force deep sleep instead of s2idle
+      # New memory management parameters
+      "hugepagesz=2M"                # Enable 2MB huge pages
+      "hugepages=2048"               # Reserve 4GB for huge pages (2048 * 2MB)
+      "default_hugepagesz=2M"        # Set default huge page size
+      "transparent_hugepage=madvise" # Enable transparent huge pages
+
+      "pti=on"                      # Page Table Isolation for security
+      "page_poison=1"               # Poison freed memory pages
+      "randomize_kstack_offset=on"  # Enhanced kernel stack ASLR
+
     ];
 
     kernel.sysctl = {
-    "vm.swappiness" = 10;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
+
+    #! Swap related
+    "vm.swappiness" = 0;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
+
+    #! Memory management
+    "vm.dirty_ratio" = 10;                  # Full writeback at 10%
+    "vm.page-cluster" = 3;                  # Default page clustering (test with 0 if needed)
+    "vm.min_free_kbytes" = 65536;           # Reserve 64MB of free memory (adjust as needed)
+    "vm.dirty_background_ratio" = 5;        # Background writeback at 5%
+    "vm.compaction_proactiveness" = 0;      # Default memory compaction (change to 1 if fragmentation issues arise)
+
+    # Memory security
+    "vm.mmap_rnd_bits" = 32;                # Increase ASLR entropy
+    "kernel.kptr_restrict" = 2;             # Hide kernel pointers
+    "kernel.dmesg_restrict" = 1;            # Restrict dmesg access
+    "vm.mmap_rnd_compat_bits" = 16;         # Compatible ASLR entropy
+
+    # DDR5 and NUMA settings
+    "vm.zone_reclaim_mode" = 0;             # Disable zone reclaim for NUMA
+    "kernel.numa_balancing" = 0;            # Disable automatic NUMA balancing
     };
 
     # No extra module packages
