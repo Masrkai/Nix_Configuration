@@ -21,9 +21,11 @@ let
     ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
     MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
     mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
-
-
   };
+
+  PyVersion = 312;
+  pythonSP = pkgs."python${toString PyVersion}";
+  pythonPackages = pkgs."python${toString PyVersion}Packages";
 
 in
 
@@ -187,19 +189,32 @@ in
 
   nixpkgs = {
     overlays = [
-     (self: super: {
-      filterOutX11 = super.lib.filterAttrs (name: pkg:
-        !(self.lib.strings.contains "libX11" (toString pkg) || self.lib.strings.contains "xset" (toString pkg) || self.lib.strings.contains "x11-utils" (toString pkg) )) super;
+      (self: super: {
 
-      jax = super.python312Packages.jax.override {
-        torch = super.python312Packages.torchWithCuda;
+      # Establish Python 3.12 as the system-wide default
+      python = self.python312;
+      python3 = self.python312;
+      pythonPackages = self.python312Packages;
+      python3Packages = self.python312Packages;
+
+      filterOutX11 = super.lib.filterAttrs (name: pkg:
+        !(self.lib.strings.contains "libX11" (toString pkg) ||
+          self.lib.strings.contains "xset" (toString pkg) ||
+          self.lib.strings.contains "x11-utils" (toString pkg) ))
+
+      super;
+
+
+
+      jax = super.pythonPackages.jax.override {
+        torch = super.pythonPackages.torchWithCuda;
       };
 
-      torchWithCuda = super.python312Packages.torchWithCuda.override {
+      torchWithCuda = super.pythonPackages.torchWithCuda.override {
         magma = super.magma-cuda;
       };
 
-      realtime-stt = super.python311Packages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
+      realtime-stt = super.pythonPackages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
       })
     ];
     #-------------------------------------------------------------------->
@@ -321,7 +336,7 @@ in
         datasets
         # speechbrain
         # transformers
-        opencv-python
+        # opencv-python
 
         # jax
         # torchWithCuda
@@ -338,7 +353,7 @@ in
 
           #> speechrecognition
           soundfile
-          realtime-stt
+          # realtime-stt
           arabic-reshaper
 
         #-> Juniper/jupter
@@ -602,7 +617,6 @@ in
   yt-dlp
   haruna
   amberol
-  jackett
   syncthing
   qbittorrent
   unstable.ani-cli
@@ -638,7 +652,7 @@ in
   gimp
   kooha
   blender
-  davinci-resolve
+  # davinci-resolve
   thunderbird-bin
   gnome-disk-utility
   libreoffice-qt6-still
@@ -889,11 +903,18 @@ in
   # services.colord.enable = true;
 
   #---> Qbit_torrent x Jackett
-    services.jackett = {
-      enable = true;
-      openFirewall = false;
-      dataDir = "/var/lib/jackett";
-    };
+    # services.jackett = {
+    #   port = 0117;
+    #   enable = true;
+    #   package = pkgs.jackett;
+
+    #   user = "jackett" ;
+    #   group = "jackett" ;
+
+    #   openFirewall = false;
+
+    #   dataDir = "/var/lib/jackett/.config/Jackett";
+    # };
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;
