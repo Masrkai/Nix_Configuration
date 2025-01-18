@@ -51,7 +51,7 @@ programs.bash = {
     #-? NixOS Specific
     switch =  "sudo -v && sudo bash -c 'nixos-rebuild switch --show-trace 2>&1' | nom";
     update = "sudo nix-channel --update && sudo nixos-rebuild switch --upgrade --show-trace 2>&1 |&  nom";
-    checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 7 '#include <...> search starts here:'";
+    checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 12 '#include <...> search starts here:'";
   };
 };
 }
