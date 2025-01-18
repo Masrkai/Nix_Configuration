@@ -118,6 +118,28 @@
                   method = "disabled";      #? Disable IPv6
                 };
             };
+            "Ethernet 1" = {
+                connection = {
+                id = "Ethernet 1";
+                type = "ethernet";
+                permissions = "";
+                interface-name = "eth0";              # Specify the interface name
+                autoconnect = false;
+                permanent = true;  # This makes the profile persistent
+                };
+                ethernet = {
+                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                };
+                ipv4 = {
+                  method = "manual";
+                  address1 = "192.168.2.10/24,192.168.2.1";  # IP/prefix,gateway
+                  dns = "127.0.0.1";         # You can add more DNS servers if needed
+                  ignore-auto-dns = true;
+                };
+                ipv6 = {
+                  method = "disabled";      #? Disable IPv6
+                };
+            };
             "USB" = {
                 connection = {
                 id = "USB";
@@ -169,6 +191,35 @@
               ignore-auto-dns = true;    # Ignore DNS from DHCP
             };
             ipv6.method = "disabled";
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          Repel = {
+            connection = {
+              id = "Repel";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 1;  #! Higher means more priority priority
+            };
+            wifi = {
+              ssid = "Repel";
+              mode = "infrastructure";
+              mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = "\${Repel_psk}";
+              auth-alg = "open";
+            };
+            ipv4 = {
+                  method = "manual";
+                  address1 = "192.168.1.10/24,192.168.1.1";  # IP/prefix,gateway
+                  dns = "127.0.0.1";         # You can add more DNS servers if needed
+                  ignore-auto-dns = true;
+                };
+            ipv6 = {
+              method = "disabled";
+            };
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           AfafAfaf = {
@@ -447,11 +498,11 @@
     enable = true;
     settings = {
     listen_addresses = [ "127.0.0.1@53"
-                         "0.0.0.0@53"
+                        #  "0.0.0.0@53"
                         #"172.20.0.1@53"       #? Listen on the default NetworkManager shared subnet
                         #"0::1@5353"           #! ::1 cause error, use 0::1 instead
                        ];
-    idle_timeout = 10000;
+    idle_timeout = 15000;
     round_robin_upstreams = 1;
     edns_client_subnet_private = 1;
     tls_query_padding_blocksize = 256;

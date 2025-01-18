@@ -7,9 +7,9 @@ mkMerge [
     boot.kernel.sysctl = mkMerge [
       # Core kernel security settings
       {
-        "kernel.ftrace_enabled" = mkDefault false;
         "kernel.dmesg_restrict" = mkForce 1;
         "fs.suid_dumpable" = mkOverride 500 0;
+        "kernel.ftrace_enabled" = mkDefault false;
         "net.core.bpf_jit_enable" = mkDefault false;
       }
 
@@ -28,12 +28,26 @@ mkMerge [
         "net.ipv4.tcp_max_syn_backlog" = mkForce 4096;
       }
 
+      # keepalive for connection maintenance
+      {
+        "net.ipv4.tcp_keepalive_time" = mkForce 60;
+        "net.ipv4.tcp_keepalive_intvl" = mkForce 10;
+        "net.ipv4.tcp_keepalive_probes" = mkForce 6;
+
+      }
+
+      # Larger buffer for handling connection instability
+      {
+          "net.core.rmem_max" = mkForce 2500000;
+          "net.core.wmem_max" = mkForce 2500000;
+      }
+
       # Additional network security
       {
-        "net.ipv4.icmp_echo_ignore_all" = mkForce 1;
-        "net.ipv4.conf.all.rp_filter" = mkForce 1;
-        "net.ipv4.conf.default.rp_filter" = mkForce 1;
         "net.ipv4.tcp_rfc1337" = mkForce 1;
+        "net.ipv4.conf.all.rp_filter" = mkForce 1;
+        "net.ipv4.icmp_echo_ignore_all" = mkForce 1;
+        "net.ipv4.conf.default.rp_filter" = mkForce 1;
         "net.ipv4.conf.all.log_martians" = mkDefault true;
         "net.ipv4.conf.default.log_martians" = mkDefault true;
         "net.ipv4.icmp_ignore_bogus_error_responses" = mkForce 1;
