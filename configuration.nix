@@ -92,14 +92,19 @@ in
 
       CPLUS_INCLUDE_PATH = let
         includeDirs = [
+          "${pkgs.glibc.dev}/include"  # Add this line
+
+          "${pkgs.boost185}/include/"
           "${pkgs.eigen}/include/eigen3"
           "${pkgs.nlohmann_json}/include"
-          "${pkgs.boost185}/include/"
         ];
       in builtins.concatStringsSep ":" includeDirs;
 
       LIBRARY_PATH = let
         libDirs = [
+          "${pkgs.glibc.dev}/include"  # Add this line
+
+
           "${pkgs.eigen}/lib"
           "${pkgs.nlohmann_json}/lib"
           "${pkgs.boost185}/lib"
@@ -192,10 +197,10 @@ in
       (self: super: {
 
       # Establish Python 3.12 as the system-wide default
-      python = self.python312;
-      python3 = self.python312;
-      pythonPackages = self.python312Packages;
-      python3Packages = self.python312Packages;
+      # python = self.python312;
+      # python3 = self.python312;
+      # pythonPackages = self.python312Packages;
+      # python3Packages = self.python312Packages;
 
       filterOutX11 = super.lib.filterAttrs (name: pkg:
         !(self.lib.strings.contains "libX11" (toString pkg) ||
@@ -393,12 +398,20 @@ in
   (hiPrio boost185)
 
   #! Compilers + Extras
+  
+  # Add these C/C++ development essentials
+  gcc-unwrapped.lib
+  glibc
+  glibc.dev
+
   (lowPrio gdb)
-  (hiPrio gcc)
+  (hiPrio gcc_multi)
 
   clang-tools
   clang-analyzer
-  (lowPrio clang_18)
+  (hiPrio clang)
+  llvmPackages.libclang
+  llvmPackages.libcxx
 
   #-> Rust
   rustc
@@ -437,7 +450,7 @@ in
                             #* C++
                             twxs.cmake
                             vadimcn.vscode-lldb
-                            llvm-vs-code-extensions.vscode-clangd
+                            # llvm-vs-code-extensions.vscode-clangd
 
                             #* Rust
                             rust-lang.rust-analyzer
@@ -491,6 +504,14 @@ in
                             github.vscode-pull-request-github
     ]
     ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+
+                                                        # https://open-vsx.org/extension/llvm-vs-code-extensions/vscode-clangd
+                                                        {
+                                                          name = "vscode-clangd";
+                                                          publisher = "llvm-vs-code-extensions";
+                                                          version = "0.1.33";
+                                                          hash = "sha256-NAQ7qT99vudcb/R55pKY3M5H6sV32aB4P8IWZKVQJas=";
+                                                        }
                                                         {
                                                           name = "remote-ssh-edit";
                                                           publisher = "ms-vscode-remote";
