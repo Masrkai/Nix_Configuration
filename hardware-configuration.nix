@@ -164,8 +164,17 @@
 
   services.power-profiles-daemon.enable= true;
 
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = false; # powers up the default Bluetooth controller on boot
+
+  hardware.bluetooth = {
+  enable = true; # enables support for Bluetooth
+  powerOnBoot = false; # powers up the default Bluetooth controller on boot
+
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
+  };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
