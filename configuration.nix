@@ -196,7 +196,7 @@ in
     overlays = [
       (self: super: {
 
-      # Establish Python 3.12 as the system-wide default
+      #> Establish Python 3.12 as the system-wide default
       # python = self.python312;
       # python3 = self.python312;
       # pythonPackages = self.python312Packages;
@@ -209,7 +209,9 @@ in
 
       super;
 
-
+      jackett = super.jackett.overrideAttrs (oldAttrs: {
+        doCheck = false;
+      });
 
       jax = super.pythonPackages.jax.override {
         torch = super.pythonPackages.torchWithCuda;
@@ -924,18 +926,18 @@ in
   # services.colord.enable = true;
 
   #---> Qbit_torrent x Jackett
-    # services.jackett = {
-    #   port = 0117;
-    #   enable = true;
-    #   package = pkgs.jackett;
+    services.jackett = {
+      port = 9117;
+      enable = true;
+      package = pkgs.jackett;
 
-    #   user = "jackett" ;
-    #   group = "jackett" ;
+      user = "jackett" ;
+      group = "jackett" ;
 
-    #   openFirewall = false;
+      openFirewall = false;
 
-    #   dataDir = "/var/lib/jackett/.config/Jackett";
-    # };
+      dataDir = "/var/lib/jackett/";
+    };
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;
