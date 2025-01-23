@@ -1,5 +1,10 @@
 { config, lib, pkgs, modulesPath, ... }:
 
+
+let
+  # Define username as a variable at the top level
+  username = "masrkai";
+in
 {
 
  systemd = {
@@ -50,11 +55,11 @@
             ProtectSystem = "strict";
 
             # Enhanced process isolation
-            # PrivateUsers = true;        # Isolate user namespace
-            ProtectClock = true;        # Prevent clock manipulation
-            ProtectHostname = true;     # Prevent hostname changes
-            LockPersonality = true;     # Lock down ABI personality
-            ProcSubset = "all";         # Restrict /proc visibility
+            # PrivateUsers = true;       # Isolate user namespace
+            ProtectClock = true;         # Prevent clock manipulation
+            ProtectHostname = true;      # Prevent hostname changes
+            LockPersonality = true;      # Lock down ABI personality
+            ProcSubset = "all";          # Restrict /proc visibility
             ProtectProc = "ptraceable";  # Further /proc hardening
 
             # Device and kernel protection layers
@@ -124,7 +129,75 @@
             UMask = "0027";            # Restrictive file permissions
         };
       };
+
+
+      "Jackett_Ensurance" = {
+        description = "Create the jj.json file for qBittorrent";
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          ExecStart = let
+            script = pkgs.writeShellScript "Jackett_Ensurance" ''
+              ${pkgs.coreutils}/bin/cat > /home/${username}/.local/share/qBittorrent/nova3/engines/jackett.json << 'EOF'
+              {
+                  "api_key": "n1asleravzpgw5pq7jxtpsmg3oc5inyc",
+                  "thread_count": 20,
+                  "tracker_first": false,
+                  "url": "http://127.0.0.1:9117"
+              }
+              EOF
+            '';
+          in "${script}";
+
+          User = username;
+          Type = "oneshot";
+          ProtectHome = false;
+          DynamicUser = false;
+          RemainAfterExit = true;
+          ReadWritePaths = [ "/home/${username}/.local/share/qBittorrent/nova3/engines/" ];
+
+          NoNewPrivileges = true;
+          ProtectSystem = "strict";
+
+          CapabilityBoundingSet = [ "CAP_CHOWN" "CAP_DAC_OVERRIDE" ];
+          AmbientCapabilities = [ "CAP_CHOWN" "CAP_DAC_OVERRIDE" ];
+
+          # Network protocol stack access control
+          RestrictAddressFamilies = [
+                "~AF_UNIX"      # Local socket communication
+                "~AF_INET"      # IPv4 support
+                "~AF_INET6"     # IPv6 support
+                "~AF_PACKET"    # Raw packet manipulation
+                "~AF_NETLINK"   # Kernel networking communications
+                "~AF_BLUETOOTH" # Bluetooth support
+          ];
+
+          SystemCallFilter= [
+            "~@swap"
+            "~@clock"
+            "~@debug"
+            "~@mount"
+            "~@module"
+            "~@raw-io"
+            "~@reboot"
+            "~@obsolete"
+            "~@resources"
+            "~@privileged"
+            "~@cpu-emulation"
+          ];
+
+
+
+          # Ensure home directory is mounted
+          RequiresMountsFor = [ "/home/${username}" ];
+        };
+      };
+
+
+
+#-------------------------------------------------------------------------------->
     };
   };
+
+
 
 }
