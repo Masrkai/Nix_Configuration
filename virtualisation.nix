@@ -17,11 +17,15 @@
   win-spice
   win-virtio
 
-  virtiofsd
-  virglrenderer
+  # virtiofsd
+  # virglrenderer
 
-  virtio-win
+  # virtio-win
  ];
+
+  users.groups.libvirt = {
+  members = [ "masrkai" ];
+  };
 
    #--> Qemu KVM & VirtualBox
     virtualisation = lib.mkForce {
@@ -35,6 +39,11 @@
           package = pkgs.qemu_full;
           runAsRoot = true;
           swtpm.enable = true;
+          vhostUserPackages = with pkgs; [
+            virtiofsd
+            virtio-win
+            virglrenderer
+          ];
 
           ovmf = {
             enable = true;
@@ -46,7 +55,15 @@
         };
       };
     };
-    services.spice-vdagentd.enable = false;
+    services.spice-vdagentd.enable = true;
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
+
+
+  # networking.interfaces.br0 = {
+  # ipv4.addresses = [
+  #   { address = "192.168.1.2"; prefixLength = 24; }
+  # ];
+  # ipv4.gateway = "192.168.1.1";
+  # };
 }
