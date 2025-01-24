@@ -12,6 +12,7 @@ let
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
     #custom-httrack = pkgs.libsForQt5.callPackage ./Programs/Packages/custom-httrack.nix {};
+    lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
 
     #! Bash
     backup = pkgs.callPackage ./Programs/custom/backup.nix {};
@@ -91,8 +92,12 @@ in
       MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
 
       CPLUS_INCLUDE_PATH = let
+      #! This environment variable is specifically for header files
+      #? Should contain paths to .h and .hpp files
+      #* Typically includes /include directories
         includeDirs = [
-          "${pkgs.glibc.dev}/include"  # Add this line
+          "${pkgs.glibc.dev}/include"
+          "${pkgs.stdenv.cc.cc.lib}/include"
 
           "${pkgs.boost185}/include/"
           "${pkgs.eigen}/include/eigen3"
@@ -100,16 +105,24 @@ in
         ];
       in builtins.concatStringsSep ":" includeDirs;
 
-      LIBRARY_PATH = let
-        libDirs = [
-          "${pkgs.glibc.dev}/include"  # Add this line
 
+      LIBRARY_PATH = let
+      #! Used for linking, points to library binary locations
+      #? Contains paths to .so and .a files
+      #* Typically includes /lib directories
+        libDirs = [
+          "${pkgs.glibc.dev}/lib"
+          "${pkgs.stdenv.cc.cc.lib}/lib"
 
           "${pkgs.eigen}/lib"
           "${pkgs.nlohmann_json}/lib"
           "${pkgs.boost185}/lib"
         ];
       in builtins.concatStringsSep ":" libDirs;
+
+      # Compiler configuration
+      CC = "gcc";
+      CXX = "g++";
      };
     };
 
@@ -258,7 +271,6 @@ in
   #customPackages.airgeddon
   #customPackages.custom-httrack
 
-  lm_sensors
 
   searxng
   nix-prefetch-git
@@ -409,10 +421,8 @@ in
   (lowPrio gdb)
   (hiPrio gcc_multi)
 
-  clang-tools
-  clang-analyzer
   (hiPrio clang)
-  llvmPackages.libclang
+  (lowPrio clang-tools)
   llvmPackages.libcxx
 
   #-> Rust
@@ -626,7 +636,9 @@ in
 #? User-Daily:
 #?#############
   #-> Ai
-  lmstudio
+  # lmstudio
+  customPackages.lm-studio   #? relying on custom package rather than nix packages because they are ancient in release
+
   # koboldcpp
 
   #-> Monitoring
@@ -1040,6 +1052,12 @@ in
             initial_zoom_level 0.75
           '';
 
+          "qBittorrent/nova3/engines/jj.json".text = ''
+          {
+            "name": "example",
+            "url": "https://example.com"
+          }
+        '';
 
           "xdg/ghostty/config".text = "
             font-family = Iosevka Nerd Font
