@@ -60,6 +60,7 @@
                           1234         #? NTS Time server
                           # 6881       #? Qbittorrent
                           # 16509      #? libvirt
+                          5353
                           # 8384 22000 #? Syncthing
                           443 8888 18081
                         ];
@@ -122,10 +123,13 @@
   services.stubby = lib.mkForce {
     enable = true;
     settings = {
-    listen_addresses = [ "127.0.0.1@53"
-                        #"0.0.0.0@53"
-                        #"172.20.0.1@53"       #? Listen on the default NetworkManager shared subnet
-                        #"0::1@5353"           #! ::1 cause error, use 0::1 instead
+    listen_addresses = [
+                        #  "127.0.0.1@53"
+                         "127.0.0.1@5353"
+
+                         #"0.0.0.0@53"
+                         #"172.20.0.1@53"       #? Listen on the default NetworkManager shared subnet
+                         #"0::1@5353"           #! ::1 cause error, use 0::1 instead
                        ];
 
     idle_timeout = 300000;
@@ -163,6 +167,53 @@
         #   address_data = "149.112.112.112";
         #   tls_auth_name = "dns.quad9.net";
         # }
+      ];
+    };
+  };
+
+  #> DNS Caching using Unbound
+  services.unbound = {
+    enable = true;
+    settings = {
+      server = {
+        access-control = [
+          "0.0.0.0/0 refuse"     # Refuse all other networks by default
+
+          "127.0.0.0/8 allow"    # Localhost
+
+          "10.0.0.0/8 allow"     # Another private network range
+
+          "172.16.0.0/12 allow"  # Another private network range
+
+          "192.0.0.0/8 allow"    # Private network range
+          "192.168.0.0/16 allow" # Common home/local network range
+        ];
+        interface = [
+        # "0.0.0.0"
+        "127.0.0.1"
+        ];  # Listen on localhost and all interfaces
+        do-ip4 = "yes";
+        do-ip6 = "no";  # Disable IPv6 if not needed
+        do-udp = "yes";
+        do-tcp = "yes";
+        prefetch = "yes";  # Prefetch popular domains
+        qname-minimisation = "yes";  # Enhance privacy
+        cache-min-ttl = 300;  # Minimum TTL for cached entries
+        cache-max-ttl = 86400;  # Maximum TTL for cached entries
+        do-not-query-localhost = "no";  # Allow querying localhost
+
+        verbosity = 2;  # Moderate logging
+        log-queries = "yes";
+        log-replies = "yes";
+        log-tag-queryreply = "yes";
+
+      };
+      forward-zone = [
+        {
+          name = ".";
+          forward-addr = "127.0.0.1@5353";  # Match Stubby's port
+          forward-first = "yes";  # Allow recursive resolution if forwarding fails
+        }
       ];
     };
   };
