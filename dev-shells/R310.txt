@@ -1,0 +1,86 @@
+pylint
+pyinstaller
+python-dotenv
+terminaltables
+pyinstaller-versionfile
+
+
+h5py
+lxml
+tqdm
+scapy
+curio
+numpy
+pandas
+pyvips
+pillow
+requests
+scikit-image
+
+sympy
+scikit-learn
+# sqlcipher
+
+
+pylint
+ipython
+jupyter
+notebook
+jupyterlab
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# tensorflow
+# netaddr
+# openusd
+# networkx
+# openpyxl
+# colorama
+# netifaces
+# markdown2
+# matplotlib
+# weasyprint
+# setuptools
+# markdown-it-py
+# nltk
+# datasets
+# opencv-python
+# streamlit
+# openai
+# huggingface-hub
+# soundfile
+# realtime-stt
+# arabic-reshaper
+# notebook
+# jupyterlab
+# ipykernel
+# ipython-sql
+# ipython-genutils
+# beautifulsoup4
+# types-beautifulsoup4
+
+
+# # ML/AI specific packages
+# tensorflow
+# keras
+# pytorch-lightning
+# optuna
+# wandb
+# mlflow
+# ray[tune]
+# deepspeed
+# faster-whisper
+# bitsandbytes
