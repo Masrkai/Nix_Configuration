@@ -382,3 +382,39 @@
   #     alsa.enable = true;
   #     pulse.enable = true;
   #   };
+
+    # # Define the network check script
+  # environment.etc."check-internet.sh" = {
+  #   text = ''
+  #     #!/bin/sh
+  #     # Check for internet connectivity by pinging a reliable external host (e.g., Cloudflare's 1.1.1.1)
+  #     if curl -s https://1.1.1.1 > /dev/null; then
+  #       echo "Internet connection is working."
+  #     else
+  #       echo "No internet connection. Restarting stubby..."
+  #       systemctl restart stubby.service
+  #     fi
+  #   '';
+  #   mode = "0700";  # Only the owner (root) can read, write, and execute
+  #   uid = 0;        # Set owner to root (user ID 0)
+  #   gid = 0;        # Set group to root (group ID 0)
+  # };
+
+  # # Create a systemd service that runs the check-internet script periodically
+  # systemd.services.check-internet = {
+  #   description = "Check for internet connectivity and restart stubby if down";
+  #   serviceConfig = {
+  #     ExecStart = "/etc/check-internet.sh";
+  #   };
+  #   wantedBy = [ "multi-user.target" ];
+  # };
+
+  # # Create a systemd timer to run the check-internet service every 5 minutes
+  # systemd.timers.check-internet = {
+  #   description = "Run check-internet every 1 minute";
+  #   wantedBy = [ "timers.target" ];
+  #   timerConfig = {
+  #     OnBootSec = "1min";   # First run 1 minute after boot
+  #     OnUnitActiveSec = "1min";  # Run every 5 minutes
+  #   };
+  # };
