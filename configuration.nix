@@ -28,6 +28,10 @@ let
   pythonSP = pkgs."python${toString PyVersion}";
   pythonPackages = pkgs."python${toString PyVersion}Packages";
 
+
+  # inherit (config._module.args.secrets) searx-secret-key;
+
+
 in
 
 {
@@ -40,6 +44,7 @@ in
       ./systemd.nix
       ./desktop.nix
       ./bash.nix
+      ./Ai.nix
       ./dev-shells/collector.nix
 
     ];
@@ -98,6 +103,8 @@ in
         includeDirs = [
           "${pkgs.glibc.dev}/include"
           "${pkgs.stdenv.cc.cc.lib}/include"
+          "${pkgs.llvmPackages.libcxx}/include/c++/v1"
+
 
           "${pkgs.boost185}/include/"
           "${pkgs.eigen}/include/eigen3"
@@ -113,16 +120,26 @@ in
         libDirs = [
           "${pkgs.glibc.dev}/lib"
           "${pkgs.stdenv.cc.cc.lib}/lib"
+          "${pkgs.llvmPackages.libcxx}/lib"
 
           "${pkgs.eigen}/lib"
-          "${pkgs.nlohmann_json}/lib"
           "${pkgs.boost185}/lib"
+          "${pkgs.nlohmann_json}/lib"
         ];
       in builtins.concatStringsSep ":" libDirs;
 
       # Compiler configuration
       CC = "gcc";
       CXX = "g++";
+
+      # Additional flags for clang to use libstdc++
+      LDFLAGS = lib.mkForce "-L${pkgs.stdenv.cc.cc.lib}/lib";
+      CXXFLAGS = lib.mkForce "-stdlib=libstdc++ -I${pkgs.stdenv.cc.cc.lib}/include -I${pkgs.stdenv.cc.cc.lib}/include/c++/13.3.0 -I${pkgs.stdenv.cc.cc.lib}/include/c++/13.3.0/x86_64-unknown-linux-gnu";
+
+      # Other optional environment variables for clang
+      CLANG_GCC_TOOLCHAIN = lib.mkForce "${pkgs.stdenv.cc}";
+      CLANG_LIBRARY_DIRS = lib.mkForce "${pkgs.llvmPackages.libcxx}/lib";
+      CLANG_INCLUDE_DIRS = lib.mkForce "${pkgs.llvmPackages.libcxx}/include/c++/v1";
      };
     };
 
@@ -208,48 +225,39 @@ in
   nixpkgs = {
     overlays = [
       (self: super: {
+        # Rest of your existing configurations
+        filterOutX11 = super.lib.filterAttrs (name: pkg:
+          !(self.lib.strings.contains "libX11" (toString pkg) ||
+            self.lib.strings.contains "xset" (toString pkg) ||
+            self.lib.strings.contains "x11-utils" (toString pkg)))
+          super;
 
-      #> Establish Python 3.12 as the system-wide default
-      # python = self.python312;
-      # python3 = self.python312;
-      # pythonPackages = self.python312Packages;
-      # python3Packages = self.python312Packages;
+        jackett = super.jackett.overrideAttrs (oldAttrs: {
+          doCheck = false;
+        });
 
-      filterOutX11 = super.lib.filterAttrs (name: pkg:
-        !(self.lib.strings.contains "libX11" (toString pkg) ||
-          self.lib.strings.contains "xset" (toString pkg) ||
-          self.lib.strings.contains "x11-utils" (toString pkg) ))
+        wine = super.wineWowPackages.stableFull.override {
+          x11Support = false;
+          cupsSupport = false;
+          waylandSupport = true;
+        };
 
-      super;
+        # jax = super.pythonPackages.jax.override {
+        #   torch = super.pythonPackages.torchWithCuda;
+        # };
 
-      jackett = super.jackett.overrideAttrs (oldAttrs: {
-        doCheck = false;
-      });
-
-      jax = super.pythonPackages.jax.override {
-        torch = super.pythonPackages.torchWithCuda;
-      };
-
-      torchWithCuda = super.pythonPackages.torchWithCuda.override {
-        magma = super.magma-cuda;
-      };
-
-      realtime-stt = super.pythonPackages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
+        # realtime-stt = super.pythonPackages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
       })
     ];
     #-------------------------------------------------------------------->
-    config= {
-    allowUnfree = true;
-        permittedInsecurePackages = [
+    config = {
+      allowUnfree = true;
+      permittedInsecurePackages = [
         "electron-27.3.11"
         "qbittorrent-4.6.4"
-        ];
-        # packageOverrides = pkgs: {
-        #  xorg = null;
-        # };
+      ];
     };
   };
-
 
 
 
@@ -412,7 +420,7 @@ in
   (hiPrio boost185)
 
   #! Compilers + Extras
-  
+
   # Add these C/C++ development essentials
   gcc-unwrapped.lib
   glibc
@@ -421,8 +429,8 @@ in
   (lowPrio gdb)
   (hiPrio gcc_multi)
 
-  (hiPrio clang)
-  (lowPrio clang-tools)
+  clang_multi
+  clang-tools
   llvmPackages.libcxx
 
   #-> Rust
@@ -446,6 +454,7 @@ in
   direnv
   nix-tree
   nix-direnv
+  nix-eval-jobs
   nix-output-monitor
 
   #-->UML
@@ -645,6 +654,7 @@ in
   btop
   powertop
   dmidecode
+  nvtopPackages.nvidia
   mission-center
 
   #-> Contrnt
@@ -688,6 +698,7 @@ in
   kooha
   blender
   # davinci-resolve
+  ffmpeg
   thunderbird-bin
   gnome-disk-utility
   libreoffice-qt6-still
@@ -695,11 +706,15 @@ in
   #-> Gaming
   lutris
   bottles
+  # proton-ge-bin
   heroic-unwrapped
 
   dxvk
+  vkd3d
+  mangohud
+
   winetricks
-  wineWow64Packages.waylandFull
+  wineWowPackages.stableFull
 
   #Games
   mindustry-wayland
@@ -981,8 +996,11 @@ in
   services.asusd= {
     enable = true;
     enableUserService = true;
-
   };
+
+
+
+  # services.open-webui.enable = true;
 
   services.udev.extraRules = ''
   ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
@@ -1051,71 +1069,6 @@ in
             # Initial zoom level (optional)
             initial_zoom_level 0.75
           '';
-
-          "qBittorrent/nova3/engines/jj.json".text = ''
-          {
-            "name": "example",
-            "url": "https://example.com"
-          }
-        '';
-
-          "xdg/ghostty/config".text = "
-            font-family = Iosevka Nerd Font
-            font-size = 14
-            theme = GruvboxDarkHard
-            shell-integration-features = no-cursor,sudo,no-title
-            cursor-style = block
-            adjust-cell-height = 35%
-            background-opacity = 0.55
-
-            mouse-hide-while-typing = true
-            mouse-scroll-multiplier = 2
-
-            window-padding-balance = true
-            window-save-state = always
-            background = 1C2021
-            # foreground = d4be98
-
-            # keybindings
-            keybind = cmd+s>r=reload_config
-            keybind = cmd+s>x=close_surface
-
-            keybind = cmd+s>n=new_window
-
-            # tabs 
-            keybind = cmd+s>c=new_tab
-            keybind = cmd+s>shift+l=next_tab
-            keybind = cmd+s>shift+h=previous_tab
-            keybind = cmd+s>comma=move_tab:-1
-            keybind = cmd+s>period=move_tab:1
-
-            # quick tab switch
-            keybind = cmd+s>1=goto_tab:1
-            keybind = cmd+s>2=goto_tab:2
-            keybind = cmd+s>3=goto_tab:3
-            keybind = cmd+s>4=goto_tab:4
-            keybind = cmd+s>5=goto_tab:5
-            keybind = cmd+s>6=goto_tab:6
-            keybind = cmd+s>7=goto_tab:7
-            keybind = cmd+s>8=goto_tab:8
-            keybind = cmd+s>9=goto_tab:9
-
-            # split
-            keybind = cmd+s>\=new_split:right
-            keybind = cmd+s>-=new_split:down
-
-            keybind = cmd+s>j=goto_split:bottom
-            keybind = cmd+s>k=goto_split:top
-            keybind = cmd+s>h=goto_split:left
-            keybind = cmd+s>l=goto_split:right
-
-            keybind = cmd+s>z=toggle_split_zoom
-
-            keybind = cmd+s>e=equalize_splits
-
-            # other
-            copy-on-select = clipboard
-           ";
         };
       };
 
