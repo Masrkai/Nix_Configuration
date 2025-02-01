@@ -2,7 +2,7 @@
 
 {
   environment.shellAliases = {
-    "python312-shell" = "nix-shell /etc/nixos/dev-shells/python312-shell.nix";
-    "python310-shell" = "nix-shell /etc/nixos/dev-shells/python310-shell.nix";
+    "python-shell" = "nix-shell --command bash /etc/nixos/dev-shells/python-shell.nix";
+    "js-shell" = "nix-shell --command bash  /etc/nixos/dev-shells/js-shell.nix";
   };
 }
