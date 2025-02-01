@@ -12,6 +12,8 @@ let
 in
 
 {
+  #> Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia"];
 
   boot = lib.mkMerge [
     {
@@ -74,18 +76,48 @@ in
     ];
   };
 
-  #> Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
-
-  nixpkgs.config = lib.mkMerge[
+  nixpkgs = lib.mkMerge [
     {
-    cudaSupport = true;
-    cudaCapabilities = [
-      "8.9"    #? RTX 40 series
-      "8.6"    #? RTX 30 series
-      "7.5"    #? RTX 20 series
-    ];
-    cudaForwardCompat = false;
+      overlays = [
+        (self: super: {
+          # Force CUDA 12.4 for all packages
+          cudaPackages = super.cudaPackages_12_4;
+
+          magma = super.magma.override {
+            cudaSupport = true;
+            rocmSupport = false;
+
+            # gpuTargets = [ "sm_89" ];  # RTX 4060
+            cudaPackages = self.cudaPackages;  # Use the global CUDA 12.4
+          };
+
+          # Ensure PyTorch uses the same CUDA version
+          python3Packages = super.python3Packages.override (old: {
+            overrides = super.lib.composeExtensions (old.overrides or (_: _: {})) (pfinal: pprev: {
+              torch = pprev.torch.override {
+                cudaPackages = self.cudaPackages;
+                magma = self.magma;
+              };
+            });
+          });
+
+
+        })
+
+
+      ];
+    }
+
+    {
+      config = {
+        cudaSupport = true;
+        cudaCapabilities = [
+          "8.9"    #? RTX 40 series
+          "8.6"    #? RTX 30 series
+          "7.5"    #? RTX 20 series
+        ];
+        cudaForwardCompat = false;
+      };
     }
   ];
 
