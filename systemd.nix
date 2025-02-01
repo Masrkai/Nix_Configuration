@@ -132,7 +132,7 @@ in
 
 
       "Environment_Insurance" = {
-        description = "Create the jj.json file for qBittorrent";
+        description = "Ensure system configurations are in place";
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           ExecStart = let
@@ -147,69 +147,68 @@ in
               EOF
             '';
             ghostty_Script = pkgs.writeShellScript "ghostty_Ensurance" ''
-              ${pkgs.coreutils}/bin/cat > /home/${username}/.config/ghostty/config << 'EOF'
+              ${pkgs.coreutils}/bin/cat > /home/${username}/.config/ghostty/config << 'END_OF_CONFIG_FOR_GHOSTTY'
+              font-family = Iosevka Nerd Font
+              font-size = 14
+              # theme = GruvboxDarkHard
+              shell-integration-features = no-cursor,sudo,no-title
+              cursor-style = block
+              # adjust-cell-height = 35%
+              background-opacity = 0.75
+              window-colorspace = "display-p3"
 
-            font-family = Iosevka Nerd Font
-            font-size = 14
-            # theme = GruvboxDarkHard
-            shell-integration-features = no-cursor,sudo,no-title
-            cursor-style = block
-            # adjust-cell-height = 35%
-            background-opacity = 0.75
-            window-colorspace = "display-p3"
+              mouse-hide-while-typing = true
+              mouse-scroll-multiplier = 2
 
-            mouse-hide-while-typing = true
-            mouse-scroll-multiplier = 2
+              window-padding-balance = true
+              window-save-state = always
+              # background = 1C2021
+              # foreground = d4be98
 
-            window-padding-balance = true
-            window-save-state = always
-            # background = 1C2021
-            # foreground = d4be98
+              # keybindings
+              keybind = cmd+s>r=reload_config
+              keybind = cmd+s>x=close_surface
 
-            # keybindings
-            keybind = cmd+s>r=reload_config
-            keybind = cmd+s>x=close_surface
+              keybind = cmd+s>n=new_window
 
-            keybind = cmd+s>n=new_window
+              # tabs 
+              keybind = cmd+s>c=new_tab
+              keybind = cmd+s>shift+l=next_tab
+              keybind = cmd+s>shift+h=previous_tab
+              keybind = cmd+s>comma=move_tab:-1
+              keybind = cmd+s>period=move_tab:1
 
-            # tabs 
-            keybind = cmd+s>c=new_tab
-            keybind = cmd+s>shift+l=next_tab
-            keybind = cmd+s>shift+h=previous_tab
-            keybind = cmd+s>comma=move_tab:-1
-            keybind = cmd+s>period=move_tab:1
+              # quick tab switch
+              keybind = cmd+s>1=goto_tab:1
+              keybind = cmd+s>2=goto_tab:2
+              keybind = cmd+s>3=goto_tab:3
+              keybind = cmd+s>4=goto_tab:4
+              keybind = cmd+s>5=goto_tab:5
+              keybind = cmd+s>6=goto_tab:6
+              keybind = cmd+s>7=goto_tab:7
+              keybind = cmd+s>8=goto_tab:8
+              keybind = cmd+s>9=goto_tab:9
 
-            # quick tab switch
-            keybind = cmd+s>1=goto_tab:1
-            keybind = cmd+s>2=goto_tab:2
-            keybind = cmd+s>3=goto_tab:3
-            keybind = cmd+s>4=goto_tab:4
-            keybind = cmd+s>5=goto_tab:5
-            keybind = cmd+s>6=goto_tab:6
-            keybind = cmd+s>7=goto_tab:7
-            keybind = cmd+s>8=goto_tab:8
-            keybind = cmd+s>9=goto_tab:9
+              # split
+              keybind = cmd+s>\=new_split:right
+              keybind = cmd+s>-=new_split:down
 
-            # split
-            keybind = cmd+s>\=new_split:right
-            keybind = cmd+s>-=new_split:down
+              keybind = cmd+s>j=goto_split:bottom
+              keybind = cmd+s>k=goto_split:top
+              keybind = cmd+s>h=goto_split:left
+              keybind = cmd+s>l=goto_split:right
 
-            keybind = cmd+s>j=goto_split:bottom
-            keybind = cmd+s>k=goto_split:top
-            keybind = cmd+s>h=goto_split:left
-            keybind = cmd+s>l=goto_split:right
+              keybind = cmd+s>z=toggle_split_zoom
 
-            keybind = cmd+s>z=toggle_split_zoom
+              keybind = cmd+s>e=equalize_splits
 
-            keybind = cmd+s>e=equalize_splits
+              # other
+              copy-on-select = clipboard
+              desktop-notifications = true
 
-            # other
-            copy-on-select = clipboard
-            desktop-notifications = true
+            END_OF_CONFIG_FOR_GHOSTTY
+            '';
 
-            # succeeded ?
-
-              EOF '';
             # /home/masrkai/.config/ghostty/config
           in "${jackett_Script} ; ${ghostty_Script}";
 
@@ -259,7 +258,7 @@ in
 
 
 
-#-------------------------------------------------------------------------------->
+    #-------------------------------------------------------------------------------->
     };
   };
 
