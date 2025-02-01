@@ -7,27 +7,30 @@
 {
   imports = [
     ./NetworkProfiles.nix
+    ./Wireless_Regulation.nix
   ];
 
-  boot.kernel.sysctl = {
-    "net.ipv4.ip_forward" = lib.mkDefault 0;                           #? For Hotspot
+  boot.kernel.sysctl = lib.mkMerge [
+    {
+      "net.ipv4.ip_forward" = lib.mkDefault 0;                           #? For Hotspot
 
-    "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
-    "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
+      "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
+      "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
 
-    "net.ipv4.tcp_rmem" = lib.mkForce "4096 1048576 16777216";  # min/default/max
-    "net.ipv4.tcp_wmem" = lib.mkForce "4096 1048576 16777216";  # min/default/max
+      "net.ipv4.tcp_rmem" = lib.mkForce "4096 1048576 16777216";  # min/default/max
+      "net.ipv4.tcp_wmem" = lib.mkForce "4096 1048576 16777216";  # min/default/max
 
-    "net.ipv4.tcp_timestamps" = lib.mkDefault 1;                       #? TCP timestamps
-    "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;                #? limit on the maximum segment size
+      "net.ipv4.tcp_timestamps" = lib.mkDefault 1;                       #? TCP timestamps
+      "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;                #? limit on the maximum segment size
 
-    #? Enable BBR congestion control algorithm
-    "net.core.default_qdisc" = lib.mkDefault "fq";
-    "net.ipv4.tcp_congestion_control" = lib.mkDefault "bbr";
+      #? Enable BBR congestion control algorithm
+      "net.core.default_qdisc" = lib.mkDefault "fq";
+      "net.ipv4.tcp_congestion_control" = lib.mkDefault "bbr";
 
-    #? Memory preserving
-    "vm.min_free_kbytes" = lib.mkForce 65536;
-  };
+      #? Memory preserving
+      "vm.min_free_kbytes" = lib.mkForce 65536;
+    }
+  ];
 
   networking = {
       useDHCP = false;
@@ -38,7 +41,6 @@
       usePredictableInterfaceNames = false ;     #* wlan0 wlan1 instead of gebrish
       dhcpcd.extraConfig = "nohook resolv.conf"; #* prevent overrides by dhcpcd
 
-      wireless.athUserRegulatoryDomain = true;
       resolvconf.extraOptions = [
       "ndots:1"
       "timeout:2"
@@ -60,7 +62,7 @@
                           1234         #? NTS Time server
                           # 6881       #? Qbittorrent
                           # 16509      #? libvirt
-                          5353
+                          # 5353
                           # 8384 22000 #? Syncthing
                           443 8888 18081
                         ];
@@ -124,7 +126,6 @@
     enable = true;
     settings = {
     listen_addresses = [
-                        #  "127.0.0.1@53"
                          "127.0.0.1@5353"
 
                          #"0.0.0.0@53"
@@ -217,42 +218,6 @@
       ];
     };
   };
-
-  # # Define the network check script
-  # environment.etc."check-internet.sh" = {
-  #   text = ''
-  #     #!/bin/sh
-  #     # Check for internet connectivity by pinging a reliable external host (e.g., Cloudflare's 1.1.1.1)
-  #     if curl -s https://1.1.1.1 > /dev/null; then
-  #       echo "Internet connection is working."
-  #     else
-  #       echo "No internet connection. Restarting stubby..."
-  #       systemctl restart stubby.service
-  #     fi
-  #   '';
-  #   mode = "0700";  # Only the owner (root) can read, write, and execute
-  #   uid = 0;        # Set owner to root (user ID 0)
-  #   gid = 0;        # Set group to root (group ID 0)
-  # };
-
-  # # Create a systemd service that runs the check-internet script periodically
-  # systemd.services.check-internet = {
-  #   description = "Check for internet connectivity and restart stubby if down";
-  #   serviceConfig = {
-  #     ExecStart = "/etc/check-internet.sh";
-  #   };
-  #   wantedBy = [ "multi-user.target" ];
-  # };
-
-  # # Create a systemd timer to run the check-internet service every 5 minutes
-  # systemd.timers.check-internet = {
-  #   description = "Run check-internet every 1 minute";
-  #   wantedBy = [ "timers.target" ];
-  #   timerConfig = {
-  #     OnBootSec = "1min";   # First run 1 minute after boot
-  #     OnUnitActiveSec = "1min";  # Run every 5 minutes
-  #   };
-  # };
 
     # Make sure time synchronization is properly handled
     services.timesyncd.enable = false;  # Disable systemd-timesyncd to avoid conflicts
