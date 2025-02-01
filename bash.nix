@@ -46,6 +46,7 @@ programs.bash = {
 
     #-> Replacing List command with eza @_@
     ls = "eza --color=always --long --git --icons=always";
+    la = "eza  --color=always --long --tree --git --links -A --icons=always";
     l = "eza  --color=always --long --tree --git --links -a --icons=always";
 
     #-? NixOS Specific
