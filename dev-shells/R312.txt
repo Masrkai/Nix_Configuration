@@ -19,7 +19,9 @@ scikit-image
 
 sympy
 scikit-learn
-# sqlcipher
+
+
+pysqlcipher3
 
 
 pylint
