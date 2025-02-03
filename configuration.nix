@@ -21,7 +21,9 @@ let
     #? Python
     ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
     MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+    evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
     mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
+
   };
 
   PyVersion = 312;
@@ -276,6 +278,7 @@ in
   customPackages.mac-formatter
   customPackages.logisim-evolution
   customPackages.super-productivity
+  customPackages.evillimiter
   #customPackages.airgeddon
   #customPackages.custom-httrack
 
@@ -805,75 +808,78 @@ in
 
 
   #---> SearXNG
-  services.searx = {
-    enable = true;
-    package = pkgs.searxng;
-    settings = {
-      server = {
-        port = 8888;
-        bind_address = "127.0.0.1";
-        base_url = "http://localhost/";
-        secret_key = secrets.searx-secret-key;
-        limiter = true;  # Enable rate limiting
-        ratelimit_low = 30;
-        ratelimit_high = 50;
-      };
-      ui = {
-        default_locale = "en";
-        default_theme = "simple";
-        query_in_title = true;
-        infinite_scroll = true;
-        engine_shortcuts = true;  # Show engine icons
-        expand_results = true;    # Show result thumbnails
-        theme_args = {
-          style = "auto";  # Supports dark/light mode
+    services.searx = {
+      enable = true;
+      package = pkgs.searxng;
+      settings = {
+        server = {
+          port = 8888;
+          bind_address = "127.0.0.1";
+          base_url = "http://localhost/";
+          secret_key = secrets.searx-secret-key;
+          limiter = true;  # Enable rate limiting
+          ratelimit_low = 30;
+          ratelimit_high = 50;
         };
-      };
-      search = {
-        safe_search = 0;
-        default_lang = "en";
-        autocomplete = "duckduckgo";
-        suspend_on_unavailable = true;
-          result_extras = {
-          favicon = true;          # Enable website icons
-          thumbnail = true;        # Enable result thumbnails
-          thumbnail_proxy = true;  # Use a proxy for thumbnails
+        ui = {
+          default_locale = "en";
+          default_theme = "simple";
+          query_in_title = true;
+          infinite_scroll = true;
+          engine_shortcuts = true;  # Show engine icons
+          expand_results = true;    # Show result thumbnails
+          theme_args = {
+            style = "auto";  # Supports dark/light mode
           };
-      };
-      engines = [
-        { name = "bing"; engine = "bing"; disabled = false; timeout = 6.0; }
-        { name = "brave"; engine = "brave"; disabled = false; timeout = 6.0; }
-        { name = "google"; engine = "google"; disabled = false; timeout = 6.0; }
-        { name = "wikipedia"; engine = "wikipedia"; disabled = false; timeout = 6.0; }
-        { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; timeout = 6.0; }
-      ];
-      outgoing = {
-        request_timeout = 10.0;
-        max_request_timeout = 15.0;
-        pool_connections = 100;  # Increased connection pool
-        pool_maxsize = 20;       # Maximum concurrent connections
-        dns_resolver = {
-          enable = true;
-          use_system_resolver = true;
-          resolver_address = "127.0.0.1:53";
         };
-      };
-      cache = {
-        cache_dir = "/var/cache/searx";
-        cache_max_age = 1440;  # Cache for 24 hours
-        cache_disabled_plugins = [];
-      };
-      privacy = {
-        preferences = {
-          disable_web_search = false;
-          disable_image_search = false;
-          disable_map_search = true;
+        search = {
+          safe_search = 0;
+          default_lang = "en";
+          autocomplete = "duckduckgo";
+          suspend_on_unavailable = true;
+            result_extras = {
+            favicon = true;          # Enable website icons
+            thumbnail = true;        # Enable result thumbnails
+            thumbnail_proxy = true;  # Use a proxy for thumbnails
+            };
+            formats = [
+              "html"
+              "json"
+            ];
         };
-        http_header_anonymization = true;
+        engines = [
+          { name = "bing"; engine = "bing"; disabled = false; timeout = 6.0; }
+          { name = "brave"; engine = "brave"; disabled = false; timeout = 6.0; }
+          { name = "google"; engine = "google"; disabled = false; timeout = 6.0; }
+          { name = "wikipedia"; engine = "wikipedia"; disabled = false; timeout = 6.0; }
+          { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; timeout = 6.0; }
+        ];
+        outgoing = {
+          request_timeout = 10.0;
+          max_request_timeout = 15.0;
+          pool_connections = 100;  # Increased connection pool
+          pool_maxsize = 20;       # Maximum concurrent connections
+          dns_resolver = {
+            enable = true;
+            use_system_resolver = true;
+            resolver_address = "127.0.0.1:53";
+          };
+        };
+        cache = {
+          cache_dir = "/var/cache/searx";
+          cache_max_age = 1440;  # Cache for 24 hours
+          cache_disabled_plugins = [];
+        };
+        privacy = {
+          preferences = {
+            disable_web_search = false;
+            disable_image_search = false;
+            disable_map_search = true;
+          };
+          http_header_anonymization = true;
+        };
       };
     };
-  };
-
 
   #---> Syncthing
   services.syncthing = {
