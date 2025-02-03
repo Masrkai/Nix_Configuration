@@ -73,6 +73,10 @@ export FZF_DEFAULT_OPTS='
 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
 
 
+export HISTCONTROL="erasedups:ignoreboth"
+export HISTFILE="$HOME/.bash_history"
+export HISTORY_SIZE="1000000"
+
 #--------------------------------------------------------------------------------------------------! Convert all Powerpoints to PDFs
 convert_ppts_to_pdf() {
     local input_dir="${1:-.}"  # Default to current directory
