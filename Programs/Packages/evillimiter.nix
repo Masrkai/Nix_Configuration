@@ -15,7 +15,7 @@ python3Packages.buildPythonApplication rec {
     owner = "Masrkai";
     repo = "Evillimiter";
     tag = "v${version}";
-    hash = "sha256-yWcsG6xlyzSrYxYZnnG8t2t1PubvYzqTcdO+JXzYsnk=";
+    hash = "sha256-g7OZLAzH47RrqvnEQC+ExsGxiRlVvRlihct8ltGVlOY=";
   };
 
   build-system = with python3Packages; [ setuptools-scm ];
