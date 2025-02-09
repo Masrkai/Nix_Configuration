@@ -160,10 +160,10 @@
         options = "-d nvme";  # Changed to string
       }
       # External SATA drive
-      { 
-        device = "/dev/sda";
-        options = "-n standby,15 -d sat";  # Combined options into single string
-      }
+      # { 
+      #   device = "/dev/sda";
+      #   options = "-n standby,15 -d sat";  # Combined options into single string
+      # }
     ];
   };
 
