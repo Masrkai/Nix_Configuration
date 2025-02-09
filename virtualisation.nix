@@ -55,30 +55,10 @@
         };
       };
 
-      podman = {
-      enable = true;
-      dockerCompat = true;
-      #defaultNetwork.settings.dns_enabled = true;
-      };
-
-      oci-containers = {
-        backend = "podman";
-        containers = {
-          open-webui = import ./containers/open-webui.nix;
-        };
-      };
-
     };
     services.spice-vdagentd.enable = true;
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
-
-    system.activationScripts = {
-    script.text = ''
-      install -d -m 755 ${builtins.getEnv "HOME"}/open-webui/data -o root -g root
-    '';
-   };
-
 
   # networking.interfaces.br0 = {
   # ipv4.addresses = [
