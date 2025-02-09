@@ -181,14 +181,24 @@ IFS="$(printf '\n\t')"
 function compress {
     if [ $# -lt 3 ]; then
         echo "Usage: compress <compression_level> <format_flag> <path/file_name> [path/file_name_2] [path/file_name_3]"
-        echo "Compression level: 1-9 for zip/7z, 1-9 for tar.gz"
-        echo "Format flags: --zip, --tar.gz, --7z"
+        echo "Compression level: 1-9 for zip/7z/tar.lz, 1-9 for tar.gz"
+        echo "Format flags: --zip, --tar.gz, --tar.lz, --7z"
         return 1
     fi
 
-    level=$1
-    format_flag=$2
+    local level=$1
+    local format_flag=$2
     shift 2
+    local THREADS=$(nproc)
+
+    # Progress bar display function
+    progress_bar() {
+        local percent=$1
+        local filled=$((percent/2))
+        printf "\r["
+        printf "%${filled}s" | tr ' ' '='
+        printf "%$((50-filled))s] %d%%" "" "$percent"
+    }
 
     for n in "$@"; do
         if [ ! -f "$n" ] && [ ! -d "$n" ]; then
@@ -196,32 +206,54 @@ function compress {
             continue
         fi
 
-        case "$level" in
-            ''|*[!0-9]*) 
-                echo "Invalid compression level. Must be a number."
-                return 1
-                ;;
-        esac
+        [[ "$level" =~ ^[0-9]+$ ]] || {
+            echo "Invalid compression level. Must be a number."
+            return 1
+        }
 
-        filename=$(basename "$n")
-        
-        # Adjust compression levels
-        level=$((level > 9 ? 9 : level))  # Max level for p7zip is 9
+        local filename=$(basename "$n")
+        level=$((level > 9 ? 9 : level))
 
-        echo "Compressing '$n'..."
+        echo "Compressing '$n' using $THREADS threads..."
 
         case "$format_flag" in
-            "--zip")
-                7za a -tzip -mx="$level" -mmt "${filename}.zip" "$n"
-                ;;
-            "--tar.gz")
-                tar cf - "$n" | gzip -"$level" > "${filename}.tar.gz"
-                ;;
             "--7z")
-                7za a -t7z -mx="$level" -mmt "${filename}.7z" "$n"
+                7za a -t7z -mx="$level" -mmt="$THREADS" -bsp1 -bb0 "${filename}.7z" "$n"
                 ;;
+
+            "--zip")
+                7za a -tzip -mx="$level" -mmt="$THREADS" -bsp1 -bb0 "${filename}.zip" "$n"
+                ;;
+
+            "--tar.gz")
+                local size=$(du -sb "$n" 2>/dev/null | awk '{print $1}')
+                if [ -z "$size" ]; then
+                    local pv_cmd="pv"
+                else
+                    local pv_cmd="pv -s $size"
+                fi
+
+                if command -v pigz >/dev/null; then
+                    tar cf - "$n" | eval "$pv_cmd" | pigz -"$level" -p"$THREADS" > "${filename}.tar.gz"
+                else
+                    echo "Notice: pigz not found, using single-threaded gzip"
+                    tar cf - "$n" | eval "$pv_cmd" | gzip -"$level" > "${filename}.tar.gz"
+                fi
+                ;;
+
+            "--tar.lz")
+                if command -v pv >/dev/null && tarlz -h 2>&1 | grep -q -- '-f-'; then
+                    local size=$(du -sb "$n" 2>/dev/null | awk '{print $1}')
+                    [ -z "$size" ] && size=0
+                    tarlz -c -n "$THREADS" --solid -"$level" -f- "$n" | pv -s "$size" > "${filename}.tar.lz"
+                else
+                    echo "Progress not available for tar.lz format"
+                    tarlz -c -n "$THREADS" --solid -"$level" -f "${filename}.tar.lz" "$n"
+                fi
+                ;;
+
             *)
-                echo "Invalid format flag. Must be --zip, --tar.gz, or --7z."
+                echo "Invalid format flag. Must be --zip, --tar.gz, --tar.lz, or --7z."
                 return 1
                 ;;
         esac
@@ -229,6 +261,7 @@ function compress {
 }
 
 IFS=$SAVEIFS
+
 #------------------------------------------------------------------------------------------! Journald errors:
 function journalctle() {
 # Check for required tools
