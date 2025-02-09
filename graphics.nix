@@ -56,7 +56,7 @@ in
   #! Enable OpenGL
   hardware.graphics = {
     enable = true;
-    enable32Bit = false;
+    enable32Bit = true;
     extraPackages = with pkgs; [
       # mesa
 
