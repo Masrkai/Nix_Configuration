@@ -6,13 +6,15 @@ let
 
   customPackages = {
     #? .Nix
-    #airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
+    lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
     wifi-honey = pkgs.callPackage ./Programs/Packages/wifi-honey.nix {};
     hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
+
+
+    #airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
     #custom-httrack = pkgs.libsForQt5.callPackage ./Programs/Packages/custom-httrack.nix {};
-    lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
 
     #! Bash
     backup = pkgs.callPackage ./Programs/custom/backup.nix {};
@@ -295,9 +297,11 @@ in
     dynamips
     gns3-server
 
+  git
+  git-lfs
+
   bat
   eza
-  git
   acpi
   wget
   less
@@ -310,7 +314,6 @@ in
   #xterm
   gparted #!has issues
   glxinfo
-  git-lfs
   pciutils
   hw-probe
   unrar-wrapper
@@ -657,10 +660,12 @@ in
   btop
   powertop
   dmidecode
-  nvtopPackages.nvidia
+  gsmartcontrol
   mission-center
+  nvtopPackages.nvidia
 
   #-> Contrnt
+  busybox
   fzf
   yt-dlp
   haruna
@@ -678,9 +683,11 @@ in
   signal-desktop
 
   #-> Archivers
+  pv
   xz
-  p7zip
+  pigz
   tarlz
+  p7zip
 
   #-> Audio
   pamixer
@@ -761,9 +768,11 @@ in
   stubby
   getdns
   asleap
-  openssl
   linssid
-  # dnsmasq
+
+  # armitage
+  # metasploit
+
   tcpdump
   iproute2
   arp-scan
@@ -772,12 +781,19 @@ in
   bettercap
   traceroute
   aircrack-ng
+  reaverwps-t6x
   linux-wifi-hotspot
 ];
 
   #?########################
   #? Applications services:
   #?########################
+
+  #--> Appimages supports
+  programs.appimage = {
+  enable = true;
+  binfmt = true;
+  };
 
   #--> direnv
     programs.direnv = {
@@ -804,81 +820,6 @@ in
       enable    = true;
       localuser = null;
       package   = pkgs.mlocate;
-    };
-
-
-  #---> SearXNG
-    services.searx = {
-      enable = true;
-      package = pkgs.searxng;
-      settings = {
-        server = {
-          port = 8888;
-          bind_address = "127.0.0.1";
-          base_url = "http://localhost/";
-          secret_key = secrets.searx-secret-key;
-          limiter = true;  # Enable rate limiting
-          ratelimit_low = 30;
-          ratelimit_high = 50;
-        };
-        ui = {
-          default_locale = "en";
-          default_theme = "simple";
-          query_in_title = true;
-          infinite_scroll = true;
-          engine_shortcuts = true;  # Show engine icons
-          expand_results = true;    # Show result thumbnails
-          theme_args = {
-            style = "auto";  # Supports dark/light mode
-          };
-        };
-        search = {
-          safe_search = 0;
-          default_lang = "en";
-          autocomplete = "duckduckgo";
-          suspend_on_unavailable = true;
-            result_extras = {
-            favicon = true;          # Enable website icons
-            thumbnail = true;        # Enable result thumbnails
-            thumbnail_proxy = true;  # Use a proxy for thumbnails
-            };
-            formats = [
-              "html"
-              "json"
-            ];
-        };
-        engines = [
-          { name = "bing"; engine = "bing"; disabled = false; timeout = 6.0; }
-          { name = "brave"; engine = "brave"; disabled = false; timeout = 6.0; }
-          { name = "google"; engine = "google"; disabled = false; timeout = 6.0; }
-          { name = "wikipedia"; engine = "wikipedia"; disabled = false; timeout = 6.0; }
-          { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; timeout = 6.0; }
-        ];
-        outgoing = {
-          request_timeout = 10.0;
-          max_request_timeout = 15.0;
-          pool_connections = 100;  # Increased connection pool
-          pool_maxsize = 20;       # Maximum concurrent connections
-          dns_resolver = {
-            enable = true;
-            use_system_resolver = true;
-            resolver_address = "127.0.0.1:53";
-          };
-        };
-        cache = {
-          cache_dir = "/var/cache/searx";
-          cache_max_age = 1440;  # Cache for 24 hours
-          cache_disabled_plugins = [];
-        };
-        privacy = {
-          preferences = {
-            disable_web_search = false;
-            disable_image_search = false;
-            disable_map_search = true;
-          };
-          http_header_anonymization = true;
-        };
-      };
     };
 
   #---> Syncthing
