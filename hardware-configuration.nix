@@ -139,14 +139,35 @@
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
+
+
   services.smartd = {
     enable = true;
+    notifications = {
+      # Enable email notifications (requires mail server setup)
+      mail.enable = false;
+      mail.recipient = "your-email@example.com";  # Replace with your email
+    };
+    defaults = {
+      # Monitor all attributes, auto-enable monitoring, check every 30 minutes
+      monitored = "-a -o on -S on -s (S/../.././02|L/../../7/03)";
+      # Use default notification settings
+    };
     devices = [
-      {
-        device = "/dev/nvme0n1"; # FIXME: Change this to your actual disk; use lsblk to find the appropriate value
+      # Main NVMe drive
+      { 
+        device = "/dev/nvme0n1";
+        options = "-d nvme";  # Changed to string
+      }
+      # External SATA drive
+      { 
+        device = "/dev/sda";
+        options = "-n standby,15 -d sat";  # Combined options into single string
       }
     ];
   };
+
+
 
   # Add zram-based swap since you have no swap configured
   zramSwap = {
