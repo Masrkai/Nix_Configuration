@@ -1,10 +1,9 @@
 { nixpkgsConfig ? {}
-, enableCuda ? false
+, enableCuda ? true
 , enableAudio ? false
 , enableMonitoring ? false
 , pythonVersion ? 312
 }:
-
 
 let
   nixpkgs = import <nixpkgs> {
@@ -22,21 +21,20 @@ let
   pythonPackages = pkgs."python${toString PyVersion}Packages";
 
   libraryPath = with pkgs; lib.makeLibraryPath ([
-    stdenv.cc.cc.lib
-    libxkbcommon
-    fontconfig
-    wayland          # Add this
-    qt6.qtwayland   # Add this
-    glib
+    zstd
     zlib
-    xorg.libX11      # Add this
-    xorg.libXext     # Add this too for good measure
-    freetype        # Add this
-    zstd            # Add this
-    dbus            # Add this
+    glib
+    glibc_multi
 
-
-
+    dbus
+    wayland
+    freetype
+    fontconfig
+    xorg.libX11
+    xorg.libXext
+    libxkbcommon
+    qt6.qtwayland
+    stdenv.cc.cc.lib
   ] ++ lib.optionals enableCuda [
     cudatoolkit
     cudaPackages.cudnn
@@ -66,58 +64,68 @@ let
     libpulseaudio
   ];
 
-setupEnvScript = pkgs.writeTextFile {
-  name = "setup-env";
-  destination = "/bin/setup-env";
-  text = ''
-    #!/usr/bin/env bash
+  setupEnvScript = pkgs.writeTextFile {
+    name = "setup-env";
+    destination = "/bin/setup-env";
+    text = ''
+      #!/usr/bin/env bash
 
-    # Variables exported from Nix
-    export PyVersion="${toString PyVersion}"
-    export enableCuda="${if enableCuda then "1" else "0"}"
-    export CUDA_PATH="${pkgs.cudatoolkit}"
-    export LIBRARY_PATH="${libraryPath}"
+      # Variables exported from Nix
+      export PyVersion="${toString PyVersion}"
+      export enableCuda="${if enableCuda then "1" else "0"}"
+      export CUDA_PATH="${pkgs.cudatoolkit}"
+      export LIBRARY_PATH="${libraryPath}"
 
-    # Source the provided setup-env.sh script
-    source ${./setup-env.sh}
-  '';
-  executable = true;
-  checkPhase = ''
-    ${pkgs.bash}/bin/bash -n $out/bin/setup-env
-  '';
-};
-
+      # Source the provided setup-env.sh script
+      source ${./setup-env.sh}
+    '';
+    executable = true;
+    checkPhase = ''
+      ${pkgs.bash}/bin/bash -n $out/bin/setup-env
+    '';
+  };
 
 in pkgs.mkShell {
   buildInputs = [
     pythonSP
     pythonPackages.pip
+    pythonPackages.wheel
     pythonPackages.virtualenv
     pythonPackages.setuptools
-    pythonPackages.wheel
-    pkgs.openssl
-    pkgs.pkg-config
-    pkgs.libxkbcommon
-    pkgs.fontconfig  # Add this line
-    pkgs.wayland     # Add this
-    pkgs.qt6.qtwayland  # Add this
-    setupEnvScript
-    pkgs.xorg.libX11     # Add this
-    pkgs.xorg.libXext    # Add this too
-    pkgs.freetype    # Add this
-    pkgs.zstd        # Add this
-    pkgs.dbus        # Add this
 
+    pkgs.dbus
+    pkgs.zstd
+    pkgs.wayland
+    pkgs.openssl
+    pkgs.freetype
+    setupEnvScript
+    pkgs.fontconfig
+    pkgs.pkg-config
+    pkgs.xorg.libX11
+    pkgs.xorg.libXext
+    pkgs.libxkbcommon
+    pkgs.qt6.qtwayland
   ] ++ dev-tools
     ++ (lib.optionals enableCuda cuda-common-pkgs)
     ++ (lib.optionals enableAudio audio-pkgs)
     ++ (lib.optionals enableMonitoring monitoring-pkgs);
 
+  shellHook = ''
+    # Add OpenGL driver path and additional library paths
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:${libraryPath}:$LD_LIBRARY_PATH"
+    export TRITON_LIBCUDA_PATH="/run/opengl-driver/lib"
+    export PTXAS_PATH=$(which ptxas)
+    
+    # Fix Triton ptxas issue on NixOS:
+    # Remove the bundled ptxas (which is not runnable on NixOS) and symlink the system one.
+    TRITON_PTXAS="/home/masrkai/Virtual/Python/.python-312/lib/python3.12/site-packages/triton/backends/nvidia/bin/ptxas"
+    if [ -e "$TRITON_PTXAS" ]; then
+      rm -f "$TRITON_PTXAS"
+      ln -s "$(which ptxas)" "$TRITON_PTXAS"
+      echo "Fixed Triton ptxas: linked system ptxas at $(which ptxas)"
+    fi
 
-    # source ${setupEnvScript}/bin/setup-env
-  shellHook =''
-    # Inline the script contents or source it
-    export LD_LIBRARY_PATH="${libraryPath}:$LD_LIBRARY_PATH"
+    # Source the environment setup script.
     source ${setupEnvScript}/bin/setup-env
   '';
 }
