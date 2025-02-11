@@ -28,6 +28,7 @@ let
 
   };
 
+  # Define common paths
   PyVersion = 312;
   pythonSP = pkgs."python${toString PyVersion}";
   pythonPackages = pkgs."python${toString PyVersion}Packages";
@@ -40,16 +41,16 @@ in
 
 {
     imports = [
-      ./hardware-configuration.nix
-      ./virtualisation.nix
-      ./networking.nix
+      ./Ai.nix
+      ./bash.nix
+      ./desktop.nix
+      ./systemd.nix
       ./graphics.nix
       ./security.nix
-      ./systemd.nix
-      ./desktop.nix
-      ./bash.nix
-      ./Ai.nix
+      ./virtualisation.nix
       ./dev-shells/collector.nix
+      ./Networking/Networking.nix
+      ./hardware-configuration.nix
 
     ];
 
@@ -146,6 +147,11 @@ in
       CLANG_INCLUDE_DIRS = lib.mkForce "${pkgs.llvmPackages.libcxx}/include/c++/v1";
      };
     };
+
+
+
+
+
 
   programs.less = {
     enable = true;
@@ -912,6 +918,14 @@ in
 
       dataDir = "/var/lib/jackett/";
     };
+
+  #> Steam
+  programs.steam = {
+    enable = true;
+      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+      localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;

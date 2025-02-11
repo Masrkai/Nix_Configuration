@@ -5,7 +5,6 @@
   #>################
   #> Virtualization:
   #>################
-  qemu_full
   qemu-utils
 
   virt-viewer
@@ -13,14 +12,6 @@
 
   spice
   spice-protocol
-
-  win-spice
-  win-virtio
-
-  # virtiofsd
-  # virglrenderer
-
-  # virtio-win
  ];
 
   users.groups.libvirt = {
@@ -40,8 +31,10 @@
           runAsRoot = true;
           swtpm.enable = true;
           vhostUserPackages = with pkgs; [
+            win-spice
             virtiofsd
             virtio-win
+            win-virtio
             virglrenderer
           ];
 
