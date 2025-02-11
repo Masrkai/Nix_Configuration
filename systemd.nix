@@ -136,7 +136,7 @@ in
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           ExecStart = let
-              Clang_Script = pkgs.writeShellScript "Clang_Ensurance" ''
+              Clang_Script = pkgs.writeShellScript "Clang_Insurance" ''
               ${pkgs.coreutils}/bin/cat > /home/${username}/.config/clangd/config.yaml  << 'EOF'
               CompileFlags:
                 Add: ["-stdlib=libstdc++"]
@@ -148,7 +148,7 @@ in
                 ShowAKA: Yes
               EOF
             '';
-            jackett_Script = pkgs.writeShellScript "Jackett_Ensurance" ''
+            jackett_Script = pkgs.writeShellScript "Jackett_Insurance" ''
               ${pkgs.coreutils}/bin/cat > /home/${username}/.local/share/qBittorrent/nova3/engines/jackett.json << 'EOF'
               {
                   "api_key": "n1asleravzpgw5pq7jxtpsmg3oc5inyc",
@@ -158,7 +158,7 @@ in
               }
               EOF
             '';
-            ghostty_Script = pkgs.writeShellScript "ghostty_Ensurance" ''
+            ghostty_Script = pkgs.writeShellScript "ghostty_Insurance" ''
               ${pkgs.coreutils}/bin/cat > /home/${username}/.config/ghostty/config << 'END_OF_CONFIG_FOR_GHOSTTY'
               font-family = Iosevka Nerd Font
               font-size = 14
