@@ -136,6 +136,18 @@ in
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           ExecStart = let
+              Clang_Script = pkgs.writeShellScript "Clang_Ensurance" ''
+              ${pkgs.coreutils}/bin/cat > /home/${username}/.config/clangd/config.yaml  << 'EOF'
+              CompileFlags:
+                Add: ["-stdlib=libstdc++"]
+              Index:
+                Background: Build
+              Diagnostics:
+                UnusedIncludes: Strict
+              Hover:
+                ShowAKA: Yes
+              EOF
+            '';
             jackett_Script = pkgs.writeShellScript "Jackett_Ensurance" ''
               ${pkgs.coreutils}/bin/cat > /home/${username}/.local/share/qBittorrent/nova3/engines/jackett.json << 'EOF'
               {
@@ -210,7 +222,7 @@ in
             '';
 
             # /home/masrkai/.config/ghostty/config
-          in "${jackett_Script} ; ${ghostty_Script}";
+          in "${jackett_Script} ; ${ghostty_Script} ; ${Clang_Script}";
 
           User = username;
           Type = "oneshot";
