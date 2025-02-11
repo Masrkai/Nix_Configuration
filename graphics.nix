@@ -163,13 +163,13 @@ in
         NVIDIA_DRIVER_PATH = "${config.hardware.nvidia.package}";
 
         # Modify compilation flags
-        CFLAGS = "-fPIC";
-        CXXFLAGS = "-fPIC";
-        FFLAGS = "-fPIC";
-        FCFLAGS = "-fPIC";
+        CFLAGS   = lib.mkAfter "-fPIC";
+        FFLAGS   = lib.mkAfter "-fPIC";
+        FCFLAGS  = lib.mkAfter "-fPIC";
+        CXXFLAGS = lib.mkAfter "-fPIC";
 
         # Additional linking flags
-        LDFLAGS = "-L${pkgs.cudatoolkit}/lib64 -L/run/opengl-driver/lib -Wl,-rpath,${pkgs.cudatoolkit}/lib64 -Wl,--as-needed";
+        LDFLAGS = lib.mkAfter "-L${pkgs.cudatoolkit}/lib64 -L/run/opengl-driver/lib -Wl,-rpath,${pkgs.cudatoolkit}/lib64 -Wl,--as-needed";
 
         # CUDA-specific flags
         CUDA_CFLAGS = "-I${pkgs.cudatoolkit}/include";
