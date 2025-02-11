@@ -72,6 +72,28 @@ mkMerge [
                   method = "disabled";      #? Disable IPv6
                 };
             };
+            "virbr0" = {
+                connection = {
+                id = "virbr0";
+                type = "bridge";
+                permissions = "";
+                interface-name = "virbr0";              # Specify the interface name
+                autoconnect = true;
+                permanent = true;  # This makes the profile persistent
+                };
+                ethernet = {
+                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                };
+                ipv4 = {
+                  method = "manual";         #? Use DHCP for IPv4
+                  dns = "127.0.0.1";         #? Local DNS resolver
+                  ignore-auto-dns = true;    #? Ignore DNS provided by DHCP
+                  address1 = "192.168.122.1/24,0.0.0.0";  #? IP/prefix,gateway
+                };
+                ipv6 = {
+                  method = "disabled";      #? Disable IPv6
+                };
+            };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           "Nix_Hotspot" = {
             connection = {

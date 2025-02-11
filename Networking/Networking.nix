@@ -12,7 +12,7 @@
 
   boot.kernel.sysctl = lib.mkMerge [
     {
-      "net.ipv4.ip_forward" = lib.mkDefault 0;                           #? For Hotspot
+      "net.ipv4.ip_forward" = lib.mkDefault 1;                           #? For Hotspot
 
       "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
       "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
