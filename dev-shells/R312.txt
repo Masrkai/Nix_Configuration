@@ -1,8 +1,29 @@
+#! Basics
 pylint
 pyinstaller
 python-dotenv
 terminaltables
 pyinstaller-versionfile
+
+#? Data Science
+ipython
+jupyter
+notebook
+ipykernel
+jupyterlab
+ipython-sql
+ipython-genutils
+
+
+# # ML/AI specific packages
+einops
+colorama
+tiktoken
+jaxtyping
+transformers
+scikit-learn
+transformer_lens
+transformers_stream_generator
 
 
 h5py
@@ -21,14 +42,7 @@ sympy
 scikit-learn
 
 
-pysqlcipher3
 
-
-pylint
-ipython
-jupyter
-notebook
-jupyterlab
 
 
 
@@ -66,23 +80,8 @@ jupyterlab
 # soundfile
 # realtime-stt
 # arabic-reshaper
-# notebook
-# jupyterlab
-# ipykernel
-# ipython-sql
-# ipython-genutils
+
 # beautifulsoup4
 # types-beautifulsoup4
 
 
-# # ML/AI specific packages
-# tensorflow
-# keras
-# pytorch-lightning
-# optuna
-# wandb
-# mlflow
-# ray[tune]
-# deepspeed
-# faster-whisper
-# bitsandbytes
