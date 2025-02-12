@@ -155,12 +155,12 @@
     };
     devices = [
       # Main NVMe drive
-      { 
+      {
         device = "/dev/nvme0n1";
         options = "-d nvme";  # Changed to string
       }
       # External SATA drive
-      # { 
+      # {
       #   device = "/dev/sda";
       #   options = "-n standby,15 -d sat";  # Combined options into single string
       # }
@@ -185,11 +185,43 @@
 
   services.power-profiles-daemon.enable= true;
 
+  services.udev.extraRules = ''
+  ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
+
+  # Disable XHC USB controllers from waking up the system
+  ACTION=="add", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/wakeup}="disabled"
+  ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
+  '';
+
+  #--> Better scheduling for better CPU cycles & audio performance
+  services.system76-scheduler = {
+    enable = true;
+    settings.cfsProfiles.enable = true; #? Enable CPU scheduling improvements for Audio
+  };
+
+  security.rtkit.enable = true;         #? Allow real-time priorities for audio tasks
+
+  # PipeWire Setup
+  services.pipewire = {
+    enable = true;
+    audio.enable = true;         # Makes PipeWire the primary sound server
+
+    wireplumber.enable =true;    # WirePlumber: Session Manager for PipeWire
+
+    #! compatibility / integration
+    alsa.enable = true;          # ALSA integration
+    pulse.enable = true;         # PulseAudio compatibility
+    jack.enable = true;          # JACK support for advanced audio workflows
+  };
+
+  services.asusd= {
+    enable = true;
+    enableUserService = true;
+  };
 
   hardware.bluetooth = {
   enable = true; # enables support for Bluetooth
   powerOnBoot = false; # powers up the default Bluetooth controller on boot
-
     settings = {
       General = {
         Enable = "Source,Sink,Media,Socket";
