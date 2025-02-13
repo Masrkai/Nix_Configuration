@@ -84,10 +84,10 @@ in
         isNormalUser = true;
         description = "Masrkai";
         extraGroups = [
-                        "networkmanager" "bluetooth"
                         "wheel"
-                        "qbittorrent" "jackett"
+                        "networkmanager" "bluetooth"
                         "wireshark"
+                        "qbittorrent" "jackett"
                         "libvirtd" "kvm" "ubridge"
                         "video" "audio" "power"
                         "ollama"
@@ -313,7 +313,7 @@ in
   wget
   less
   most
-  kitty
+  sass
   ghostty
 
 
