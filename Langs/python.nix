@@ -1,17 +1,34 @@
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   pythonpackages = with pkgs; [
     #-> Python
     (python312.withPackages (pk: with pk; [
-        #> Basics
+        #-> Basics
+        uv
         pip
         pylint
         python-dotenv
         terminaltables
 
-        pyinstaller
-        pyinstaller-versionfile
+            #-> GUI
+            pyqt6
+            pyqt6-sip
+            pyqt6-charts
+            pyqt6-webengine
+
+            #-> Juniper/jupter
+            notebook
+            jupyterlab
+
+            ipykernel
+            ipython-sql
+            ipython-genutils
+
+            #> Packaging \ Compiling
+            pyinstaller
+            pyinstaller-versionfile
+
 
         h5py
         lxml
@@ -49,25 +66,18 @@
 
           #> UI
           # gradio
-          streamlit
+          # streamlit
 
           #> Platforms
-          openai
+          # openai
           huggingface-hub
           # google-cloud-texttospeech
 
           #> speechrecognition
           soundfile
           # realtime-stt
-          arabic-reshaper
+          # arabic-reshaper
 
-        #-> Juniper/jupter
-        notebook
-        jupyterlab
-
-        ipykernel
-        ipython-sql
-        ipython-genutils
 
         beautifulsoup4
         types-beautifulsoup4
