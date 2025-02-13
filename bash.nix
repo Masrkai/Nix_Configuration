@@ -45,9 +45,9 @@ programs.bash = {
     mv = "mv -vi";
 
     #-> Replacing List command with eza @_@
-    ls = "eza --color=always --long --git --icons=always";
-    la = "eza  --color=always --long --tree --git --links -A --icons=always";
-    l = "eza  --color=always --long --tree --git --links -a --icons=always";
+    ls = "eza  --color=always --group-directories-first --long --git --icons=always --links";
+    la = "eza  --color=always --group-directories-first --long --git --icons=always --links -A";
+    l =  "eza  --color=always --group-directories-first --long --git --icons=always --links -a --tree";
 
     #-? NixOS Specific
     switch =  "sudo -v && sudo bash -c 'nixos-rebuild switch --show-trace 2>&1' | nom";
