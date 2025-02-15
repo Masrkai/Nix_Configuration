@@ -406,9 +406,6 @@ mkMerge [
               mode = "infrastructure";
               mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
             };
-            wifi-security = {
-              key-mgmt = "none";  # Changed from "wpa-psk"
-            };
             ipv4 = {
               method = "auto";
               dns = "127.0.0.1";

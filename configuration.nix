@@ -184,6 +184,7 @@ in
     packages = with pkgs; [
 
       #* First Class
+      amiri
       iosevka-bin
       material-design-icons
 
@@ -408,7 +409,7 @@ in
   #-> Productivity
   gimp
   kooha
-  blender
+  # blender
   # davinci-resolve
   ffmpeg
   thunderbird-bin
@@ -422,11 +423,11 @@ in
   heroic-unwrapped
 
   dxvk
-  vkd3d
+  # vkd3d
   mangohud
 
   winetricks
-  wineWowPackages.stableFull
+  # wineWowPackages.stableFull
 
   #Games
   mindustry-wayland
