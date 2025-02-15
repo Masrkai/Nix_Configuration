@@ -8,11 +8,13 @@
         uv
         pip
         pylint
+        setuptools
         python-dotenv
         terminaltables
 
             #-> GUI
             pyqt6
+            pyside6
             pyqt6-sip
             pyqt6-charts
             pyqt6-webengine
@@ -21,6 +23,7 @@
             notebook
             jupyterlab
 
+            #-> IpyKernal
             ipykernel
             ipython-sql
             ipython-genutils
@@ -29,6 +32,19 @@
             pyinstaller
             pyinstaller-versionfile
 
+            #-> Misc
+            qrcode
+            qrcode-terminal
+
+            #-> cryptography & Databases
+            pandas
+            sqlite
+            portalocker
+            cryptography
+
+        #-> Web Scraping
+        beautifulsoup4
+        types-beautifulsoup4
 
         h5py
         lxml
@@ -36,11 +52,9 @@
         scapy
         curio
         numpy
-        pandas
         pyvips
-        sqlite
         netaddr
-        openusd
+        # openusd
         networkx
         openpyxl
         requests
@@ -49,7 +63,6 @@
         markdown2
         matplotlib
         weasyprint
-        setuptools
         markdown-it-py
 
         #-> Ai
@@ -79,8 +92,6 @@
           # arabic-reshaper
 
 
-        beautifulsoup4
-        types-beautifulsoup4
         ]
       )
     )
