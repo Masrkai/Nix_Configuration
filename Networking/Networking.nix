@@ -160,14 +160,14 @@
           address_data = "1.0.0.1";
           tls_auth_name = "cloudflare-dns.com";
         }
-        {
-          address_data = "8.8.8.8";
-          tls_auth_name = "dns.google";
-        }
-        {
-          address_data = "8.8.4.4";
-          tls_auth_name = "dns.google";
-        }
+        # {
+        #   address_data = "8.8.8.8";
+        #   tls_auth_name = "dns.google";
+        # }
+        # {
+        #   address_data = "8.8.4.4";
+        #   tls_auth_name = "dns.google";
+        # }
 
         # {
         #   address_data = "9.9.9.9";
@@ -184,38 +184,60 @@
   #> DNS Caching using Unbound
   services.unbound = {
     enable = true;
+    stateDir = "/var/lib/unbound";
     settings = {
       server = {
         access-control = [
           "0.0.0.0/0 refuse"     # Refuse all other networks by default
 
-          "127.0.0.0/8 allow"    # Localhost
-
           "10.0.0.0/8 allow"     # Another private network range
-
-          "172.16.0.0/12 allow"  # Another private network range
-
           "192.0.0.0/8 allow"    # Private network range
+          "127.0.0.0/8 allow"    # Localhost
+          "172.16.0.0/12 allow"  # Another private network range
           "192.168.0.0/16 allow" # Common home/local network range
         ];
         interface = [
         # "0.0.0.0"
-        "127.0.0.1"
-        ];  # Listen on localhost and all interfaces
+        "127.0.0.1" # Listen on localhost
+        ];
+
+        num-threads = 4;    # Match CPU core count
+
         do-ip4 = "yes";
         do-ip6 = "no";  # Disable IPv6 if not needed
         do-udp = "yes";
         do-tcp = "yes";
         prefetch = "yes";  # Prefetch popular domains
-        qname-minimisation = "yes";  # Enhance privacy
-        cache-min-ttl = 300;  # Minimum TTL for cached entries
-        cache-max-ttl = 86400;  # Maximum TTL for cached entries
+
+        cache-min-ttl = 300;         # Minimum TTL for cached entries
+        cache-max-ttl = 604800;      # 1 week maximum cache
+
+        msg-cache-size = "100m";     # Increased from default 4m
+        rrset-cache-size = "200m";   # Increased from default 4m
+
         do-not-query-localhost = "no";  # Allow querying localhost
 
         verbosity = 2;  # Moderate logging
         log-queries = "yes";
         log-replies = "yes";
         log-tag-queryreply = "yes";
+
+        # Existing settings
+
+        key-cache-size = "100m";
+        aggressive-nsec = "yes";        # Reduce DNSSEC overhead
+        prefetch-key = "yes";           # Prefetch DNSSEC keys
+
+        # Keep existing security settings
+        qname-minimisation = "yes";
+        hide-identity = "yes";
+        hide-version = "yes";
+        use-caps-for-id = "yes";        # Better DNS spoofing protection
+
+        # Security restrictions
+        harden-glue = "yes";
+        harden-dnssec-stripped = "yes";
+        harden-referral-path = "yes";
 
       };
       forward-zone = [
