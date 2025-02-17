@@ -133,24 +133,32 @@
                          #"0::1@5353"           #! ::1 cause error, use 0::1 instead
                        ];
 
-    idle_timeout = 300000;
-    round_robin_upstreams = 1;
-    edns_client_subnet_private = 1;
+      # Optimize connection handling
+      idle_timeout = 10000;        # Reduced from 300000 to free resources faster
+      round_robin_upstreams = 1;   # Enable upstream rotation for load balancing
+      edns_client_subnet_private = 1;
 
-    tls_min_version = "GETDNS_TLS1_3";
-    tls_query_padding_blocksize = 256;
+      # Enhanced TLS security settings
+      tls_min_version = "GETDNS_TLS1_3";
+      tls_query_padding_blocksize = 128;  # Reduced from 256 for better performance while maintaining security
 
-    dnssec = "GETDNS_EXTENSION_TRUE";
-    dnssec_return_status = "GETDNS_EXTENSION_TRUE";
+      # DNSSEC configuration
+      dnssec = "GETDNS_EXTENSION_TRUE";
+      dnssec_return_status = "GETDNS_EXTENSION_TRUE";
 
-    appdata_dir = "/var/cache/stubby";
-    resolution_type = "GETDNS_RESOLUTION_STUB";
-    dns_transport_list = [ "GETDNS_TRANSPORT_TLS" ];
-    tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
-    tls_ciphersuites = "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256";
-    # prefetch = "true";
-    # hide_identity = "true";   # Hides the identity of the resolver
-    # hide_version = "true";    # Hides the version of the resolver
+      # Core settings
+      appdata_dir = "/var/cache/stubby";
+      resolution_type = "GETDNS_RESOLUTION_STUB";
+      dns_transport_list = [ "GETDNS_TRANSPORT_TLS" ];
+      tls_authentication = "GETDNS_AUTHENTICATION_REQUIRED";
+
+      # Modern cipher suite selection optimized for performance
+      tls_ciphersuites = "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384";
+
+      # Enable performance optimizations
+      prefetch = true;             # Enable prefetching for faster responses
+      timeout = 2000;             # 2 second timeout (lower than default)
+
       upstream_recursive_servers = [
         {
           address_data = "1.1.1.1";
@@ -160,14 +168,14 @@
           address_data = "1.0.0.1";
           tls_auth_name = "cloudflare-dns.com";
         }
-        # {
-        #   address_data = "8.8.8.8";
-        #   tls_auth_name = "dns.google";
-        # }
-        # {
-        #   address_data = "8.8.4.4";
-        #   tls_auth_name = "dns.google";
-        # }
+        {
+          address_data = "8.8.8.8";
+          tls_auth_name = "dns.google";
+        }
+        {
+          address_data = "8.8.4.4";
+          tls_auth_name = "dns.google";
+        }
 
         # {
         #   address_data = "9.9.9.9";
@@ -180,6 +188,7 @@
       ];
     };
   };
+
 
   #> DNS Caching using Unbound
   services.unbound = {
@@ -201,45 +210,54 @@
         "127.0.0.1" # Listen on localhost
         ];
 
-        num-threads = 4;    # Match CPU core count
+        # Performance optimization settings
+        num-threads = 4;
+        msg-cache-slabs = 4;      # Match thread count for optimal cache distribution
+        rrset-cache-slabs = 4;
+        infra-cache-slabs = 4;
+        key-cache-slabs = 4;
 
+        # Aggressive caching configuration
+        prefetch = "yes";
+        prefetch-key = "yes";
+        rrset-roundrobin = "yes";  # Load balance between cached responses
+        cache-min-ttl = 60;        # Reduced minimum TTL for faster updates
+        cache-max-ttl = 86400;     # 24 hours maximum cache
+        serve-expired = "yes";     # Serve expired records while refreshing
+        serve-expired-ttl = 3600;  # Serve expired records for up to 1 hour
+
+        # Enhanced cache sizes
+        msg-cache-size = "128m";
+        rrset-cache-size = "256m";
+        key-cache-size = "128m";
+        neg-cache-size = "32m";    # Negative cache for faster NXDOMAIN responses
+
+        # Fault tolerance settings
+        retry-time = 300;          # Retry failed queries after 5 minutes
+        timeout = 2000;            # 2 second timeout
+        tcp-idle-timeout = 30000;  # Keep TCP connections alive longer
+
+        # Protocol settings
         do-ip4 = "yes";
-        do-ip6 = "no";  # Disable IPv6 if not needed
+        do-ip6 = "no";
         do-udp = "yes";
         do-tcp = "yes";
-        prefetch = "yes";  # Prefetch popular domains
 
-        cache-min-ttl = 300;         # Minimum TTL for cached entries
-        cache-max-ttl = 604800;      # 1 week maximum cache
-
-        msg-cache-size = "100m";     # Increased from default 4m
-        rrset-cache-size = "200m";   # Increased from default 4m
-
-        do-not-query-localhost = "no";  # Allow querying localhost
-
-        verbosity = 2;  # Moderate logging
-        log-queries = "yes";
-        log-replies = "yes";
-        log-tag-queryreply = "yes";
-
-        # Existing settings
-
-        key-cache-size = "100m";
-        aggressive-nsec = "yes";        # Reduce DNSSEC overhead
-        prefetch-key = "yes";           # Prefetch DNSSEC keys
-
-        # Keep existing security settings
+        # Security settings (maintained from original)
         qname-minimisation = "yes";
         hide-identity = "yes";
         hide-version = "yes";
-        use-caps-for-id = "yes";        # Better DNS spoofing protection
-
-        # Security restrictions
+        use-caps-for-id = "yes";
         harden-glue = "yes";
         harden-dnssec-stripped = "yes";
         harden-referral-path = "yes";
 
+        # Logging for troubleshooting
+        verbosity = 1;            # Reduced from 2 for less overhead
+        log-queries = "no";       # Disable detailed logging for better performance
+        log-replies = "no";
       };
+
       forward-zone = [
         {
           name = ".";
