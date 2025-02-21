@@ -15,6 +15,11 @@ in
   #> Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
 
+  services.xserver.screenSection = ''
+    option "TearFree" "true"
+    option "VariableRefresh" "true"
+  '';
+
   boot = lib.mkMerge [
     {
       initrd.kernelModules = [
@@ -40,7 +45,6 @@ in
 
       # Additional parameters for better performance and stability
       "nvidia.NVreg_UsePageAttributeTable=1"
-      # "nvidia.NVreg_EnablePCIeGen3=1"
       "nvidia.NVreg_EnableResizableBAR=1"
       ];
 
@@ -68,6 +72,8 @@ in
 
       libglvnd
       egl-wayland
+      vaapiVdpau
+      libvdpau-va-gl
 
       #! Vulkan
       vulkan-tools
@@ -76,50 +82,56 @@ in
     ];
   };
 
-  nixpkgs = lib.mkMerge [
+  nix.settings = lib.mkMerge [
     {
-      overlays = [
-        (self: super: {
-          # Force CUDA 12.4 for all packages
-          cudaPackages = super.cudaPackages_12_4;
-
-          magma = super.magma.override {
-            cudaSupport = true;
-            rocmSupport = false;
-
-            # gpuTargets = [ "sm_89" ];  # RTX 4060
-            cudaPackages = self.cudaPackages;  # Use the global CUDA 12.4
-          };
-
-          # Ensure PyTorch uses the same CUDA version
-          python3Packages = super.python3Packages.override (old: {
-            overrides = super.lib.composeExtensions (old.overrides or (_: _: {})) (pfinal: pprev: {
-              torch = pprev.torch.override {
-                cudaPackages = self.cudaPackages;
-                magma = self.magma;
-              };
-            });
-          });
-
-
-        })
-
-
+      substituters = [
+        "https://cuda-maintainers.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
       ];
     }
-
-    {
-      config = {
-        cudaSupport = true;
-        cudaCapabilities = [
-          "8.9"    #? RTX 40 series
-          "8.6"    #? RTX 30 series
-          "7.5"    #? RTX 20 series
-        ];
-        cudaForwardCompat = false;
-      };
-    }
   ];
+
+  nixpkgs = {
+    overlays = [
+      (final: prev: {
+        cudaPackages = prev.cudaPackages_12_4;
+      })
+
+      (final: prev: {
+        magma = prev.magma.override {
+          cudaSupport = true;
+          rocmSupport = false;
+          cudaPackages = final.cudaPackages;
+        };
+      })
+
+    (final: prev: {
+      python3Packages = prev.python3Packages.override (old: {
+        overrides = prev.lib.composeExtensions
+          (old.overrides or (_: _: {}))
+          (pyFinal: pyPrev: {
+            torch = pyPrev.torch.override {
+              cudaPackages = final.cudaPackages;
+              magma = final.magma;
+            };
+          });
+      });
+    })
+
+    ];
+
+    config = {
+      cudaSupport = true;
+      cudaCapabilities = [
+        "8.9"    # RTX 40 series
+        "8.6"    # RTX 30 series
+        "7.5"    # RTX 20 series
+      ];
+      cudaForwardCompat = false;
+    };
+  };
 
   hardware.nvidia = {
     open = false;
@@ -132,81 +144,136 @@ in
   };
 
   # Add CUDA toolkit to system packages
-  environment = lib.mkMerge[
-    {
+  environment = lib.mkMerge [{
+    systemPackages = let
+      # Group packages by functionality for better maintenance
+      graphicsDiagnostics = with pkgs; [
+        clinfo     # OpenCL information
+        glxinfo    # GLX diagnostics
+        vulkan-tools  # Vulkan utilities
+        libva-utils  # VA-API diagnostics
+      ];
 
-      systemPackages = with pkgs; [
-        clinfo
-        glxinfo
+      performanceTools = with pkgs; [
+        mangohud  # Performance monitoring
+      ];
 
-        mangohud
-        vulkan-tools
+      videoAcceleration = with pkgs; [
         libva-vdpau-driver
+        nvidia-vaapi-driver
+        vaapiVdpau
+      ];
 
+      cudaEcosystem = with pkgs; [
         magma-cuda
-        cudatoolkit  # Ensure this is installed system-wide
+        cudatoolkit
         cudaPackages.nccl
         cudaPackages.cudnn
         cudaPackages.libnpp
-        # cudaPackages.tensorrt  # Added for AI/ML acceleration
         cudaPackages.cuda_cccl
         cudaPackages.cuda_nvcc
         cudaPackages.cuda_cudart
       ];
+    in
+      graphicsDiagnostics ++
+      performanceTools ++
+      videoAcceleration ++
+      cudaEcosystem;
 
-      # Add necessary environment variables
-      sessionVariables =
-      {
-        CUDA_PATH = "${pkgs.cudatoolkit}";
-        CUDA_CACHE_PATH = "$HOME/.cache/cuda";
-        OCL_ICD_VENDORS = "${pkgs.ocl-icd}/etc/OpenCL/vendors/";
-        NVIDIA_DRIVER_PATH = "${config.hardware.nvidia.package}";
+    sessionVariables = let
+      # Security-critical paths
+      cudaPath = "${pkgs.cudatoolkit}";
+      nvidiaPath = "${config.hardware.nvidia.package}";
+      openglPath = "/run/opengl-driver";
 
-        # Modify compilation flags
-        CFLAGS   = lib.mkAfter "-fPIC";
-        FFLAGS   = lib.mkAfter "-fPIC";
-        FCFLAGS  = lib.mkAfter "-fPIC";
-        CXXFLAGS = lib.mkAfter "-fPIC";
+      # Secure base library paths - ordered by priority
+      baseLibPaths = [
+        "${cudaPath}/lib64"
+        "${openglPath}/lib"
+        "${openglPath}-32/lib"
+        "${pkgs.libglvnd}/lib"
+        "${pkgs.nvidia-vaapi-driver}/lib"
+        "${pkgs.vaapiVdpau}/lib"
+      ];
 
-        # Additional linking flags
-        LDFLAGS = lib.mkAfter "-L${pkgs.cudatoolkit}/lib64 -L/run/opengl-driver/lib -Wl,-rpath,${pkgs.cudatoolkit}/lib64 -Wl,--as-needed";
+      # Additional security-vetted libraries
+      extraLibs = lib.makeLibraryPath [
+        pkgs.khronos-ocl-icd-loader
+        pkgs.libvdpau
+      ];
 
-        # CUDA-specific flags
-        CUDA_CFLAGS = "-I${pkgs.cudatoolkit}/include";
-        NVCC_FLAGS = "-O3";  # Optimization for CUDA compilation
+      # Path security utilities
+      sanitizePath = path: lib.removePrefix ":" (lib.removeSuffix ":" path);
 
+      # Secure path concatenation with validation
+      safeConcatPaths = paths:
+        sanitizePath (lib.concatStringsSep ":" (lib.filter (x: x != null && x != "") paths));
 
-        # Wayland/KDE specific
-        KWIN_DRM_USE_EGL_STREAMS = "1";
-        __GLX_VENDOR_LIBRARY_NAME = "nvidia";  # Added for better compatibility
-        GBM_BACKEND = "nvidia-drm";  # Added for better Wayland support
-        EGL_PLATFORM = "wayland";  # Added for explicit EGL platform selection
-        WLR_NO_HARDWARE_CURSORS = "1";  # Added for better cursor handling
-        LIBVA_DRIVER_NAME = "nvidia";  # Added for VA-API support
+      # Final secured library path
+      fullLibPath = safeConcatPaths (baseLibPaths ++ lib.splitString ":" extraLibs);
 
-        PATH = lib.mkBefore [
-          "${pkgs.cudatoolkit}/bin"
-          "${pkgs.nvidia-vaapi-driver}/bin"
-        ];
+      # Compiler security flags
+      securityFlags = "-fPIC -fstack-protector-strong -D_FORTIFY_SOURCE=2";
+    in {
+      # CUDA Configuration - Hardened
+      CUDA_PATH = cudaPath;
+      CUDA_CACHE_PATH = "$HOME/.cache/cuda";
+      CUDA_CFLAGS = "-I${cudaPath}/include ${securityFlags}";
+      NVCC_FLAGS = "-O3 ${securityFlags}";
 
-        LD_LIBRARY_PATH = lib.mkBefore ([
-          "${pkgs.cudatoolkit}/lib64"
-          "/run/opengl-driver/lib"
-          "/run/opengl-driver-32/lib"
-          "${pkgs.libglvnd}/lib"
-          "${pkgs.nvidia-vaapi-driver}/lib"
-          "${pkgs.vaapiVdpau}/lib"
-        ] ++ (lib.splitString ":" (lib.makeLibraryPath [
+      # OpenCL Security Configuration
+      OCL_ICD_VENDORS = "${pkgs.ocl-icd}/etc/OpenCL/vendors/";
+
+      # Driver Security Configuration
+      NVIDIA_DRIVER_PATH = nvidiaPath;
+
+      # Hardened Compiler Flags
+      CFLAGS = lib.mkAfter securityFlags;
+      FFLAGS = lib.mkAfter securityFlags;
+      FCFLAGS = lib.mkAfter securityFlags;
+      CXXFLAGS = lib.mkAfter securityFlags;
+
+      # Secure Linker Configuration
+      LDFLAGS = lib.mkAfter (lib.concatStringsSep " " [
+        "-L${cudaPath}/lib64"
+        "-L${openglPath}/lib"
+        "-Wl,-rpath,${cudaPath}/lib64"
+        "-Wl,--as-needed"
+        "-Wl,-z,now"  # Immediate binding
+        "-Wl,-z,relro"  # Full RELRO
+      ]);
+
+      # Wayland/KDE Security Hardening
+      KWIN_DRM_USE_EGL_STREAMS = "1";
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+      GBM_BACKEND = "nvidia-drm";
+      EGL_PLATFORM = "wayland";
+      WLR_NO_HARDWARE_CURSORS = "1";
+      LIBVA_DRIVER_NAME = "nvidia";
+
+      # Secure Path Configuration
+      PATH = lib.mkBefore [
+        "${cudaPath}/bin"
+        "${pkgs.nvidia-vaapi-driver}/bin"
+      ];
+
+      # Library Path with Secure Composition
+      LD_LIBRARY_PATH = lib.mkMerge [
+        (lib.mkForce (lib.makeLibraryPath [
+          # Your critical paths in order of priority
+          pkgs.cudatoolkit
+          "/run/opengl-driver"
+          "/run/opengl-driver-32"
+          pkgs.libglvnd
+          pkgs.nvidia-vaapi-driver
+          pkgs.vaapiVdpau
           pkgs.khronos-ocl-icd-loader
           pkgs.libvdpau
-        ])));
+        ]))
+        # Allow other modules to append their paths
+        "\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+      ];
+    };
+  }];
 
-        #  LD_LIBRARY_PATH = lib.mkAfter"${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH";
-
-
-      };
-
-
-    }
-  ];
 }
