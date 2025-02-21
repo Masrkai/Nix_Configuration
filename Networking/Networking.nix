@@ -156,7 +156,7 @@
       tls_ciphersuites = "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384";
 
       # Enable performance optimizations
-      prefetch = true;             # Enable prefetching for faster responses
+      # prefetch = true;             # Enable prefetching for faster responses
       timeout = 2000;             # 2 second timeout (lower than default)
 
       upstream_recursive_servers = [
@@ -188,7 +188,6 @@
       ];
     };
   };
-
 
   #> DNS Caching using Unbound
   services.unbound = {
@@ -233,8 +232,6 @@
         neg-cache-size = "32m";    # Negative cache for faster NXDOMAIN responses
 
         # Fault tolerance settings
-        retry-time = 300;          # Retry failed queries after 5 minutes
-        timeout = 2000;            # 2 second timeout
         tcp-idle-timeout = 30000;  # Keep TCP connections alive longer
 
         # Protocol settings
