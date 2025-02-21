@@ -40,13 +40,21 @@
         "xhci_pci"
         "usb_storage"
       ];
-      kernelModules = [ ];
+      kernelModules = [
+          "asus-nb-wmi" "asus_wmi"
+       ];
     };
 
     # Configure kernel modules
     kernelModules = [
       "amd_pstate" "kvm-amd"
       "asus-nb-wmi" "asus_wmi"
+      "thunderbolt" "usb4"
+
+      "typec"              # USB-C subsystem
+      "typec_mux"          # Mux control for alternate modes
+      "typec_dp"           # DisplayPort over USB-C
+      "usb_typec"          # General USB-C device handling
     ];
 
     # Blacklist specific kernel modules
@@ -66,6 +74,9 @@
     # Kernel parameters configuration
     kernelParams = [
       "acpi_backlight=active" "acpi_osi=Linux"
+
+      "libata.force=noncq"  # Disable NCQ power management
+      "ahci.mobile_lpm_policy=0"  # Disable AHCI Link Power Management
 
       # CPU optimizations
       "amd_iommu=on"
@@ -131,7 +142,10 @@
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/43aedd8b-e362-4cb3-872b-da3ea71c02c2";
       fsType = "ext4";
-      options = [ "noatime" "commit=5"  ];  # Optimize for SSD
+      options = [
+      "noatime"
+      "commit=5"         # Optimize for SSD
+      ];
     };
 
   fileSystems."/boot" =
