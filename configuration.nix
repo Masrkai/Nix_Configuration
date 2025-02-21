@@ -94,65 +94,15 @@ in
                       ];
       };
 
-    environment={
-      #? Set up environment variables for colored man pages
-      variables = {
-      MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
-      LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
-      LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
-      MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
-
-      CPLUS_INCLUDE_PATH = let
-      #! This environment variable is specifically for header files
-      #? Should contain paths to .h and .hpp files
-      #* Typically includes /include directories
-        includeDirs = [
-          "${pkgs.glibc.dev}/include"
-          "${pkgs.stdenv.cc.cc.lib}/include"
-          "${pkgs.llvmPackages.libcxx}/include/c++/v1"
-
-
-          "${pkgs.boost185}/include/"
-          "${pkgs.eigen}/include/eigen3"
-          "${pkgs.nlohmann_json}/include"
-        ];
-      in builtins.concatStringsSep ":" includeDirs;
-
-
-      LIBRARY_PATH = let
-      #! Used for linking, points to library binary locations
-      #? Contains paths to .so and .a files
-      #* Typically includes /lib directories
-        libDirs = [
-          "${pkgs.glibc.dev}/lib"
-          "${pkgs.stdenv.cc.cc.lib}/lib"
-          "${pkgs.llvmPackages.libcxx}/lib"
-
-          "${pkgs.eigen}/lib"
-          "${pkgs.boost185}/lib"
-          "${pkgs.nlohmann_json}/lib"
-        ];
-      in builtins.concatStringsSep ":" libDirs;
-
-      # Compiler configuration
-      CC = "gcc";
-      CXX = "g++";
-
-      # Additional flags for clang to use libstdc++
-      LDFLAGS = lib.mkForce "-L${pkgs.stdenv.cc.cc.lib}/lib";
-      CXXFLAGS = lib.mkForce "-stdlib=libstdc++ -I${pkgs.stdenv.cc.cc.lib}/include -I${pkgs.stdenv.cc.cc.lib}/include/c++/13.3.0 -I${pkgs.stdenv.cc.cc.lib}/include/c++/13.3.0/x86_64-unknown-linux-gnu";
-
-      # Other optional environment variables for clang
-      CLANG_GCC_TOOLCHAIN = lib.mkForce "${pkgs.stdenv.cc}";
-      CLANG_LIBRARY_DIRS = lib.mkForce "${pkgs.llvmPackages.libcxx}/lib";
-      CLANG_INCLUDE_DIRS = lib.mkForce "${pkgs.llvmPackages.libcxx}/include/c++/v1";
-     };
+  environment={
+    #? Set up environment variables for colored man pages
+    variables = {
+    MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
+    LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
+    LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
+    MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
     };
-
-
-
-
-
+  };
 
   programs.less = {
     enable = true;
@@ -160,7 +110,6 @@ in
       LESS = "-R --use-color -Dd+r$Du+b";
     };
   };
-
 
     services.journald = {
     # Controls repeated message filtering
@@ -210,29 +159,46 @@ in
 
   nix = {
   settings = {
+    # experimental-features = "nix-command";   # add flakes if you use that system
+    experimental-features = [
+     "nix-command"  # add flakes if you use that system
+    ];
+
+
       # Enable sandboxing if not already enabled (it helps isolate builds).
       sandbox = true;
 
       # Limit the number of parallel build jobs (default: all available cores).
-      max-jobs = 2;
+      max-jobs = 9;
 
       # Optionally limit CPU usage by controlling core availability.
       cores = 0; # Restrict builds to use only 4 cores.
 
       system-features = [ "big-parallel" "cuda" "kvm" ];
 
-      # substituters = [
-      #   "https://cuda-maintainers.cachix.org"
-      # ];
-      # trusted-public-keys = [
-      #   "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-      # ];
+
+      trusted-users =[
+        "root"
+        "@wheel"
+        "masrkai"
+      ];
+
     };
+
     extraOptions = ''
     keep-outputs = true
     keep-derivations = true
     '';
   };
+
+  # nixConfig = {
+  #   extra-substituters = [
+  #     "cuda-maintainers.cachix.org"
+  #   ];
+  #   extra-trusted-public-keys = [
+  #     "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+  #   ];
+  # };
 
   nixpkgs = {
     overlays = [
@@ -367,7 +333,7 @@ in
   mission-center
   nvtopPackages.nvidia
 
-  #-> Contrnt
+  #-> Content
   busybox
   fzf
   yt-dlp
@@ -409,7 +375,7 @@ in
   #-> Productivity
   gimp
   kooha
-  # blender
+  blender
   # davinci-resolve
   ffmpeg
   thunderbird-bin
@@ -460,8 +426,6 @@ in
   zip2hashcat
   hashcat-utils
 
-
-
   iw
   dig
   mdk4
@@ -491,6 +455,8 @@ in
   #?########################
   #? Applications services:
   #?########################
+
+  gtk.iconCache.enable = true;
 
   #--> Appimages supports
   programs.appimage = {
@@ -619,9 +585,13 @@ in
   #> Steam
   programs.steam = {
     enable = true;
-      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-      localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    extest.enable = false;
+      extraCompatPackages = with pkgs; [
+        proton-ge-bin
+      ];
+    remotePlay.openFirewall = false; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = false; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = false; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
   #---> Enable CUPS to print documents.
