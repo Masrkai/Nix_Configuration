@@ -19,6 +19,10 @@
     (lowPrio gdb)
     (hiPrio gcc_multi)
     glibc glibc.dev gcc-unwrapped.lib
+
+    ninja
+    clang
+    llvm
     clang_multi clang-tools llvmPackages.libcxx
   ];
 
