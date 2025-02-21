@@ -1,18 +1,16 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 {
 
- environment.systemPackages = with pkgs; [
-  #>################
-  #> Virtualization:
-  #>################
-  qemu-utils
+  environment.systemPackages = with pkgs; [
+    #> Virtualization
+    qemu-utils
+    virt-viewer
+    virt-manager
+    spice
+    spice-protocol
+    virglrenderer  # Required for 3D acceleration
+  ];
 
-  virt-viewer
-  virt-manager
-
-  spice
-  spice-protocol
- ];
 
   users.groups.libvirt = {
   members = [ "masrkai" ];
@@ -30,6 +28,7 @@
           package = pkgs.qemu_full;
           runAsRoot = true;
           swtpm.enable = true;
+
           vhostUserPackages = with pkgs; [
             win-spice
             virtiofsd
@@ -37,6 +36,15 @@
             win-virtio
             virglrenderer
           ];
+
+          verbatimConfig = ''
+          cgroup_device_acl = [
+            "/dev/null", "/dev/full", "/dev/zero",
+            "/dev/random", "/dev/urandom", "/dev/ptmx",
+            "/dev/kvm", "/dev/dri/renderD128"
+          ]
+          nvram = [ "${pkgs.OVMFFull}/FV/OVMF.fd:${pkgs.OVMFFull}/FV/OVMF_VARS.fd" ]
+          '';
 
           ovmf = {
             enable = true;
@@ -53,10 +61,17 @@
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
 
-  # networking.interfaces.br0 = {
-  # ipv4.addresses = [
-  #   { address = "192.168.1.2"; prefixLength = 24; }
-  # ];
-  # ipv4.gateway = "192.168.1.1";
-  # };
+    # environment.sessionVariables = {
+    #   # Required for NVIDIA GL context sharing
+    #   # OR explicitly reference the NVIDIA package:
+    #   LIBGL_DRIVERS_PATH = "${config.hardware.nvidia.package}/lib/dri";
+    #   __EGL_VENDOR_LIBRARY_DIRS = "${pkgs.mesa.drivers}/share/glvnd/egl_vendor.d";
+    # };
+
+    # # Render node permissions
+    # services.udev.extraRules = ''
+    #   KERNEL=="renderD128", GROUP="libvirt", MODE="0660"
+    # '';
+
+
 }
