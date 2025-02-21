@@ -5,6 +5,7 @@
 { lib, pkgs, config, ... }:
 
 let
+  sql = import ./sql.nix{ inherit pkgs lib ; };
   cpp = import ./cpp.nix { inherit pkgs lib ; };
   nixX = import ./nix.nix { inherit pkgs lib ; };
   rust = import ./rust.nix{ inherit pkgs lib ; };
@@ -14,6 +15,7 @@ let
 in{
   environment.systemPackages = with pkgs;
   lib.flatten [  # Flatten the lists of packages
+    sql.sqlpackages
     cpp.cpppackages
     nixX.nixpackages
     rust.rustpackages
@@ -56,6 +58,7 @@ in{
                             ms-vscode-remote.remote-ssh
                             ms-vscode-remote.remote-ssh-edit
         ]
+        ++ sql.sql-nixpkgs-extensions
         ++ cpp.cpp-nixpkgs-extensions
         ++ nixX.nix-nixpkgs-extensions
         ++ rust.rust-nixpkgs-extensions
