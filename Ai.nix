@@ -27,17 +27,17 @@ in
   virtualisation = lib.mkMerge [
     {
       podman = {
-        enable = true;
+        enable = false;
         dockerCompat = true;
         #defaultNetwork.settings.dns_enabled = true;
       };
 
-      oci-containers = {
-        backend = "podman";
-        containers = {
-          "open-webui" = import ./containers/open-webui.nix;
-        };
-      };
+      # oci-containers = {
+      #   backend = "podman";
+      #   containers = {
+      #     "open-webui" = import ./containers/open-webui.nix;
+      #   };
+      # };
     }
   ];
 
