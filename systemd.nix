@@ -6,6 +6,11 @@ let
   username = "masrkai";
 in
 {
+ services.logind = {
+  # enable = true;
+  lidSwitch = "ignore";
+ };
+
 
  systemd = {
     enableEmergencyMode = true;
@@ -45,6 +50,7 @@ in
     '';
 
     services = {
+
       # Example of a systemd service override for NetworkManager
       NetworkManager = {
         serviceConfig = {
@@ -164,7 +170,7 @@ in
               font-size = 14
               # theme = GruvboxDarkHard
               shell-integration-features = no-cursor,sudo,no-title
-              cursor-style = block
+              # cursor-style = block
               # adjust-cell-height = 35%
               background-opacity = 0.75
               window-colorspace = "display-p3"
@@ -215,7 +221,7 @@ in
               keybind = cmd+s>e=equalize_splits
 
               # other
-              copy-on-select = clipboard
+              # copy-on-select = clipboard
               desktop-notifications = true
 
             END_OF_CONFIG_FOR_GHOSTTY
