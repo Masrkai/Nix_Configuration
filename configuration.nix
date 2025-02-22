@@ -159,23 +159,16 @@ in
 
   nix = {
   settings = {
-    # experimental-features = "nix-command";   # add flakes if you use that system
-    experimental-features = [
-     "nix-command"  # add flakes if you use that system
-    ];
+      experimental-features = [
+        #"flakes"
+        "nix-command"
+      ];
 
-
-      # Enable sandboxing if not already enabled (it helps isolate builds).
-      sandbox = true;
-
-      # Limit the number of parallel build jobs (default: all available cores).
-      max-jobs = 9;
-
-      # Optionally limit CPU usage by controlling core availability.
-      cores = 0; # Restrict builds to use only 4 cores.
-
-      system-features = [ "big-parallel" "cuda" "kvm" ];
-
+      cores = 0;                        # Restrict builds to use only N cores 0 to use all.
+      max-jobs = 1;                     # Limit the number of parallel build jobs.
+      sandbox = true;                   # Enable sandboxing if not already enabled (it helps isolate builds).
+      builders-use-substitutes = true;  # Prefer cached builds
+      system-features = [ "big-parallel" "kvm" ];
 
       trusted-users =[
         "root"
@@ -183,22 +176,16 @@ in
         "masrkai"
       ];
 
+      # Keep fewer generations to reduce memory pressure
+      keep-derivations = false;
+      keep-outputs = false;
     };
 
-    extraOptions = ''
-    keep-outputs = true
-    keep-derivations = true
-    '';
+    # extraOptions = ''
+    # keep-outputs = true
+    # keep-derivations = true
+    # '';
   };
-
-  # nixConfig = {
-  #   extra-substituters = [
-  #     "cuda-maintainers.cachix.org"
-  #   ];
-  #   extra-trusted-public-keys = [
-  #     "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
-  #   ];
-  # };
 
   nixpkgs = {
     overlays = [
@@ -334,7 +321,6 @@ in
   nvtopPackages.nvidia
 
   #-> Content
-  busybox
   fzf
   yt-dlp
   haruna
@@ -377,7 +363,6 @@ in
   kooha
   blender
   # davinci-resolve
-  ffmpeg
   thunderbird-bin
   gnome-disk-utility
   libreoffice-qt6-still
@@ -385,7 +370,6 @@ in
   #-> Gaming
   lutris
   bottles
-  # proton-ge-bin
   heroic-unwrapped
 
   dxvk
@@ -400,6 +384,7 @@ in
 
   #System
   mlocate
+  busybox
   pciutils
   translate-shell
 

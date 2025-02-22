@@ -5,4 +5,10 @@
     ./sql-server.nix
   ];
 
+  nixpkgs = {
+    overlays = [
+
+    ];
+  };
+
 }

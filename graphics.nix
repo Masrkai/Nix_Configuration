@@ -95,30 +95,30 @@ in
 
   nixpkgs = {
     overlays = [
-      (final: prev: {
-        cudaPackages = prev.cudaPackages_12_4;
-      })
+      # (final: prev: {
+      #   cudaPackages = prev.cudaPackages_12_4;
+      # })
 
-      (final: prev: {
-        magma = prev.magma.override {
-          cudaSupport = true;
-          rocmSupport = false;
-          cudaPackages = final.cudaPackages;
-        };
-      })
+      # (final: prev: {
+      #   magma = prev.magma.override {
+      #     cudaSupport = true;
+      #     rocmSupport = false;
+      #     cudaPackages = final.cudaPackages;
+      #   };
+      # })
 
-    (final: prev: {
-      python3Packages = prev.python3Packages.override (old: {
-        overrides = prev.lib.composeExtensions
-          (old.overrides or (_: _: {}))
-          (pyFinal: pyPrev: {
-            torch = pyPrev.torch.override {
-              cudaPackages = final.cudaPackages;
-              magma = final.magma;
-            };
-          });
-      });
-    })
+    # (final: prev: {
+    #   python3Packages = prev.python3Packages.override (old: {
+    #     overrides = prev.lib.composeExtensions
+    #       (old.overrides or (_: _: {}))
+    #       (pyFinal: pyPrev: {
+    #         torch = pyPrev.torch.override {
+    #           cudaPackages = final.cudaPackages;
+    #           magma = final.magma;
+    #         };
+    #       });
+    #   });
+    # })
 
     ];
 
@@ -165,6 +165,7 @@ in
       ];
 
       cudaEcosystem = with pkgs; [
+        magma
         magma-cuda
         cudatoolkit
         cudaPackages.nccl

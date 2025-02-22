@@ -28,6 +28,20 @@
   #   };
   # };
 
+
+    #   "clangd.path": "/run/current-system/sw/bin/clangd",
+    # "clangd.restartAfterCrash": true,
+    # "clangd.arguments": [
+    #     "-std=c++23",
+    #     "--enable-config",
+    #     "--background-index",
+    #     "--clang-tidy",
+    #     "--header-insertion=iwyu",
+    #     "--completion-style=detailed",
+    #     "--suggest-missing-includes",
+    # ],
+
+
   #! Nat for hotspot
   # networking.nat = {
   #   enable = true;

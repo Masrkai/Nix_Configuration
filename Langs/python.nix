@@ -1,7 +1,25 @@
 { pkgs, ... }:
 
+let
+
+customPackages = {
+    #? Python
+    # ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
+    # MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+    smolagents = pkgs.callPackage ../Programs/custom/smolagents.nix {};
+    # evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
+    # mac-formatter = pkgs.callPackage ../Programs/custom/mac-formatter.nix {};
+
+  };
+in
 {
   pythonpackages = with pkgs; [
+
+    # customPackages.smolagents
+
+    opencv
+    ffmpeg-full
+
     #-> Python
     (python312.withPackages (pk: with pk; [
         #-> Basics
@@ -46,6 +64,10 @@
         beautifulsoup4
         types-beautifulsoup4
 
+        #-> ML
+        scikit-learn
+        scikit-image
+
         h5py
         lxml
         tqdm
@@ -54,7 +76,12 @@
         numpy
         pyvips
         netaddr
-        # openusd
+
+
+        #-> Algos
+        opencv
+        openusd
+
         networkx
         openpyxl
         requests
@@ -65,12 +92,20 @@
         weasyprint
         markdown-it-py
 
+        # diffusers
+        # transformers
+
+
+        #-> torch
+        torch-bin
+        triton-bin
+        torchaudio-bin
+        torchvision-bin
+
         #-> Ai
         nltk
-        # pydub
         datasets
         # speechbrain
-        # transformers
         # opencv-python
 
         # jax
@@ -78,11 +113,13 @@
         # tensorflow-bin
 
           #> UI
+          pydub
           # gradio
-          # streamlit
+
+          streamlit
 
           #> Platforms
-          # openai
+          openai
           huggingface-hub
           # google-cloud-texttospeech
 

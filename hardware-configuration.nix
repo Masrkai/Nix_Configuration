@@ -71,11 +71,11 @@
     "amdgpu" "radeon"
     ];
 
-    # Kernel parameters configuration
+    #> Kernel parameters configuration
     kernelParams = [
       "acpi_backlight=active" "acpi_osi=Linux"
 
-      "libata.force=noncq"  # Disable NCQ power management
+      # "libata.force=noncq"  # Disable NCQ power management
       "ahci.mobile_lpm_policy=0"  # Disable AHCI Link Power Management
 
       # CPU optimizations
@@ -85,14 +85,19 @@
       "processor.max_cstate=7"  # Limit C-states for better response time
 
       # Remove
-      "nmi_watchdog=0"
+      "nowatchdog"
       "intel_pstate=disable"
+
+      "preempt=full"           # Better for desktop/low-latency
+      # "mce=ignore_ce"          # Ignore non-fatal Correctable Errors (reduces log noise)
+      "scsi_mod.use_blk_mq=1"  # Use multi-queue for faster I/O
 
       # Memory security parameters
       "slab_nomerge"            # Disables merging of slabs of similar sizes
       "vsyscall=none"           # Disables legacy system call interface
-      "slub_debug=FZ"           # Enables sanity checks (F) and redzoning (Z)
+      "slub_debug=FZP"          # Enables sanity checks (F), redzoning (Z) and poisoning (P).
       "init_on_free=1"          # Fill freed pages and heap objects with zeroes
+      "init_on_alloc=1"         # to initialize memory on allocation (complements init_on_free=1).
       "page_alloc.shuffle=1"    # Helps detect memory issues earlier + Major security gain
 
       # New memory management parameters
@@ -102,7 +107,7 @@
       "transparent_hugepage=madvise" # Enable transparent huge pages
 
       "pti=on"                      # Page Table Isolation for security
-      "page_poison=1"               # Poison freed memory pages
+      # "page_poison=1"             # Poison freed memory pages (As it conflicts with init_on_free)
       "randomize_kstack_offset=on"  # Enhanced kernel stack ASLR
 
     ];
@@ -185,9 +190,9 @@
 
   # Add zram-based swap since you have no swap configured
   zramSwap = {
-    enable = true;
+    enable = false;
     algorithm = "zstd";
-    memoryPercent = 20;  # Use up to 20% of RAM for zram swap
+    memoryPercent = 10;  # Use up to 10% of RAM for zram swap
   };
 
   hardware.cpu.amd = {
@@ -217,16 +222,18 @@
 
   # PipeWire Setup
   services.pipewire = {
-    enable = true;
-    audio.enable = true;         # Makes PipeWire the primary sound server
+      enable = true;
+      systemWide = false;  # Maintaining per-user audio sessions
+      audio.enable = true;
 
-    wireplumber.enable =true;    # WirePlumber: Session Manager for PipeWire
+      # Enable WirePlumber for intelligent session management
+      wireplumber.enable = true;
 
-    #! compatibility / integration
-    alsa.enable = true;          # ALSA integration
-    pulse.enable = true;         # PulseAudio compatibility
-    jack.enable = true;          # JACK support for advanced audio workflows
-  };
+      # Critical compatibility layers
+      alsa.enable = true;          # Native ALSA protocol support
+      jack.enable = true;          # Pro-audio JACK compatibility
+      pulse.enable = true;         # Essential PulseAudio compatibility layer
+    };
 
   services.asusd= {
     enable = true;
@@ -242,6 +249,11 @@
       };
     };
   };
+
+  hardware.firmware= [
+    pkgs.sof-firmware
+
+  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

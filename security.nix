@@ -118,34 +118,21 @@ mkMerge [
       daemon.enable = true;
       updater = {
         enable = true;
-        interval = "hourly";
-          # settings = {
-          #   # Enable multithreading
-          #   MaxThreads = 4;  # Adjust based on CPU cores
+        interval = "daily";
+          settings = {
+            # Enable multithreading
+            MaxThreads = 4;  # Adjust based on CPU cores
 
-          #   # Optimize scanning performance
-          #   # ScanOnAccess = false;
-          #   # MaxDirectoryRecursion = 20;
-          #   # MaxFileSize = "100M";
-          #   # MaxScanSize = "100M";
-
-          #   # Memory settings
-          #   # MaxQueuedEmails = 800;
-          #   # MaxRecursion = 16;
-          #   # PCREMaxFileSize = "25M";
-          #   # PCREMatchLimit = 10000;
-          #   # PCRERecMatchLimit = 5000;
-
-          #   # Debug and logging
-          #   LogFile = "/var/log/clamav/clamd.log";
-          #   LogTime = true;
-          #   LogClean = false;
-          #   LogVerbose = false;
-          # };
+            # Debug and logging
+            LogFile = "/var/log/clamav/clamd.log";
+            LogTime = true;
+            LogClean = false;
+            LogVerbose = false;
+          };
       };
       fangfrisch = {
         enable = true;
-        interval = "daily";
+        interval = "weekly";
       };
     };
   }
