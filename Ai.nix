@@ -2,6 +2,8 @@
 
 let
   secrets = import ./Sec/secrets.nix;
+  unstable = import <unstable> {config.allowUnfree = true;};
+
 in
 {
   services.ollama = {
@@ -14,6 +16,19 @@ in
     user = "ollama";
     group = "ollama";
   };
+
+  services.open-webui = {
+    enable = true;
+    stateDir = "/var/lib/open-webui";
+
+    package= unstable.open-webui;
+
+    port = 8080;
+    host = "127.0.0.1";
+    openFirewall = false;
+
+  };
+
 
   services.tika = {
     enable = true;
