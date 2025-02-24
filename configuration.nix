@@ -352,6 +352,7 @@ in
   #-> KDE Specific
   kdePackages.kgamma
   kdePackages.kscreen
+  kdePackages.kdenlive
   kdePackages.filelight
   kdePackages.colord-kde
   kdePackages.breeze-icons
@@ -362,7 +363,6 @@ in
   gimp
   kooha
   blender
-  # davinci-resolve
   thunderbird-bin
   gnome-disk-utility
   libreoffice-qt6-still
