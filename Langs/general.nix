@@ -3,13 +3,7 @@
 {
 
   general-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
-      # https://open-vsx.org/extension/llvm-vs-code-extensions/vscode-clangd
-      # {
-      #   name = "vscode-clangd";
-      #   publisher = "llvm-vs-code-extensions";
-      #   version = "0.1.33";
-      #   hash = "sha256-NAQ7qT99vudcb/R55pKY3M5H6sV32aB4P8IWZKVQJas=";
-      # }
+
       {
         #https://open-vsx.org/extension/lukinco/lukin-vscode-theme
         name = "lukin-vscode-theme";
@@ -38,13 +32,6 @@
         version = "1.6.6";
         hash = "sha256-1WwjGaYNHN6axlprjznF1S8BB4cQLnNFXqi7doQZjrQ=";
       }
-      # {
-      #   #https://open-vsx.org/extension/TabNine/tabnine-vscode
-      #   name = "tabnine-vscode";
-      #   publisher = "TabNine";
-      #   version = "3.132.0";
-      #   hash = "sha256-hwr/lPLOxpraqjyu0MjZd9JxtcruGz7dKA6CVxUZNYw=";
-      # }
       {
         #https://open-vsx.org/extension/ultram4rine/vscode-choosealicense
         name = "vscode-choosealicense";
@@ -101,12 +88,6 @@
         version = "0.1.2";  # Check for the latest version
         hash = "sha256-dcxtgUfn2GhVVyTxd+6mC0bhwMeLUxB6T9mPBUbgxbA=";
       }
-      # {
-      #   #https://marketplace.visualstudio.com/items?itemName=shellscape.shellscape-rackets
-      #   name = "shellscape-brackets";
-      #   publisher = "shellscape";
-      #   version = "0.1.2";  # Check for the latest version
-      #   hash = "sha256-dcxtgUfn2GhVVyTxd+6mC0bhwMeLUxB6T9mPBUbgxbA=";
-      # }
+
   ];
 }
