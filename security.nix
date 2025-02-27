@@ -114,10 +114,10 @@ mkMerge [
     # ClamAV configuration
     services.clamav = {
 
-      scanner.enable = true;
-      daemon.enable = true;
+      scanner.enable = false;
+      daemon.enable = false;
       updater = {
-        enable = true;
+        enable = false;
         interval = "daily";
           settings = {
             # Enable multithreading
@@ -131,7 +131,7 @@ mkMerge [
           };
       };
       fangfrisch = {
-        enable = true;
+        enable = false;
         interval = "weekly";
       };
     };
