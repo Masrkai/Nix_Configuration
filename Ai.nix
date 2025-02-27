@@ -19,13 +19,26 @@ in
 
   services.open-webui = {
     enable = true;
-    stateDir = "/var/lib/open-webui";
+    # stateDir = "/var/lib/open-webui";
 
     package= unstable.open-webui;
 
     port = 8080;
     host = "127.0.0.1";
-    openFirewall = false;
+    openFirewall = true;
+    environment = {
+      TZ = secrets.TZ;
+      WEBUI_AUTH = "False";
+      DATA_DIR = "/var/lib/open-webui/data";  # Explicitly set data directory
+      OLLAMA_BASE_URL = "http://127.0.0.1:11434";  # Redundant but sometimes helps
+      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
+
+      DO_NOT_TRACK = "True";
+        SCARF_NO_ANALYTICS = "True";
+        ANONYMIZED_TELEMETRY = "False";
+        WEBUI_SESSION_COOKIE_SECURE = "True";
+        WEBUI_SESSION_COOKIE_SAME_SITE = "strict";
+    };
 
   };
 
