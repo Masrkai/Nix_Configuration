@@ -1,63 +1,39 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, pythonRelaxDepsHook
+
+{
+  lib
+, pkgs
+
+  #! build-system
 , setuptools
-, transformers
-, requests
-, rich
-, pandas
-, jinja2
-, markdownify
-, gradio
-, duckduckgo-search
-, python-dotenv
-, e2b-code-interpreter
-, torch-bin
-, torchvision-bin
-, accelerate
-, openai
+, python3Packages
+
 }:
+
 
 let
   pname = "smolagents";
   version = "1.9.2";
-in buildPythonPackage {
+in
+
+  python3Packages.buildPythonPackage {
   inherit pname version;
+  pyproject = true;
 
-  format = "pyproject";  # More precise than just setting pyproject = true
-
-  src = fetchFromGitHub {
+  src = pkgs.fetchFromGitHub {
     owner = "huggingface";
     repo = "smolagents";
     rev = "v${version}";
-    hash = "";  # Replace with actual hash
+    hash = "sha256-YAN9MN3I7LMzuhr/069klbHbYZ+hFZG1MHoWxuwOxcE=";
   };
 
-  nativeBuildInputs = [
-    pythonRelaxDepsHook
+  nativeBuildInputs = with python3Packages; [
+    wheel
     setuptools
-  ];
-
-  propagatedBuildInputs = [
-    rich
-    pandas
-    jinja2
-    gradio
-    requests
-    markdownify
-    transformers
-    duckduckgo-search
-    python-dotenv
-    e2b-code-interpreter
-
-    torch-bin
-    torchvision-bin
-
-    openai
     accelerate
+    pythonRelaxDepsHook
   ];
 
+  # List of packages for which to relax dependency restrictions.
   pythonRelaxDeps = [
     "rich"
     "gradio"
@@ -66,13 +42,33 @@ in buildPythonPackage {
     "e2b-code-interpreter"
   ];
 
-  pythonImportsCheck = [ "smolagents" ];
+  propagatedBuildInputs = with python3Packages; [
+    huggingface-hub
+    requests
+    rich
+    pandas
+    jinja2
+    pillow
+    markdownify
+    duckduckgo-search
+    python-dotenv
+    transformers
+    gradio
+    # e2b-code-interpreter # Not yet available in nixpkgs
+    openai
+    torch-bin
+    triton-bin
+    accelerate
+    torchvision-bin
+  ];
+
+  pythonImportsCheck = [ "smolagents" "huggingface_hub"];
 
   meta = with lib; {
     homepage = "https://huggingface.co/docs/smolagents/index";
     description = ''
-      A barebones library for agents. Agents write python code to
-      call tools and orchestrate other agents
+      🤗 smolagents: a barebones library for agents. Agents write python code to
+      call tools or orchestrate other agents.
     '';
     license = licenses.asl20;
     maintainers = with maintainers; [ offline ];

@@ -2,26 +2,38 @@
 
 let
 
-customPackages = {
-    #? Python
-    # ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
-    # MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
-    smolagents = pkgs.callPackage ../Programs/custom/smolagents.nix {};
-    # evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
-    # mac-formatter = pkgs.callPackage ../Programs/custom/mac-formatter.nix {};
+  # unstable = import <unstable> {config.allowUnfree = true;};
 
-  };
+
+    # customPackages = {
+    #   #? Python
+    #   # ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
+    #   # MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+    #   smolagents = pkgs.callPackage ../Programs/Packages/smolagents.nix {};
+    #   # evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
+    #   # mac-formatter = pkgs.callPackage ../Programs/custom/mac-formatter.nix {}
+    # };
+
+    # Extract package attributes directly from the customPackages attrset
+    # customPythonPackages = with customPackages; [
+    #   smolagents
+    # ];
+
 in
 {
   pythonpackages = with pkgs; [
 
-    # customPackages.smolagents
-
     opencv
     ffmpeg-full
+    # customPackages.smolagents
+    # unstable.python312Packages.huggingface-hub
 
     #-> Python
     (python312.withPackages (pk: with pk; [
+
+    (callPackage ../Programs/Packages/smolagents.nix {})
+
+
         #-> Basics
         uv
         pip
@@ -92,11 +104,12 @@ in
         weasyprint
         markdown-it-py
 
-        # diffusers
-        # transformers
+        diffusers
+        transformers
 
 
         #-> torch
+        # jax
         torch-bin
         triton-bin
         torchaudio-bin
@@ -107,14 +120,12 @@ in
         datasets
         # speechbrain
         # opencv-python
-
-        # jax
         # torchWithCuda
         # tensorflow-bin
 
           #> UI
           pydub
-          # gradio
+          gradio
 
           streamlit
 
@@ -132,7 +143,9 @@ in
         ]
       )
     )
-  ];
+  ]
+  # ++ customPythonPackages
+  ;
 
   python-nixpkgs-extensions = with pkgs.vscode-extensions; [
     #* Python
