@@ -14,8 +14,13 @@ python3Packages.buildPythonApplication rec {
   src = fetchFromGitHub {
     owner = "Masrkai";
     repo = "Evillimiter";
-    tag = "v${version}";
-    hash = "sha256-g7OZLAzH47RrqvnEQC+ExsGxiRlVvRlihct8ltGVlOY=";
+    # tag = "v${version}";
+    # hash = "sha256-g7OZLAzH47RrqvnEQC+ExsGxiRlVvRlihct8ltGVlOY=";
+
+    tag = "dev.04";
+    # hash = lib.fakeHash;
+    hash = "sha256-NpSGVoJ0On4UYspbEkfaOlmm6CusSo3j8OMeFk+2XJo=";
+    # hash = "sha256-uVsPxDbC3uNwDxlA4n3YPPwqmzijiPuEgUjhoauCfj0=";
   };
 
   build-system = with python3Packages; [ setuptools-scm ];
