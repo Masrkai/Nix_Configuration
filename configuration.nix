@@ -26,6 +26,9 @@ let
     evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
     mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
 
+    #> VENV
+    grayjay = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay.nix {};
+
   };
 
   # Define common paths
@@ -242,6 +245,7 @@ in
   customPackages.logisim-evolution
   customPackages.super-productivity
   customPackages.evillimiter
+  customPackages.grayjay
   #customPackages.airgeddon
   #customPackages.custom-httrack
 
