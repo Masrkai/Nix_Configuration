@@ -59,6 +59,7 @@ in
             ProtectHome = true;
             NoNewPrivileges = true;
             ProtectSystem = "strict";
+            ReadWritePaths = "/etc/NetworkManager/";
 
             # Enhanced process isolation
             # PrivateUsers = true;       # Isolate user namespace
