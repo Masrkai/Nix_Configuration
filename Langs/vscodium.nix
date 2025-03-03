@@ -5,10 +5,11 @@
 { lib, pkgs, config, ... }:
 
 let
-  sql = import ./sql.nix{ inherit pkgs lib ; };
+  sql = import ./sql.nix { inherit pkgs lib ; };
   cpp = import ./cpp.nix { inherit pkgs lib ; };
   nixX = import ./nix.nix { inherit pkgs lib ; };
-  rust = import ./rust.nix{ inherit pkgs lib ; };
+  umlx = import ./UML.nix { inherit pkgs lib ; };
+  rust = import ./rust.nix { inherit pkgs lib ; };
   pythonX = import ./python.nix{ inherit pkgs lib ; };
   generalX = import ./general.nix{ inherit pkgs lib ; };
 
@@ -67,6 +68,7 @@ in{
 
         ++ vscode-utils.extensionsFromVscodeMarketplace (
           cpp.cpp-marketplace-extensions
+          ++ umlx.UML-marketplace-extensions
           ++ nixX.nix-marketplace-extensions
           ++ rust.rust-marketplace-extensions
           ++ pythonX.python-marketplace-extensions
