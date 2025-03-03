@@ -482,14 +482,24 @@ in
 
   #---> Syncthing
   services.syncthing = {
+        enable = true;
+        user = "masrkai";
+        dataDir = "/home/masrkai";
+        configDir = "/home/masrkai/Documents/.config/syncthing";
+
     guiAddress = "127.0.0.1:8384";
-    enable = true;
-    user = "masrkai";
-    dataDir = "/home/masrkai";
-    configDir = "/home/masrkai/Documents/.config/syncthing";
+    systemService = true;
     overrideDevices = true; #! Overrides devices added or deleted through the WebUI
     overrideFolders = true; #! Overrides folders added or deleted through the WebUI
+    openDefaultPorts = true;
     settings = {
+      options ={
+        urAccepted = -1;
+        relaysEnabled = false;
+        maxFolderConcurrency = 9;
+        localAnnounceEnabled = true;
+
+      };
       devices = {
         "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
         "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
