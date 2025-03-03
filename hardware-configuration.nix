@@ -51,6 +51,8 @@
       "asus-nb-wmi" "asus_wmi"
       "thunderbolt" "usb4"
 
+      "tun"
+
       "typec"              # USB-C subsystem
       "typec_mux"          # Mux control for alternate modes
       "typec_dp"           # DisplayPort over USB-C
@@ -214,7 +216,7 @@
 
   #--> Better scheduling for better CPU cycles & audio performance
   services.system76-scheduler = {
-    enable = true;
+    enable = false;
     settings.cfsProfiles.enable = true; #? Enable CPU scheduling improvements for Audio
   };
 

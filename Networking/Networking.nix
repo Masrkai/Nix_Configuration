@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ pkgs, lib, ... }:
 
 
 #*#########################
@@ -63,10 +63,12 @@
                           # 6881       #? Qbittorrent
                           # 16509      #? libvirt
                           # 5353
-                          # 8384 22000 #? Syncthing
-                          443 8888 18081
+                          443        #? OpenVPN
+                          8384 22000 #? Syncthing
+                          8888 18081
                         ];
       allowedUDPPorts = [
+                          1337  #? OpenVPN
                           6881  #? Qbittorrent
                           18081
                           21027 #? Syncthing
@@ -92,6 +94,10 @@
       wifi.powersave = true;
       wifi.scanRandMacAddress = true;  #? Enable random MAC during scanning
 
+      plugins = with pkgs; [
+        networkmanager-openvpn
+      ];
+
       settings = {
         global = {
         };
@@ -106,6 +112,39 @@
       };
     };
   };
+
+
+  #> OpenVPN
+  # programs.openvpn3 = {
+  #   enable = false;
+  #   package = pkgs.openvpn3;
+  # };
+
+  programs.openvpn3 = {
+    enable = true;
+    package = pkgs.openvpn3;
+
+    # Configure logging
+    log-service.settings = {
+      log_level = 3;  # Info level
+      journald = true;
+    };
+
+    # Configure DNS integration
+    netcfg.settings = {
+      systemd_resolved = false;
+    };
+  };
+
+
+  services.openvpn = {
+      servers = {
+        };
+      };
+
+  environment.systemPackages = with pkgs; [
+     easyrsa
+     ];
 
   #> SSH
   services.openssh = {

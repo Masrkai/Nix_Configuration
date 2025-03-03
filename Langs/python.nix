@@ -1,25 +1,5 @@
 { pkgs, ... }:
 
-let
-
-  # unstable = import <unstable> {config.allowUnfree = true;};
-
-
-    # customPackages = {
-    #   #? Python
-    #   # ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
-    #   # MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
-    #   smolagents = pkgs.callPackage ../Programs/Packages/smolagents.nix {};
-    #   # evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
-    #   # mac-formatter = pkgs.callPackage ../Programs/custom/mac-formatter.nix {}
-    # };
-
-    # Extract package attributes directly from the customPackages attrset
-    # customPythonPackages = with customPackages; [
-    #   smolagents
-    # ];
-
-in
 {
   pythonpackages = with pkgs; [
 
