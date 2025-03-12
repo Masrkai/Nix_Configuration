@@ -38,6 +38,12 @@ in
         ANONYMIZED_TELEMETRY = "False";
         WEBUI_SESSION_COOKIE_SECURE = "True";
         WEBUI_SESSION_COOKIE_SAME_SITE = "strict";
+
+      #! NONSENSE IN MY HUMBLE OPINION
+      ENABLE_OPENAI_API = "False";
+      ENABLE_MESSAGE_RATING = "False";
+      ENABLE_EVALUATION_ARENA_MODELS = "False";
+      ENABLE_AUTOCOMPLETE_GENERATION = "False";
     };
 
   };
@@ -69,11 +75,6 @@ in
     }
   ];
 
-  system.activationScripts = {
-    script.text = ''
-      install -d -m 755 ${builtins.getEnv "HOME"}/open-webui/data -o root -g root
-    '';
-  };
 
   #---> SearXNG
     services.searx = {
