@@ -152,7 +152,7 @@ fi
                 ;;
         *.lzma)      unlzma ./"$n"      ;;
         *.bz2)       bunzip2 ./"$n"     ;;
-        *.cbr|*.rar) unrar x -ad ./"$n" ;;
+        *.cbr|*.rar) unrar x ./"$n" ;;
         *.gz)        gunzip ./"$n"      ;;
         *.cbz|*.epub|*.zip) unzip ./"$n"   ;;
         *.z)         uncompress ./"$n"  ;;
