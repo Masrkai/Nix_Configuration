@@ -187,7 +187,7 @@ function compress {
     if [ $# -lt 3 ]; then
         echo "Usage: compress <compression_level> <format_flag> <path/file_name> [path/file_name_2] [path/file_name_3]"
         echo "Compression level: 1-9 for zip/7z/tar.lz, 1-9 for tar.gz"
-        echo "Format flags: --zip, --tar.gz, --tar.lz, --7z"
+        echo "Format flags: --zip, --tar.gz, --tar.lz, --7z, --tar.zst"
         return 1
     fi
 
@@ -222,12 +222,14 @@ function compress {
         echo "Compressing '$n' using $THREADS threads..."
 
         case "$format_flag" in
+
             "--7z")
-                7za a -t7z -mx="$level" -mmt="$THREADS" -bsp1 -bb0 "${filename}.7z" "$n"
+                7z a -t7z -mx="$level" -mmt=on -bsp1 -bb0 "${filename}.7z" "$n"
                 ;;
 
             "--zip")
-                7za a -tzip -mx="$level" -mmt="$THREADS" -bsp1 -bb0 "${filename}.zip" "$n"
+                # Use higher compression method (deflate64) for better compression
+                7z a -tzip -mm=deflate64 -mx="$level" -mmt=on -bsp2 -bb2 "${filename}.zip" "$n"
                 ;;
 
             "--tar.gz")
@@ -257,8 +259,22 @@ function compress {
                 fi
                 ;;
 
+            "--tar.zst")
+                # Add zstd compression option for better multithreaded compression
+                if command -v zstd >/dev/null; then
+                    tar cf - "$n" | eval "$pv_cmd" | zstd -"$level" -T"$THREADS" > "${filename}.tar.zst"
+                else
+                    echo "Error: zstd not installed"
+                    return 1
+                fi
+                ;;
+
             *)
-                echo "Invalid format flag. Must be --zip, --tar.gz, --tar.lz, or --7z."
+                echo "Invalid format flag. Must be
+                                                   --7z.
+                                                   --zip,
+                                                   --tar.gz, --tar.lz, --tar.zst
+                "
                 return 1
                 ;;
         esac
