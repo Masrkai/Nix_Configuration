@@ -1,4 +1,5 @@
 {  lib, pkgs, ...}:
+
 {
 
 
@@ -26,6 +27,83 @@
             torchaudio = py-final.torchaudio-bin;
             torchvision = py-final.torchvision-bin;
           })
+
+        (py-final: py-prev: {
+        # Custom bitsandbytes that works with binary pytorch
+          bitsandbytes = py-prev.buildPythonPackage {
+            pname = "bitsandbytes";
+            version = "0.44.1";
+            pyproject = true;
+
+            src = prev.fetchFromGitHub {
+              owner = "TimDettmers";
+              repo = "bitsandbytes";
+              tag = "0.44.1";
+              hash = "sha256-yvxD5ymMK5p4Xg7Csx/90mPV3yxUC6QUuF/8BKO2p0k=";
+            };
+
+            nativeBuildInputs = [
+              prev.cmake
+              prev.cudaPackages.cuda_nvcc
+            ];
+
+            build-system = [
+              py-prev.setuptools
+            ];
+
+            buildInputs = [
+              # Define CUDA dependencies directly
+              prev.cudaPackages.cuda_cccl
+              prev.cudaPackages.libcublas
+              prev.cudaPackages.libcurand
+              prev.cudaPackages.libcusolver
+              prev.cudaPackages.libcusparse
+              prev.cudaPackages.cuda_cudart
+            ];
+
+            cmakeFlags = [
+              (prev.lib.cmakeFeature "COMPUTE_BACKEND" "cuda")
+            ];
+            
+            # Pass CUDA_HOME directly
+            CUDA_HOME = prev.symlinkJoin {
+              name = "cuda-home";
+              paths = with prev.cudaPackages; [
+                cuda_cudart
+                cuda_nvcc
+                libcublas
+                libcurand
+                libcusolver
+                libcusparse
+                cuda_cccl
+              ];
+            };
+            
+            NVCC_PREPEND_FLAGS = [
+              "-I${prev.cudaPackages.cuda_cudart.dev}/include"
+              "-L${prev.cudaPackages.cuda_cudart.lib}/lib"
+            ];
+
+            preBuild = ''
+              make -j $NIX_BUILD_CORES
+              cd .. # leave /build/source/build
+            '';
+
+            dependencies = [
+              py-prev.scipy
+              py-final.torch-bin
+            ];
+
+            doCheck = false;
+            pythonImportsCheck = [ "bitsandbytes" ];
+
+            meta = {
+              description = "8-bit CUDA functions for PyTorch";
+              homepage = "https://github.com/TimDettmers/bitsandbytes";
+              license = prev.lib.licenses.mit;
+            };
+          };
+        })
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         # Compositionally correct extension for huggingface-hub

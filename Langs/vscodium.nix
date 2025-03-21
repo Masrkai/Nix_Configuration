@@ -5,6 +5,8 @@
 { lib, pkgs, config, ... }:
 
 let
+  unstable = import <unstable> {config.allowUnfree = true;};
+
   sql = import ./sql.nix { inherit pkgs lib ; };
   cpp = import ./cpp.nix { inherit pkgs lib ; };
   nixX = import ./nix.nix { inherit pkgs lib ; };
@@ -23,7 +25,7 @@ in{
     pythonX.pythonpackages
     [
       (vscode-with-extensions.override {
-        vscode = vscodium;
+        vscode = unstable.vscodium;
         vscodeExtensions = with vscode-extensions; [
                             #* HTML
                             # ms-vscode.live-server
@@ -61,6 +63,7 @@ in{
         ]
         ++ sql.sql-nixpkgs-extensions
         ++ cpp.cpp-nixpkgs-extensions
+        ++ umlx.UML-nixpkgs-extensions
         ++ nixX.nix-nixpkgs-extensions
         ++ rust.rust-nixpkgs-extensions
         ++ pythonX.python-nixpkgs-extensions
@@ -68,6 +71,7 @@ in{
 
         ++ vscode-utils.extensionsFromVscodeMarketplace (
           cpp.cpp-marketplace-extensions
+          ++ sql.sql-marketplace-extensions
           ++ umlx.UML-marketplace-extensions
           ++ nixX.nix-marketplace-extensions
           ++ rust.rust-marketplace-extensions

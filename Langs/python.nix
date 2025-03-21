@@ -11,7 +11,11 @@
     #-> Python
     (python312.withPackages (pk: with pk; [
 
+    # (callPackage ../Programs/Packages/unsloth.nix {})
+    (callPackage ../Programs/Packages/flash-attn.nix {})
     (callPackage ../Programs/Packages/smolagents.nix {})
+
+    # (callPackage ../Programs/Packages/openinference-instrumentation-smolagents.nix {})
 
 
         #-> Basics
@@ -31,6 +35,7 @@
 
             #-> Juniper/jupter
             notebook
+            ipywidgets
             jupyterlab
 
             #-> IpyKernal
@@ -43,6 +48,9 @@
             pyinstaller-versionfile
 
             #-> Misc
+            geopy
+            selenium
+
             qrcode
             qrcode-terminal
 
@@ -56,9 +64,9 @@
         beautifulsoup4
         types-beautifulsoup4
 
-        #-> ML
-        scikit-learn
-        scikit-image
+        #-> RPC
+        grpcio
+        grpcio-tools
 
         h5py
         lxml
@@ -68,6 +76,7 @@
         numpy
         pyvips
         netaddr
+        seaborn
 
 
         #-> Algos
@@ -88,25 +97,40 @@
         transformers
 
 
+        #-> Cuda
+        numba
+        pycuda
+
+
         #-> torch
         # jax
         torch-bin
         triton-bin
+        # bitsandbytes
         torchaudio-bin
         torchvision-bin
+
+        #-> Open telemetry
+        opentelemetry-sdk
+        opentelemetry-exporter-otlp
 
         #-> Ai
         nltk
         datasets
-        # speechbrain
-        # opencv-python
-        # torchWithCuda
-        # tensorflow-bin
+        langchain
+        langchain-community
+
+          #-> ML
+          peft
+          bitsandbytes
+          scikit-learn
+          scikit-image
 
           #> UI
           pydub
           gradio
-
+           gradio-pdf
+           gradio-client
           streamlit
 
           #> Platforms

@@ -20,9 +20,8 @@
     (hiPrio gcc_multi)
     glibc glibc.dev gcc-unwrapped.lib
 
-    ninja
-    clang
     llvm
+    ninja
     clang_multi clang-tools llvmPackages.libcxx
   ];
 

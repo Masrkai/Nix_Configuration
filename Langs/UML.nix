@@ -6,6 +6,7 @@
   ];
 
   UML-nixpkgs-extensions = with pkgs.vscode-extensions; [
+    hediet.vscode-drawio
   ];
 
   UML-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
