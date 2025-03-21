@@ -72,28 +72,31 @@ mkMerge [
                   method = "disabled";      #? Disable IPv6
                 };
             };
-            "virbr0" = {
-                connection = {
-                id = "virbr0";
-                type = "bridge";
-                permissions = "";
-                interface-name = "virbr0";              # Specify the interface name
-                autoconnect = true;
-                permanent = true;  # This makes the profile persistent
-                };
-                ethernet = {
-                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
-                };
-                ipv4 = {
-                  method = "manual";         #? Use DHCP for IPv4
-                  dns = "127.0.0.1";         #? Local DNS resolver
-                  ignore-auto-dns = true;    #? Ignore DNS provided by DHCP
-                  address1 = "192.168.122.1/24,0.0.0.0";  #? IP/prefix,gateway
-                };
-                ipv6 = {
-                  method = "disabled";      #? Disable IPv6
-                };
-            };
+            # "virbr0" = {
+            #     connection = {
+            #     id = "virbr0";
+            #     type = "bridge";
+            #     permissions = "";
+            #     interface-name = "virbr0";              # Specify the interface name
+            #     autoconnect = true;
+            #     permanent = true;  # This makes the profile persistent
+            #     };
+            #     bridge = {
+            #       # Bridge-specific settings
+            #       stp = false;  # Spanning Tree Protocol, usually false for virtual bridges
+            #       priority = 32768;
+            #     };
+            #     ipv4 = {
+            #       method = "manual";         #? Use DHCP for IPv4
+            #       dns = "127.0.0.1";         #? Local DNS resolver
+            #       address1 = "192.168.122.1/24,0.0.0.0";
+            #       address2 = "10.0.0.1/8,0.0.0.0";
+            #       ignore-auto-dns = true;    #? Ignore DNS provided by DHCP
+            #     };
+            #     ipv6 = {
+            #       method = "disabled";      #? Disable IPv6
+            #     };
+            # };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
           "Nix_Hotspot" = {
             connection = {
@@ -118,10 +121,11 @@ mkMerge [
               pmf = 2;
             };
             ipv4 = {
+              dns-search = "";           # Disable DNS search
               method = "shared";         # Use shared mode for hotspot
               # dns = "127.0.0.1";         # Use local Stubby instance
-              dns-search = "";           # Disable DNS search
               ignore-auto-dns = true;    # Ignore DNS from DHCP
+              address1 = "192.168.125.1/24,192.168.125.1";
             };
             ipv6.method = "disabled";
           };
@@ -416,6 +420,38 @@ mkMerge [
             };
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+          "Gu_EMP" = {
+            connection = {
+              id = "Gu_EMP";
+              type = "wifi";
+              permissions = "";
+              autoconnect = true;
+              autoconnect-priority = 4;  #! Higher means more priority priority
+            };
+            wifi = {
+              hidden = false;            #! Specify if the network is hidden
+              ssid = "Gu_EMP";
+              mode = "infrastructure";
+              # bssid = "46:FB:5A:D1:93:49";
+              mac-address-randomization = 0;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+              cloned-mac-address= "\${Gu_EMP_mac}";
+            };
+            wifi-security = {
+              key-mgmt = "wpa-psk";
+              psk = "\${Gu_EMP_pass}";
+              auth-alg = "open";
+            };
+            ipv4 = {
+              method = "auto";
+              dns = "127.0.0.1";
+              ignore-auto-dns = true;
+            };
+            ipv6 = {
+              method = "disabled";
+            };
+          };
+#->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
           # You can add more profiles here following the same structure
         };
 

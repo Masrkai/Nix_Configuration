@@ -12,7 +12,7 @@
 
   boot.kernel.sysctl = lib.mkMerge [
     {
-      "net.ipv4.ip_forward" = lib.mkDefault 1;                           #? For Hotspot
+      "net.ipv4.ip_forward" = lib.mkDefault 1;                           #? For Hotspot & Bridges
 
       "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
       "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
@@ -56,7 +56,9 @@
       firewall = {
       enable = true;
       allowedTCPPorts = [
-                          # 53         #? DNS
+                          # 53         #? DNS shouldn't be opened unless it's a DNS server for a router
+                          853          #? For stubby DNS over TLS
+
                           # 587        #? outlook.office365.com Mail server
                           # 853        #?DNSoverTLS
                           1234         #? NTS Time server
@@ -67,6 +69,7 @@
                           8384 22000 #? Syncthing
                           8888 18081
                         ];
+
       allowedUDPPorts = [
                           1337  #? OpenVPN
                           6881  #? Qbittorrent
@@ -115,18 +118,13 @@
 
 
   #> OpenVPN
-  # programs.openvpn3 = {
-  #   enable = false;
-  #   package = pkgs.openvpn3;
-  # };
-
   programs.openvpn3 = {
     enable = true;
     package = pkgs.openvpn3;
 
     # Configure logging
     log-service.settings = {
-      log_level = 3;  # Info level
+      log_level = 7;  # Info level
       journald = true;
     };
 
@@ -136,14 +134,9 @@
     };
   };
 
-
-  services.openvpn = {
-      servers = {
-        };
-      };
-
   environment.systemPackages = with pkgs; [
      easyrsa
+     openssl
      ];
 
   #> SSH
@@ -165,11 +158,11 @@
     enable = true;
     settings = {
     listen_addresses = [
-                         "127.0.0.1@5353"
+                         "127.0.0.1@853"
 
                          #"0.0.0.0@53"
                          #"172.20.0.1@53"       #? Listen on the default NetworkManager shared subnet
-                         #"0::1@5353"           #! ::1 cause error, use 0::1 instead
+                         #"0::1@853"           #! ::1 cause error, use 0::1 instead
                        ];
 
       # Optimize connection handling
@@ -297,7 +290,7 @@
       forward-zone = [
         {
           name = ".";
-          forward-addr = "127.0.0.1@5353";  # Match Stubby's port
+          forward-addr = "127.0.0.1@853";  # Match Stubby's port
           forward-first = "yes";  # Allow recursive resolution if forwarding fails
         }
       ];
