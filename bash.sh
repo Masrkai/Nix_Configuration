@@ -224,12 +224,11 @@ function compress {
         case "$format_flag" in
 
             "--7z")
-                7z a -t7z -mx="$level" -mmt=on -bsp1 -bb0 "${filename}.7z" "$n"
+                7z a -t7z -mx="$level" -mmt=on -bsp2 -bb0 "${filename}.7z" "$n"
                 ;;
 
             "--zip")
-                # Use higher compression method (deflate64) for better compression
-                7z a -tzip -mm=deflate64 -mx="$level" -mmt=on -bsp2 -bb2 "${filename}.zip" "$n"
+                7z a -tzip -mx="$level" -mmt=on -bsp2 -bb1 "${filename}.zip" "$n"
                 ;;
 
             "--tar.gz")
