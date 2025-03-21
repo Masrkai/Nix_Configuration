@@ -20,6 +20,14 @@ in
     option "VariableRefresh" "true"
   '';
 
+  # Add this to your configuration.nix or home.nix
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    # Add libraries that might be needed
+    libGL
+    libGLU
+  ];
+
   boot = lib.mkMerge [
     {
       initrd.kernelModules = [
@@ -62,7 +70,6 @@ in
     enable = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
-      # mesa
 
       #! OpenCL
       # ocl-icd
@@ -71,14 +78,16 @@ in
       khronos-ocl-icd-loader
 
       libglvnd
-      egl-wayland
       vaapiVdpau
+      egl-wayland
       libvdpau-va-gl
 
       #! Vulkan
       vulkan-tools
       vulkan-loader
       nvidia-vaapi-driver
+
+      # linuxPackages.nvidia_x11.out # includes OpenCL libraries
     ];
   };
 
@@ -94,40 +103,13 @@ in
   ];
 
   nixpkgs = {
-    overlays = [
-      # (final: prev: {
-      #   cudaPackages = prev.cudaPackages_12_4;
-      # })
-
-      # (final: prev: {
-      #   magma = prev.magma.override {
-      #     cudaSupport = true;
-      #     rocmSupport = false;
-      #     cudaPackages = final.cudaPackages;
-      #   };
-      # })
-
-    # (final: prev: {
-    #   python3Packages = prev.python3Packages.override (old: {
-    #     overrides = prev.lib.composeExtensions
-    #       (old.overrides or (_: _: {}))
-    #       (pyFinal: pyPrev: {
-    #         torch = pyPrev.torch.override {
-    #           cudaPackages = final.cudaPackages;
-    #           magma = final.magma;
-    #         };
-    #       });
-    #   });
-    # })
-
-    ];
 
     config = {
       cudaSupport = true;
       cudaCapabilities = [
         "8.9"    # RTX 40 series
-        "8.6"    # RTX 30 series
-        "7.5"    # RTX 20 series
+        # "8.6"    # RTX 30 series
+        # "7.5"    # RTX 20 series
       ];
       cudaForwardCompat = false;
     };
@@ -187,6 +169,8 @@ in
       nvidiaPath = "${config.hardware.nvidia.package}";
       openglPath = "/run/opengl-driver";
 
+      
+
       # Secure base library paths - ordered by priority
       baseLibPaths = [
         "${cudaPath}/lib64"
@@ -221,6 +205,9 @@ in
       CUDA_CACHE_PATH = "$HOME/.cache/cuda";
       CUDA_CFLAGS = "-I${cudaPath}/include ${securityFlags}";
       NVCC_FLAGS = "-O3 ${securityFlags}";
+      LIBVA_DRIVER_NAME = "nvidia";
+      VDPAU_DRIVER = "nvidia";
+      NVD_BACKEND = "direct";
 
       # OpenCL Security Configuration
       OCL_ICD_VENDORS = "${pkgs.ocl-icd}/etc/OpenCL/vendors/";
@@ -250,7 +237,6 @@ in
       GBM_BACKEND = "nvidia-drm";
       EGL_PLATFORM = "wayland";
       WLR_NO_HARDWARE_CURSORS = "1";
-      LIBVA_DRIVER_NAME = "nvidia";
 
       # Secure Path Configuration
       PATH = lib.mkBefore [
