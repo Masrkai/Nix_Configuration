@@ -10,7 +10,7 @@
 
   # ISO-specific options
   boot.loader.grub.memtest86.enable = true;
-  boot.supportedFilesystems = [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" ];
+  boot.supportedFilesystems = [ "ext4" "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" ];
 
   # Enable copy-on-write for the ISO
   isoImage.squashfsCompression = "zstd -Xcompression-level 6";
