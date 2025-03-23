@@ -306,6 +306,9 @@ in
   mermerd
   texliveMedium
 
+  #-> Benshmarking
+  furmark
+
 
 #?#############
 #? User-Daily:
@@ -415,6 +418,8 @@ in
   zip2hashcat
   hashcat-utils
 
+  inetutils
+
   iw
   dig
   mdk4
@@ -480,6 +485,28 @@ in
       package   = pkgs.mlocate;
     };
 
+  #--> NextCloud
+  environment.etc."nextcloud-admin-pass".text = secrets.nextcloud-admin-pass;
+  services.nextcloud = {
+    enable = true;
+    package = pkgs.nextcloud30;
+
+    extraAppsEnable = true;
+      extraApps = {
+        inherit (config.services.nextcloud.package.packages.apps) news contacts calendar tasks;
+
+        # memories = pkgs.fetchNextcloudApp {
+        #     sha256 = "sha256-Xr1SRSmXo2r8yOGuoMyoXhD0oPVm/0/ISHlmNZpJYsg=";
+        #     url = "https://github.com/pulsejet/memories/releases/download/v6.2.2/memories.tar.gz";
+        #     license = "agpl3";
+        # };
+      };
+
+    hostName = "NixOS";
+    config.dbtype = "sqlite";
+    config.adminpassFile = "/etc/nextcloud-admin-pass";
+  };
+
   #---> Syncthing
   services.syncthing = {
         enable = true;
@@ -503,7 +530,7 @@ in
       devices = {
         "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
         "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
-        "Mariam's Laptop G15" = { id ="5BIAHUG-AKR7L3G-OHQZCPD-B4PPAU7-2KXQEUX-OJY22LG-4GVN5BP-TK4G7AM";};
+        "Mariam's Laptop G15" = { id ="XR63JZR-33WFJNB-PPHDMWF-XF3V5WX-34XHJAB-SIL2L7L-QGPZI2U-BKRIOQO";};
         };
       folders = {
 
