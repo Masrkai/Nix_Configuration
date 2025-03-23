@@ -16,10 +16,13 @@
     efi.canTouchEfiVariables = true;
     };
 
-    # Use the latest kernel packages
+    # Set the hardened kernel as your base kernel
+    kernelPackages =
+      pkgs.linuxKernel.packages.linux_6_12
+      # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
+      ;
 
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_12; #* FOR LATEST pkgs.linuxPackages_latest
-
+    #! DIY approach - takes so much time it's impossible to wait!
     # kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
     #   argsOverride = rec {
     #     version = "6.12.8";
@@ -31,6 +34,15 @@
     #     };
     #   }
     # );
+
+    # Add the rtl8188eus-aircrack module to your kernel modules
+    extraModulePackages = with config.boot.kernelPackages; [
+      rtl8188eus-aircrack
+    ];
+
+
+
+
 
     # Configure initial ramdisk modules
     initrd = {
@@ -83,7 +95,7 @@
       # CPU optimizations
       "amd_iommu=on"
       "mitigations=on"
-      "amd_pstate=passive"      # Enable AMD P-State driver
+      "amd_pstate=guided"      # Enable AMD P-State driver
       "processor.max_cstate=7"  # Limit C-states for better response time
 
       # Remove
@@ -137,8 +149,7 @@
     "kernel.numa_balancing" = 0;            # Disable automatic NUMA balancing
     };
 
-    # No extra module packages
-    extraModulePackages = [ ];
+
   };
 
   services.fstrim = {
