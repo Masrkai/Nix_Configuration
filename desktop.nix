@@ -23,8 +23,9 @@
       portal = {
       enable = true;
       extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-gnome
         kdePackages.xdg-desktop-portal-kde
-        xdg-desktop-portal-gtk  # Add GTK portal for better app compatibility
       ];
 
     };
@@ -37,6 +38,7 @@
   environment = lib.mkMerge [
     {
       variables = {
+        GSK_RENDERER="nvidia";
         QT_QPA_PLATFORM="wayland";
         QT_SSL_FORCE_TLSV1_3 = "1";  # Enforce TLS 1.3 for Qt applications
         QT_SSL_FORCE_TLSV1_2 = "0";  # Disable TLS 1.2 (set to "1" if compatibility is required)
