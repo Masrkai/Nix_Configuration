@@ -56,10 +56,14 @@ in
         serviceConfig = {
             # Isolation fundamentals - creating a secure execution environment
             PrivateTmp = true;
-            ProtectHome = true;
+            ProtectHome = false;
             NoNewPrivileges = true;
             ProtectSystem = "strict";
-            ReadWritePaths = "/etc/NetworkManager/";
+            ReadWritePaths = [
+              "/proc/sys/net/"
+              "~/.cert/nm-openvpn/"
+              "/etc/NetworkManager/"
+            ];
 
             # Enhanced process isolation
             # PrivateUsers = true;       # Isolate user namespace
@@ -117,12 +121,12 @@ in
             ];
 
             # Network security controls
-            IPAddressDeny = "any";      # Default deny
-            IPAddressAllow = [          # Allow only necessary
-                "localhost"
-                "link-local"
-                "multicast"
-            ];
+            # IPAddressDeny = "any";      # Default deny
+            # IPAddressAllow = [          # Allow only necessary
+            #     "localhost"
+            #     "link-local"
+            #     "multicast"
+            # ];
 
             # Additional security hardening
             RestrictRealtime = true;             # Prevent scheduling interference
