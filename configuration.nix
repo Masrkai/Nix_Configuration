@@ -12,6 +12,9 @@ let
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
 
+    jsql = pkgs.callPackage ./Programs/Packages/jsql.nix {};
+
+
 
     #airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
     #custom-httrack = pkgs.libsForQt5.callPackage ./Programs/Packages/custom-httrack.nix {};
@@ -315,7 +318,7 @@ in
 #?#############
   #-> Ai
   # lmstudio
-  customPackages.lm-studio   #? relying on custom package rather than nix packages because they are ancient in release
+  # customPackages.lm-studio   #? relying on custom package rather than nix packages because they are ancient in release
 
   # koboldcpp
 
@@ -369,10 +372,14 @@ in
   #-> Productivity
   gimp
   kooha
-  blender
+  # blender
   thunderbird-bin
   gnome-disk-utility
   libreoffice-qt6-still
+
+    #-> PDF
+    pdfarranger
+    pdfmixtool
 
   #-> Gaming
   lutris
@@ -418,32 +425,46 @@ in
   zip2hashcat
   hashcat-utils
 
-  inetutils
 
+  #> Internet basics
   iw
   dig
-  mdk4
-  tmux
   nmap
-  hping
-  stubby
   getdns
-  asleap
   linssid
-
-  # armitage
-  # metasploit
-
   tcpdump
+  ettercap
   iproute2
   arp-scan
-  lighttpd
-  ettercap
-  bettercap
+  inetutils
   traceroute
+
+  bettercap
+  burpsuite
+
+  #> DOS
+  hping
+
+  #> Wireless
+  mdk4
   aircrack-ng
   reaverwps-t6x
   linux-wifi-hotspot
+
+  #> Utilities
+  tmux
+  asleap
+  lighttpd
+
+  #> Exploitation
+  # armitage
+  exploitdb
+  metasploit
+
+  #> SQL
+  customPackages.jsql
+  sqlmap
+
 ];
 
   #?########################
@@ -488,7 +509,7 @@ in
   #--> NextCloud
   environment.etc."nextcloud-admin-pass".text = secrets.nextcloud-admin-pass;
   services.nextcloud = {
-    enable = true;
+    enable = false;
     package = pkgs.nextcloud30;
 
     extraAppsEnable = true;
