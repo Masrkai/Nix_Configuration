@@ -144,6 +144,7 @@ in
         libva-vdpau-driver
         nvidia-vaapi-driver
         vaapiVdpau
+        nv-codec-headers-12
       ];
 
       cudaEcosystem = with pkgs; [
