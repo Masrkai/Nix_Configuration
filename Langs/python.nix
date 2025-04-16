@@ -5,14 +5,13 @@
 
     opencv
     ffmpeg-full
-    # customPackages.smolagents
-    # unstable.python312Packages.huggingface-hub
+
 
     #-> Python
     (python312.withPackages (pk: with pk; [
 
     # (callPackage ../Programs/Packages/unsloth.nix {})
-    (callPackage ../Programs/Packages/flash-attn.nix {})
+    # (callPackage ../Programs/Packages/flash-attn.nix {})
     (callPackage ../Programs/Packages/smolagents.nix {})
 
     # (callPackage ../Programs/Packages/openinference-instrumentation-smolagents.nix {})
@@ -22,6 +21,7 @@
         uv
         pip
         pylint
+        pylance
         setuptools
         python-dotenv
         terminaltables
@@ -39,6 +39,7 @@
             jupyterlab
 
             #-> IpyKernal
+            ipython
             ipykernel
             ipython-sql
             ipython-genutils
@@ -50,6 +51,8 @@
             #-> Misc
             geopy
             selenium
+
+            pillow
 
             qrcode
             qrcode-terminal
@@ -74,10 +77,13 @@
         scapy
         curio
         numpy
+        # cupy
         pyvips
         netaddr
         seaborn
 
+        #-> DB
+        mysql-connector
 
         #-> Algos
         opencv
@@ -106,7 +112,6 @@
         # jax
         torch-bin
         triton-bin
-        # bitsandbytes
         torchaudio-bin
         torchvision-bin
 
@@ -117,8 +122,10 @@
         #-> Ai
         nltk
         datasets
+        evaluate
         langchain
         langchain-community
+        sentence-transformers
 
           #-> ML
           peft
@@ -155,7 +162,8 @@
     #* Python
     ms-python.python
     ms-python.debugpy
-    charliermarsh.ruff
+    # ms-pyright.pyright
+    # charliermarsh.ruff
     ms-python.vscode-pylance
 
       #->Jupyter
