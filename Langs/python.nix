@@ -10,11 +10,16 @@
     #-> Python
     (python312.withPackages (pk: with pk; [
 
-    # (callPackage ../Programs/Packages/unsloth.nix {})
-    # (callPackage ../Programs/Packages/flash-attn.nix {})
-    (callPackage ../Programs/Packages/smolagents.nix {})
 
-    # (callPackage ../Programs/Packages/openinference-instrumentation-smolagents.nix {})
+
+    (callPackage ../Programs/python-libs/trl.nix {})
+    # (callPackage ../Programs/python-libs/tyro.nix {})
+    (callPackage ../Programs/python-libs/smolagents.nix {})
+
+    (callPackage ../Programs/python-libs/cut-cross-entropy.nix {})
+
+
+    # (callPackage ../Programs/python-libs/unsloth_zoo/unsloth_zoo.nix {})
 
 
         #-> Basics
@@ -142,6 +147,7 @@
 
           #> Platforms
           openai
+          replicate
           huggingface-hub
           # google-cloud-texttospeech
 

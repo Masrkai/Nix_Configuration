@@ -29,6 +29,10 @@
 
       #? Memory preserving
       "vm.min_free_kbytes" = lib.mkForce 65536;
+
+      #? Multipath TCP
+      "net.mptcp.enabled" = 1;
+      "net.mptcp.checksum_enabled" = 1;
     }
   ];
 
@@ -75,10 +79,12 @@
                           6881  #? Qbittorrent
                           18081
                           21027 #? Syncthing
+                          21116 #? RustDesk
                         ];
       #--> Ranges
       allowedTCPPortRanges = [
-                            { from = 1714; to = 1764; }  #? KDEconnect
+                              { from = 1714; to = 1764; }    #? KDEconnect
+                              { from = 21114; to = 21119; }  #? RustDesk
                              ];
       allowedUDPPortRanges = [
                             { from = 1714; to = 1764; }  #? KDEconnect
@@ -141,15 +147,28 @@
 
   #> SSH
   services.openssh = {
-  enable = true;
-  ports = [ 22 ];
+    enable = true;
+    ports = [ 22 ];
     settings = {
       PasswordAuthentication = true;
-      AllowUsers = null; # Allows all users by default. Can be [ "user1" "user2" ]
+      AllowUsers = null;
       UseDns = true;
       X11Forwarding = false;
-      PermitRootLogin = "prohibit-password"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
+      PermitRootLogin = "prohibit-password";
     };
+
+    # Add these lines to support legacy ssh-rsa keys
+    hostKeys = [
+      {
+        path = "/etc/ssh/ssh_host_rsa_key";
+        type = "rsa";
+        bits = 4096;
+      }
+      {
+        path = "/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+      }
+    ];
   };
 
   #> DNS-over-TLS
@@ -222,80 +241,123 @@
   };
 
   #> DNS Caching using Unbound
-  services.unbound = {
-    enable = true;
-    stateDir = "/var/lib/unbound";
-    settings = {
-      server = {
-        access-control = [
-          "0.0.0.0/0 refuse"     # Refuse all other networks by default
+    services.unbound = {
+      enable = true;
+      stateDir = "/var/lib/unbound";
+      settings = {
+        server = {
+          access-control = [
+            "0.0.0.0/0 refuse"     # Refuse all other networks by default
 
-          "10.0.0.0/8 allow"     # Another private network range
-          "192.0.0.0/8 allow"    # Private network range
-          "127.0.0.0/8 allow"    # Localhost
-          "172.16.0.0/12 allow"  # Another private network range
-          "192.168.0.0/16 allow" # Common home/local network range
+            "10.0.0.0/8 allow"     # Another private network range
+            "192.0.0.0/8 allow"    # Private network range
+            "127.0.0.0/8 allow"    # Localhost
+            "172.16.0.0/12 allow"  # Another private network range
+            "192.168.0.0/16 allow" # Common home/local network range
+          ];
+          interface = [
+            "127.0.0.1" # Listen on localhost
+          ];
+
+          # Performance and caching optimization settings
+          num-threads = 4;
+          msg-cache-slabs = 4;
+          rrset-cache-slabs = 4;
+          infra-cache-slabs = 4;
+          key-cache-slabs = 4;
+
+          # Extended caching configuration
+          prefetch = "yes";
+          prefetch-key = "yes";
+          rrset-roundrobin = "yes";
+          
+          # Significantly extended cache times
+          cache-min-ttl = 300;        # Minimum 5 minutes (extended from 60 seconds)
+          cache-max-ttl = 604800;     # 7 days maximum cache (extended from 24 hours)
+          serve-expired = "yes";      # Serve expired records while refreshing
+          serve-expired-ttl = 14400;  # Serve expired records for up to 4 hours (extended from 1 hour)
+
+          # Increased cache sizes
+          msg-cache-size = "512m";    # Increased from 128m
+          rrset-cache-size = "1024m"; # Increased from 256m
+          key-cache-size = "256m";    # Increased from 128m
+          neg-cache-size = "128m";    # Increased from 32m for longer negative caching
+
+          # Fault tolerance and connection settings
+          tcp-idle-timeout = 60000;   # Increased from 30000 to keep connections alive longer
+
+          # Protocol and security settings (maintained)
+          do-ip4 = "yes";
+          do-ip6 = "no";
+          do-udp = "yes";
+          do-tcp = "yes";
+
+          qname-minimisation = "yes";
+          hide-identity = "yes";
+          hide-version = "yes";
+          use-caps-for-id = "yes";
+          harden-glue = "yes";
+          harden-dnssec-stripped = "yes";
+          harden-referral-path = "yes";
+
+          # Minimal logging for performance
+          verbosity = 1;
+          log-queries = "no";
+          log-replies = "no";
+        };
+
+        forward-zone = [
+          {
+            name = ".";
+            forward-addr = "127.0.0.1@853";  # Match Stubby's port
+            forward-first = "yes";
+          }
         ];
-        interface = [
-        # "0.0.0.0"
-        "127.0.0.1" # Listen on localhost
-        ];
-
-        # Performance optimization settings
-        num-threads = 4;
-        msg-cache-slabs = 4;      # Match thread count for optimal cache distribution
-        rrset-cache-slabs = 4;
-        infra-cache-slabs = 4;
-        key-cache-slabs = 4;
-
-        # Aggressive caching configuration
-        prefetch = "yes";
-        prefetch-key = "yes";
-        rrset-roundrobin = "yes";  # Load balance between cached responses
-        cache-min-ttl = 60;        # Reduced minimum TTL for faster updates
-        cache-max-ttl = 86400;     # 24 hours maximum cache
-        serve-expired = "yes";     # Serve expired records while refreshing
-        serve-expired-ttl = 3600;  # Serve expired records for up to 1 hour
-
-        # Enhanced cache sizes
-        msg-cache-size = "128m";
-        rrset-cache-size = "256m";
-        key-cache-size = "128m";
-        neg-cache-size = "32m";    # Negative cache for faster NXDOMAIN responses
-
-        # Fault tolerance settings
-        tcp-idle-timeout = 30000;  # Keep TCP connections alive longer
-
-        # Protocol settings
-        do-ip4 = "yes";
-        do-ip6 = "no";
-        do-udp = "yes";
-        do-tcp = "yes";
-
-        # Security settings (maintained from original)
-        qname-minimisation = "yes";
-        hide-identity = "yes";
-        hide-version = "yes";
-        use-caps-for-id = "yes";
-        harden-glue = "yes";
-        harden-dnssec-stripped = "yes";
-        harden-referral-path = "yes";
-
-        # Logging for troubleshooting
-        verbosity = 1;            # Reduced from 2 for less overhead
-        log-queries = "no";       # Disable detailed logging for better performance
-        log-replies = "no";
       };
-
-      forward-zone = [
-        {
-          name = ".";
-          forward-addr = "127.0.0.1@853";  # Match Stubby's port
-          forward-first = "yes";  # Allow recursive resolution if forwarding fails
-        }
-      ];
     };
-  };
+
+    services.hostapd = {
+      enable = true;
+      package = pkgs.hostapd;
+      radios = {
+
+        # # Simple 2.4GHz AP
+        # wlan0 = {
+        #   # countryCode = "US";
+        #   networks.wlan0 = {
+        #     ssid = "AP 1";
+        #     authentication.saePasswords = [{ password = "a flakey password"; }]; # Use saePasswordsFile if possible.
+        #   };
+        # };
+
+        # WiFi 5 (5GHz) with two advertised networks
+        # wlan1 = {
+        #   band = "5g";
+        #   channel = 0; # Enable automatic channel selection (ACS). Use only if your hardware supports it.
+        #   # countryCode = "US";
+        #   networks.wlan1 = {
+        #     ssid = "My AP";
+        #     authentication.saePasswords = [{ password = "a flakey password"; }]; # Use saePasswordsFile if possible.
+        #   };
+        #   networks.wlan1-2 = {
+        #     ssid = "Open AP with WiFi5";
+        #     authentication.mode = "none";
+        #   };
+        # };
+
+        # Legacy WPA2 example
+        wlan0 = {
+          # countryCode = "US";
+          networks.wlan0 = {
+            ssid = "AP 2";
+            authentication = {
+              mode = "wpa2-sha256";
+              wpaPassword = "a flakey password"; # Use wpaPasswordFile if possible.
+            };
+          };
+        };
+      };
+    };
 
     # Make sure time synchronization is properly handled
     services.timesyncd.enable = false;  # Disable systemd-timesyncd to avoid conflicts

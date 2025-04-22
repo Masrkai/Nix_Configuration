@@ -1,6 +1,22 @@
 {  lib, pkgs, ...}:
 
+let
+  secrets = import ../Sec/secrets.nix;
+in
 {
+
+  programs.git = {
+    enable = true;
+    lfs.enable = true;
+
+    config = {
+      # Set your global git configuration here
+      user.name = "Masrkai";
+      # Add any other git config options you want
+      init.defaultBranch = "main";
+      # You can add more git configurations here
+    };
+  };
 
 
 
@@ -12,12 +28,24 @@
 
   nixpkgs = {
     overlays = [
+
       (final: prev: {
         # Top-level package replacements
         torch = prev.torch-bin;
         triton = prev.triton-bin;
         torchaudio = prev.torchaudio-bin;
         torchvision = prev.torchvision-bin;
+
+       # Override open-webui to use python312
+        open-webui = prev.open-webui.override {
+          python311 = prev.python312;
+        };
+
+        # # Override open-webui to use python312
+        # blender = prev.blender.override {
+        #   python311 = prev.python312;
+        # };
+
 
         pythonPackagesExtensions = [
 
@@ -28,6 +56,18 @@
             torchvision = py-final.torchvision-bin;
           })
 
+
+          (py-final: py-prev: {
+              sentence-transformers = py-prev.sentence-transformers.overridePythonAttrs (old: {
+                # Add Pillow to dependencies
+                dependencies = old.dependencies ++ [ py-prev.pillow ];
+
+                # Disable runtime dependency check for Pillow
+                disabledRuntimeDependencies = (old.disabledRuntimeDependencies or []) ++ [ "pillow" ];
+              });
+          })
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         (py-final: py-prev: {
         # Custom bitsandbytes that works with binary pytorch
           bitsandbytes = py-prev.buildPythonPackage {
@@ -64,7 +104,7 @@
             cmakeFlags = [
               (prev.lib.cmakeFeature "COMPUTE_BACKEND" "cuda")
             ];
-            
+
             # Pass CUDA_HOME directly
             CUDA_HOME = prev.symlinkJoin {
               name = "cuda-home";
@@ -78,7 +118,7 @@
                 cuda_cccl
               ];
             };
-            
+
             NVCC_PREPEND_FLAGS = [
               "-I${prev.cudaPackages.cuda_cudart.dev}/include"
               "-L${prev.cudaPackages.cuda_cudart.lib}/lib"

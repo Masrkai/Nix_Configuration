@@ -48,6 +48,11 @@
         XDG_SESSION_TYPE = "wayland";
         XDG_RUNTIME_DIR = "/run/user/$UID";
 
+
+        KWIN_TRIPLE_BUFFER=1;
+        PLASMA_USE_QT_SCALING=1;
+        PLASMA_NOTIFICATION_DEBUG = "0";
+
         #QT_QPA_PLATFORM = "wayland";
         GDK_BACKEND = "wayland";
         WLR_NO_HARDWARE_CURSORS = "1";

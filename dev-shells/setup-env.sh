@@ -8,8 +8,8 @@ if [ ! -d "$VENV_DIR" ]; then
   echo "Creating virtual environment at $VENV_DIR..."
   python -m venv "$VENV_DIR"
   source "$VENV_DIR/bin/activate"
-  pip install --upgrade pip
-  pip install -r "$REQUIREMENTS"
+  uv pip install --upgrade pip
+  uv pip install -r "$REQUIREMENTS"
 else
   echo "Activating existing virtual environment at $VENV_DIR..."
   source "$VENV_DIR/bin/activate"

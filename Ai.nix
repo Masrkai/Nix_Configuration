@@ -21,7 +21,7 @@ in
     enable = true;
     # stateDir = "/var/lib/open-webui";
 
-    package= unstable.open-webui;
+    package= pkgs.open-webui;
 
     port = 8080;
     host = "127.0.0.1";
@@ -50,7 +50,7 @@ in
 
 
   services.tika = {
-    enable = true;
+    enable = false;
     enableOcr = true;
 
     port = 9998;

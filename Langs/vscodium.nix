@@ -5,7 +5,7 @@
 { lib, pkgs, config, ... }:
 
 let
-  unstable = import <unstable> {config.allowUnfree = true;};
+  # unstable = import <unstable> {config.allowUnfree = true;};
 
   sql = import ./sql.nix { inherit pkgs lib ; };
   cpp = import ./cpp.nix { inherit pkgs lib ; };
@@ -25,11 +25,14 @@ in{
     pythonX.pythonpackages
     [
       (vscode-with-extensions.override {
-        vscode = unstable.vscodium;
+        vscode = vscodium;
         vscodeExtensions = with vscode-extensions; [
                             #* HTML
                             # ms-vscode.live-server
                             vscode-extensions.ritwickdey.liveserver
+
+                            #* PDF
+                            tomoki1207.pdf
 
                             #* Bash
                             mads-hartmann.bash-ide-vscode

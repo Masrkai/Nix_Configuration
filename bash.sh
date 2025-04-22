@@ -40,7 +40,7 @@ sec(){
     fwupdmgr get-devices && fwupdmgr refresh && fwupdmgr get-updates && fwupdmgr update
 }
 fixkde(){
-    pkill -f plasmashell # Kill the current plasmashell process
+    sudo pkill -f plasmashell # Kill the current plasmashell process
     plasmashell --replace > /dev/null 2>&1 & disown
 }
 

@@ -3,7 +3,22 @@
 {
 
   general-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
+      {
+        # https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.aws-toolkit-vscode
+        name = "aws-toolkit-vscode";
+        publisher = "AmazonWebServices";
+        version = "3.55.0";
+        hash = "sha256-cipckVnoqgX8Sll2Qkm05E3L9cja1x8hzKIv3HvnPyU=";
 
+      }
+      {
+        #AmazonWebServices.amazon-q-vscode
+        name = "amazon-q-vscode";
+        publisher = "AmazonWebServices";
+        version = "1.60.0";
+        hash = "sha256-w3rsYEmIAkDtCsUlsrksMo9XYrrpdLCGhOufogWil2E=";
+
+      }
       {
         #https://open-vsx.org/extension/lukinco/lukin-vscode-theme
         name = "lukin-vscode-theme";

@@ -2,6 +2,7 @@
 , enableCuda ? true
 , enableAudio ? false
 , enableMonitoring ? false
+, enableSystemPackages ? true
 , pythonVersion ? 312
 }:
 
@@ -63,6 +64,7 @@ let
     wireplumber
     libpulseaudio
   ];
+
 
   setupEnvScript = pkgs.writeTextFile {
     name = "setup-env";

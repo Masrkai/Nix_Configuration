@@ -250,7 +250,7 @@ mkMerge [
               type = "wifi";
               permissions = "";
               autoconnect = true;
-              autoconnect-priority = 4;  #! Higher means more priority priority
+              autoconnect-priority = 10;  #! Higher means more priority priority
             };
             wifi = {
               hidden = true;            #! Specify if the network is hidden
@@ -311,7 +311,7 @@ mkMerge [
               type = "wifi";
               permissions = "";
               autoconnect = true;
-              autoconnect-priority = 4;  #! Higher means more priority priority
+              autoconnect-priority = 9;  #! Higher means more priority priority
             };
             wifi = {
               hidden = true;            #! Specify if the network is hidden
@@ -451,6 +451,120 @@ mkMerge [
             };
           };
 #->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# "WirelessBond" = {
+#   connection = {
+#     id = "WirelessBond";
+
+#     type = "bond";
+#     interface-name = "bond0";
+#     permissions = "";
+
+#     autoconnect = false;
+#     autoconnect-slaves = true;  # Automatically connect all slaves when bond is activated
+#   };
+#   bond = {
+#     mode = "balance-rr";  # Round-robin load balancing
+#     miimon = "100";       # Link monitoring frequency
+#   };
+#   ipv4 = {
+#     method = "auto";
+#     dns = "127.0.0.1";
+#     ignore-auto-dns = true;
+#   };
+#   ipv6 = {
+#     method = "disabled";
+#   };
+# };
+
+
+# "AfafAfaf-bondport" = {
+#   connection = {
+#     id = "AfafAfaf-bondport";
+#     type = "wifi";
+#     master = "bond0";
+#     slave-type = "bond";
+#     autoconnect = true;
+#     permissions = "";
+#   };
+#   wifi = {
+#     ssid = "AfafAfaf";
+#     mode = "infrastructure";
+#     mac-address-randomization = 2;
+#   };
+#   wifi-security = {
+#     key-mgmt = "wpa-psk";
+#     psk = "\${AFafAfaf_psk}";
+#     auth-alg = "open";
+#   };
+# };
+
+# "Meemoo-bondport" = {
+#   connection = {
+#     id = "Meemoo-bondport";
+#     type = "wifi";
+#     master = "bond0";
+#     slave-type = "bond";
+#     autoconnect = true;
+#     permissions = "";
+#   };
+#   wifi = {
+#     ssid = "Meemoo";
+#     mode = "infrastructure";
+#     mac-address-randomization = 2;
+#   };
+#   wifi-security = {
+#     key-mgmt = "wpa-psk";
+#     psk = "\${Meemoo_psk}";
+#     auth-alg = "open";
+#   };
+# };
+
+
+
+
+
+# "AfafAfaf-teamport" = {
+#   connection = {
+#     id = "AfafAfaf-teamport";
+#     type = "wifi";
+#     master = "team0";
+#     slave-type = "team";
+#     autoconnect = true;
+#     permissions = "";
+#   };
+#   wifi = {
+#     ssid = "AfafAfaf";
+#     mode = "infrastructure";
+#     mac-address-randomization = 2;
+#   };
+#   wifi-security = {
+#     key-mgmt = "wpa-psk";
+#     psk = "\${AFafAfaf_psk}";
+#     auth-alg = "open";
+#   };
+# };
+
+# "Meemoo-teamport" = {
+#   connection = {
+#     id = "Meemoo-teamport";
+#     type = "wifi";
+#     master = "team0";
+#     slave-type = "team";
+#     autoconnect = true;
+#     permissions = "";
+#   };
+#   wifi = {
+#     ssid = "Meemoo";
+#     mode = "infrastructure";
+#     mac-address-randomization = 2;
+#   };
+#   wifi-security = {
+#     key-mgmt = "wpa-psk";
+#     psk = "\${Meemoo_psk}";
+#     auth-alg = "open";
+#   };
+# };
+
 
           # You can add more profiles here following the same structure
         };

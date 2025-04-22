@@ -23,9 +23,8 @@ in
   # Add this to your configuration.nix or home.nix
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
-    # Add libraries that might be needed
-    libGL
-    libGLU
+      zlib zstd stdenv.cc.cc curl openssl attr libssh bzip2 libxml2 acl libsodium util-linux xz systemd
+
   ];
 
   boot = lib.mkMerge [

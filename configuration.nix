@@ -243,7 +243,7 @@ in
   customPackages.backup
   customPackages.setupcpp
   customPackages.wifi-honey
-  customPackages.hostapd-wpe
+  # customPackages.hostapd-wpe
   customPackages.mac-formatter
   customPackages.logisim-evolution
   customPackages.super-productivity
@@ -265,8 +265,8 @@ in
     dynamips
     gns3-server
 
-  git
-  git-lfs
+  # git
+  # git-lfs
 
   bat
   eza

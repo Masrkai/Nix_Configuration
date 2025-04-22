@@ -10,7 +10,12 @@ mkMerge [
         "kernel.dmesg_restrict" = mkForce 1;
         "fs.suid_dumpable" = mkOverride 500 0;
         "kernel.ftrace_enabled" = mkDefault false;
-        "net.core.bpf_jit_enable" = mkDefault false;
+      }
+
+      # JIT - Just in Time Compiler
+      {
+        "net.core.bpf_jit_enable" = mkDefault true;
+        "net.core.bpf_jit_harden" = 2;
       }
 
       # IPv6 disable configuration
