@@ -42,6 +42,120 @@
     # ],
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #       (final: prev: {
+    #         python312 = prev.python312.override {
+    #           packageOverrides = py-final: py-prev:
+    #             let
+    #               version = "4.51.0";
+    #             in {
+    #               transformers = py-prev.transformers.overridePythonAttrs (oldAttrs: {
+    #                 inherit version;
+    #                 # use the correct GitHub fetcher from final
+    #                 src = prev.fetchFromGitHub {
+    #                   owner = "huggingface";
+    #                   repo = "transformers";
+    #                   tag = "v${version}";
+    #                   # hash = lib.fakeHash;
+    #                   hash = "sha256-dnVpc6fm1SYGcx7FegpwVVxUY6XRlsxLs5WOxYv11y8=";
+    #                 };
+    #                 meta = oldAttrs.meta // {
+    #                   changelog = "https://github.com/huggingface/transformers/releases/tag/v${version}";
+    #                 };
+    #               });
+    #             };
+    #         };
+    #       })
+
+    #   (final: prev: {
+    #     python312 = prev.python312.override {
+    #       packageOverrides = py-final: py-prev:
+    #         let
+    #           version = "0.21.1";
+    #           pname = "tokenizers";
+    #           newSrc = prev.fetchFromGitHub {
+    #             owner = "huggingface";
+    #             repo = "tokenizers";
+    #             tag = "v${version}";
+    #             # hash = lib.fakeHash;
+    #             hash = "sha256-3S7ZCaZnnwyNjoZ4Y/q3ngQE2MIm2iyCCjYAkdMVG2A=";
+    #           };
+    #         in {
+    #           tokenizers = py-prev.tokenizers.overridePythonAttrs (oldAttrs: rec {
+    #             # 1) Fetch the new v0.21.1 source with py-prev, not prev
+    #             src = newSrc;
+
+    #             # 2) Point to the python bindings subdirectory
+    #             sourceRoot = "${src.name}/bindings/python";
+
+    #             # 3) Disable the correctly‐named mismatch test
+    #             disabledTests = oldAttrs.disabledTests ++ [
+    #               "test_continuing_prefix_trainer_mismatch"
+    #             ];
+
+    #             # 4) Symlink tests/data → data so files are found under data/big.txt
+    #             postUnpack = oldAttrs.postUnpack + ''
+    #               ln -s $sourceRoot/tests/data $sourceRoot/data
+    #             '';
+
+    #             # 5) Vendored cargo deps (with the updated hash you already discovered)
+    #             cargoDeps = prev.rustPlatform.fetchCargoTarball {
+    #               inherit version pname src sourceRoot;
+    #               hash = "sha256-wJotxM5mebmSTzOHfmHVNIN6pMX5Zv0dsUJtoT7rHA8=";
+    #             };
+
+    #             # 6) Update metadata
+    #             meta = oldAttrs.meta // {
+    #               changelog = "https://github.com/huggingface/tokenizers/releases/tag/v0.21.1";
+    #             };
+    #           });
+    #         };
+    #     };
+    #   })
+
+    # (final: prev: {
+    #   python312 = prev.python312.override {
+    #     packageOverrides = py-final: py-prev:
+    #       let
+    #         version = "0.30.0";
+    #       in {
+    #         huggingface-hub = py-prev.huggingface-hub.overrideAttrs (oldAttrs: {
+    #           inherit version;
+    #           src = prev.fetchFromGitHub {  # Use prev from outer scope
+    #             owner = "huggingface";
+    #             repo = "huggingface_hub";
+    #             tag = "v${version}";
+    #             # hash = lib.fakeHash;
+    #             hash = "sha256-sz+n1uoWrSQPqJFiG/qCT6b4r08kD9MsoPZXbfWNB2o=";
+    #           };
+
+    #           meta = oldAttrs.meta // {
+    #             changelog = "https://github.com/huggingface/huggingface_hub/releases/tag/v${version}";
+    #           };
+    #         });
+    #       };
+    #   };
+    # })
+
+
+
+
+
+
+
+
   #! Nat for hotspot
   # networking.nat = {
   #   enable = true;
