@@ -13,23 +13,34 @@
 
 
     (callPackage ../Programs/python-libs/trl.nix {})
-    # (callPackage ../Programs/python-libs/tyro.nix {})
+
     (callPackage ../Programs/python-libs/smolagents.nix {})
+
+    (callPackage ../Programs/python-libs/flash-attn.nix {})
 
     (callPackage ../Programs/python-libs/cut-cross-entropy.nix {})
 
 
+    # (callPackage ../Programs/python-libs/tyro.nix {})
     # (callPackage ../Programs/python-libs/unsloth_zoo/unsloth_zoo.nix {})
 
 
         #-> Basics
         uv
         pip
+
         pylint
         pylance
+
+        pathlib2
         setuptools
         python-dotenv
         terminaltables
+
+            #-> Nvidia Cuda
+            pynvml
+            numba
+            pycuda
 
             #-> GUI
             pyqt6
@@ -104,13 +115,9 @@
         weasyprint
         markdown-it-py
 
+        optimum
         diffusers
         transformers
-
-
-        #-> Cuda
-        numba
-        pycuda
 
 
         #-> torch
@@ -126,6 +133,7 @@
 
         #-> Ai
         nltk
+        # vllm
         datasets
         evaluate
         langchain
