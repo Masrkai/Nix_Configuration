@@ -337,7 +337,9 @@ in
   amberol
   syncthing
   qbittorrent
+
   unstable.ani-cli
+  mpv               #! Needed for ani-cli operation
 
   brave
   logseq
@@ -394,6 +396,7 @@ in
   # wineWowPackages.stableFull
 
   #Games
+  unciv
   mindustry-wayland
 
   #System
