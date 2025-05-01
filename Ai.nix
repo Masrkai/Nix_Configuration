@@ -21,7 +21,7 @@ in
     enable = true;
     # stateDir = "/var/lib/open-webui";
 
-    package= pkgs.open-webui;
+    package= unstable.open-webui;
 
     port = 8080;
     host = "127.0.0.1";
