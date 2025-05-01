@@ -317,7 +317,7 @@
     };
 
     services.hostapd = {
-      enable = true;
+      enable = false;
       package = pkgs.hostapd;
       radios = {
 
