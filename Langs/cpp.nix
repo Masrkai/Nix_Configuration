@@ -3,26 +3,38 @@
 {
   cpppackages = with pkgs; [
     # ? Builders
-    cmake ninja gnumake cppcheck pkg-config
+    cmake
+    ninja
+    gnumake
+    cppcheck
+    pkg-config
 
     # ? UIs
-    gtk3 gtk4 qtcreator kdePackages.qtbase kdePackages.qttools
+    gtk3
+    gtk4
+    qtcreator
+    kdePackages.qtbase
+    kdePackages.qttools
 
     # ? Libraries
     eigen
     nlohmann_json
-    (hiPrio boost185)
+    # (hiPrio boost185)
 
     # ! Compilers + Extras
 
     # Add these C/C++ development essentials
     (lowPrio gdb)
     (hiPrio gcc_multi)
-    glibc glibc.dev gcc-unwrapped.lib
+    gcc14
+    glibc
+    glibc.dev
+    gcc-unwrapped.lib
 
     llvm
-    ninja
-    clang_multi clang-tools llvmPackages.libcxx
+    clang_multi
+    clang-tools
+    llvmPackages.libcxx
   ];
 
   cpp-nixpkgs-extensions = with pkgs.vscode-extensions; [
