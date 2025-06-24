@@ -2,55 +2,64 @@
   lib,
   buildPythonPackage,
   fetchFromGitHub,
-  pytestCheckHook,
-  hatch,
-  typeguard,
+
+  # build-system
+  hatchling,
+
+  # dependencies
   docstring-parser,
-  typing-extensions,
   rich,
   shtab,
-  # Test dependencies
-  omegaconf,
+  typeguard,
+  typing-extensions,
+
+  # tests
   attrs,
-  torch,
   flax,
-  pydantic,
   jax,
+  ml-collections,
+  omegaconf,
+  pydantic,
+  pytestCheckHook,
+  torch,
 }:
 
 buildPythonPackage rec {
   pname = "tyro";
-  version = "0.9.16";
+  version = "0.9.18";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "brentyi";
     repo = "tyro";
     tag = "v${version}";
-    hash = "sha256-dI6U9t4Y5TxhB710uuTmr9IgRLOEvZ9ZEWyHSWmrxag=";
+    hash = "sha256-EfcQIquO2rdR1pfRnYbjhQbiSGcIG2hCwXPodsa9aaA=";
   };
 
-  build-system = [ hatch ];
+  build-system = [ hatchling ];
 
   dependencies = [
-    typeguard
     docstring-parser
-    typing-extensions
     rich
     shtab
+    typeguard
+    typing-extensions
   ];
 
   nativeCheckInputs = [
-    omegaconf
-    torch
-    pydantic
-    jax
-    flax
     attrs
+    flax
+    jax
+    ml-collections
+    omegaconf
+    pydantic
     pytestCheckHook
+    torch
   ];
 
   pythonImportsCheck = [ "tyro" ];
+
+  # doCheck = false;
 
   meta = {
     description = "CLI interfaces & config objects, from types";

@@ -1,19 +1,26 @@
-{ lib, stdenv, makeWrapper, fetchFromGitHub
+{
+  lib, stdenv, makeWrapper, fetchFromGitHub
+
   # Required
 , iw, tmux, bash, gawk, procps, gnused, gnugrep, pciutils, iproute2, aircrack-ng, coreutils-full
+
   # X11 Front
 , xorg, xterm
+
   # Internals
 , usbutils, wget, ethtool, util-linux, ccze
+
   # Optionals
 , john, mdk4, bully, crunch, asleap, openssl, dnsmasq, hashcat, hostapd, hcxtools, lighttpd, nftables, ettercap, pixiewps, bettercap, hcxdumptool, wireshark-cli, reaverwps-t6x
+
   # Undocumented requirements
 , curl, glibc, ncurses, systemd, networkmanager, apparmor-bin-utils
+
   # Support groups
-, supportWpaWps ? true
-, supportHashCracking ? true
-, supportEvilTwin ? true
 , supportX11 ? false
+, supportWpaWps ? true
+, supportEvilTwin ? true
+, supportHashCracking ? true
 }:
 
 let
