@@ -8,6 +8,7 @@ in
 {
   services.ollama = {
     enable = true;
+    package = unstable.ollama;
     acceleration = "cuda";
 
     port = 11434;
@@ -18,10 +19,14 @@ in
   };
 
   services.open-webui = {
-    enable = true;
+    enable = false;
     # stateDir = "/var/lib/open-webui";
 
-    package= unstable.open-webui;
+    package=
+         #pkgs.open-webui;
+         #unstable.open-webui;
+         pkgs.callPackage ./Programs/python-libs/open-webui.nix {};
+
 
     port = 8080;
     host = "127.0.0.1";
@@ -80,7 +85,49 @@ in
     services.searx = {
       enable = true;
       package = pkgs.searxng;
+
+      faviconsSettings = {
+        favicons = {
+                cfg_schema = 1;
+
+                  proxy = {
+                    # Uncomment and modify as needed:
+                    max_age = 5184000;  # 60 days / default: 7 days (604800 sec)
+
+                    resolver_map = {
+                      google     = "searx.favicons.resolvers.google";
+                      yandex     = "searx.favicons.resolvers.yandex";
+                      allesedv   = "searx.favicons.resolvers.allesedv";
+                      duckduckgo = "searx.favicons.resolvers.duckduckgo";
+                    };
+                  };
+
+                  cache = {
+                    # Uncomment and modify as needed:
+                    db_url = "/var/cache/searxng/faviconcache.db";  # default: "/tmp/faviconcache.db"
+                    HOLD_TIME = 5184000;                            # 60 days / default: 30 days
+                    LIMIT_TOTAL_BYTES = 2147483648;                 # 2 GB / default: 50 MB
+                    BLOB_MAX_BYTES = 40960;                         # 40 KB / default 20 KB
+                    MAINTENANCE_MODE = "off";                       # default: "auto"
+                    MAINTENANCE_PERIOD = 600;                       # 10min / default: 1h
+                  };
+        };
+      };
+
       settings = {
+
+        general = {
+          instance_name = "Masrkai";
+        };
+
+        brand = {
+          docs_url         = "";
+          wiki_url         = "";
+          issue_url        = "";
+          new_issue_url    = "";
+          public_instances = "";
+        };
+
         server = {
           port = 8880;
           bind_address = "127.0.0.1";
@@ -91,6 +138,7 @@ in
           ratelimit_high = 50;
         };
         ui = {
+          site_name = "Masrkai";           # Browser tab title
           default_locale = "en";
           default_theme = "simple";
           query_in_title = true;
@@ -105,6 +153,8 @@ in
           safe_search = 0;
           default_lang = "en";
           autocomplete = "duckduckgo";
+          favicon_resolver = "duckduckgo";
+
           suspend_on_unavailable = false;
             result_extras = {
             favicon = true;          # Enable website icons
@@ -118,6 +168,24 @@ in
               "json"
             ];
         };
+
+        plugins = let
+          mkPlugin = name: active: { ${name} = { inherit active; }; };
+          activePlugins = map (name: mkPlugin name true) [
+            "searx.plugins.calculator.SXNGPlugin"
+            "searx.plugins.hash_plugin.SXNGPlugin"
+            "searx.plugins.self_info.SXNGPlugin"
+            "searx.plugins.tracker_url_remover.SXNGPlugin"
+            "searx.plugins.unit_converter.SXNGPlugin"
+            "searx.plugins.ahmia_filter.SXNGPlugin"
+            "searx.plugins.hostnames.SXNGPlugin"
+            "searx.plugins.oa_doi_rewrite.SXNGPlugin"
+          ];
+          inactivePlugins = map (name: mkPlugin name false) [
+          ];
+        in
+          lib.foldr lib.mergeAttrs {} (activePlugins ++ inactivePlugins);
+
         engines = [
           { name = "bing";       engine = "bing";       disabled = false; timeout = 6.0; }
           { name = "brave";      engine = "brave";      disabled = false; timeout = 6.0; }
@@ -139,7 +207,7 @@ in
         cache = {
           cache_max_age = 1440;  # Cache for 24 hours
           cache_disabled_plugins = [];
-          cache_dir = "/var/cache/searx";
+          cache_dir = "/var/cache/searxng";
         };
         privacy = {
           preferences = {

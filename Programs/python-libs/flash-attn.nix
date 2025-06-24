@@ -8,7 +8,6 @@
   setuptools,
   torch,
   transformers,
-  triton,
   cudaPackages,
   config,
   cudaSupport ? config.cudaSupport,
@@ -21,8 +20,8 @@ let
   cutlass = fetchFromGitHub {
     owner = "NVIDIA";
     repo = "cutlass";
-    rev = "refs/tags/v3.5.0";
-    sha256 = "sha256-D/s7eYsa5l/mfx73tE4mnFcTQdYqGmXa9d9TCryw4e4=";
+    rev = "refs/tags/v3.9.2";
+    sha256 = "sha256-teziPNA9csYvhkG5t2ht8W8x5+1YGGbHm8VKx4JoxgI=";
   };
 in
 
@@ -68,7 +67,7 @@ buildPythonPackage rec {
   dependencies = [
     einops
     torch
-    triton
+    transformers
   ];
 
   env = {

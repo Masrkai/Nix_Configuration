@@ -24,7 +24,6 @@
   torch,
   tqdm,
   transformers,
-  triton,
   twine,
 }:
 
@@ -51,7 +50,7 @@ buildPythonPackage rec {
 
   dependencies = [
     torch
-    triton
+    # Remove triton from dependencies to avoid duplication; torch already includes it
   ];
 
   optional-dependencies = {

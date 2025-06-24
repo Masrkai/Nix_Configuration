@@ -11,6 +11,7 @@
     nix-direnv
     nix-eval-jobs
     nix-output-monitor
+    nixpkgs-review gh
   ];
 
   nix-nixpkgs-extensions = with pkgs.vscode-extensions; [
