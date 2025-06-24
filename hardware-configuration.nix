@@ -18,26 +18,26 @@
 
     # Set the hardened kernel as your base kernel
     kernelPackages =
-      pkgs.linuxKernel.packages.linux_6_12
+      pkgs.linuxKernel.packages.linux_6_13           #! testing
       # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
       ;
 
-    #! DIY approach - takes so much time it's impossible to wait!
-    # kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
-    #   argsOverride = rec {
-    #     version = "6.12.8";
-    #     modDirVersion = "6.12.8";
-    #       src = pkgs.fetchurl {
-    #                   url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
-    #                   sha256 = "sha256-IpHaBlygS3Fcie5QNirsPwIadBS8lj8bVnNmgsgSKXk=";
-    #       };
-    #     };
-    #   }
-    # );
+        #! DIY approach - takes so much time it's impossible to wait!
+        # kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
+        #   argsOverride = rec {
+        #     version = "6.12.8";
+        #     modDirVersion = "6.12.8";
+        #       src = pkgs.fetchurl {
+        #                   url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
+        #                   sha256 = "sha256-IpHaBlygS3Fcie5QNirsPwIadBS8lj8bVnNmgsgSKXk=";
+        #       };
+        #     };
+        #   }
+        # );
 
     # Add the rtl8188eus-aircrack module to your kernel modules
     extraModulePackages = with config.boot.kernelPackages; [
-      rtl8188eus-aircrack
+      # rtl8188eus-aircrack
     ];
 
 
@@ -49,21 +49,23 @@
       availableKernelModules = [
         "nvme"
         "sd_mod"
-        "xhci_pci"
-        "usb_storage"
+        "ahci" "xhci_pci"
+        "usbhid" "usb_storage"
       ];
       kernelModules = [
-          "asus-nb-wmi" "asus_wmi"
+           "asus_wmi"
        ];
     };
 
     # Configure kernel modules
     kernelModules = [
       "amd_pstate" "kvm-amd"
-      "asus-nb-wmi" "asus_wmi"
+      "asus_wmi"
       "thunderbolt" "usb4"
 
       "tun"
+
+      "asus-armoury"
 
       "typec"              # USB-C subsystem
       "typec_mux"          # Mux control for alternate modes
@@ -96,13 +98,13 @@
       "amd_iommu=on"
       "mitigations=on"
       "amd_pstate=guided"      # Enable AMD P-State driver
-      "processor.max_cstate=7"  # Limit C-states for better response time
+      # "processor.max_cstate=7"  # Limit C-states for better response time
 
       # Remove
       "nowatchdog"
       "intel_pstate=disable"
 
-      "preempt=full"           # Better for desktop/low-latency
+      # "preempt=full"           # Better for desktop/low-latency in 
       # "mce=ignore_ce"          # Ignore non-fatal Correctable Errors (reduces log noise)
       "scsi_mod.use_blk_mq=1"  # Use multi-queue for faster I/O
 
@@ -129,7 +131,7 @@
     kernel.sysctl = {
 
     #! Swap related
-    "vm.swappiness" = 0;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
+    "vm.swappiness" = 10;  # Change this value as needed (0-100) 0 makes kernel avoid swap as much as possible
 
     #! Memory management
     "vm.dirty_ratio" = 10;                  # Full writeback at 10%
@@ -157,17 +159,14 @@
     interval = "weekly"; # Default is weekly, which is generally sufficient
   };
 
+
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/43aedd8b-e362-4cb3-872b-da3ea71c02c2";
+    { device = "/dev/disk/by-uuid/df148324-a3b5-4dd3-a1f3-621da1a9db8f";
       fsType = "ext4";
-      options = [
-      "noatime"
-      "commit=5"         # Optimize for SSD
-      ];
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/99F7-D86D";
+    { device = "/dev/disk/by-uuid/3D8A-0E92";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
@@ -203,32 +202,37 @@
 
   # Add zram-based swap since you have no swap configured
   zramSwap = {
-    enable = false;
+    enable = true;
     algorithm = "zstd";
-    memoryPercent = 10;  # Use up to 10% of RAM for zram swap
+    priority = 10;
+    memoryPercent = 50;  # Use up to 10% of RAM for zram swap
   };
 
-  hardware.cpu.amd = {
-  updateMicrocode = true;
-  sev.enable = true;  # Enable AMD SEV (Secure Encrypted Virtualization)
+  hardware.cpu = {
+    amd = {
+      updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+        sev = {
+          enable = true;  # Enable AMD SEV (Secure Encrypted Virtualization)
+        };
+    };
   };
 
   services.acpid.enable= true;
 
   services.power-profiles-daemon.enable= true;
 
-  services.udev.extraRules = ''
-  ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
+  # services.udev.extraRules = ''
+  # ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
 
-  # Disable XHC USB controllers from waking up the system
-  ACTION=="add", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/wakeup}="disabled"
-  ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
-  '';
+  # # Disable XHC USB controllers from waking up the system
+  # ACTION=="add", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/wakeup}="disabled"
+  # ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
+  # '';
 
   #--> Better scheduling for better CPU cycles & audio performance
   services.system76-scheduler = {
-    enable = false;
-    settings.cfsProfiles.enable = true; #? Enable CPU scheduling improvements for Audio
+    enable = true;
   };
 
   security.rtkit.enable = true;         #? Allow real-time priorities for audio tasks
@@ -246,6 +250,31 @@
       alsa.enable = true;          # Native ALSA protocol support
       jack.enable = true;          # Pro-audio JACK compatibility
       pulse.enable = true;         # Essential PulseAudio compatibility layer
+
+        extraConfig = {
+          #? editing pipewire.conf
+          pipewire =  {
+            context.properties = {
+              default.clock.quantum       = 1024;
+              default.clock.min-quantum   = 1024;
+            };
+          };
+
+         #? editing pipewire-pulse.conf
+         pipewire-pulse = {
+            stream.properties = {
+              resample.quality = 10;
+            };
+
+            pulse.properties = {
+              pulse.min.req          = "1024/48000";
+              pulse.default.req      = "1024/48000";
+              pulse.min.frag         = "256/48000";
+              pulse.min.quantum      = "256/48000";
+            };
+         };
+
+        };
     };
 
   services.asusd= {
