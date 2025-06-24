@@ -1,36 +1,36 @@
 { pkgs, ... }:
 
+let
+  unstable = import <unstable> {
+    config.allowUnfree = true;
+    # config.allowBroken = true;
+    };
+
+
+
+in
+
 {
   pythonpackages = with pkgs; [
 
     opencv
+    llama-cpp
     ffmpeg-full
+    unstable.ruff
 
+    (python312.withPackages (ps: with ps; [
 
-    #-> Python
-    (python312.withPackages (pk: with pk; [
-
-
-
-    (callPackage ../Programs/python-libs/trl.nix {})
-
-    (callPackage ../Programs/python-libs/smolagents.nix {})
-
-    (callPackage ../Programs/python-libs/flash-attn.nix {})
-
-    (callPackage ../Programs/python-libs/cut-cross-entropy.nix {})
-
-
-    # (callPackage ../Programs/python-libs/tyro.nix {})
-    # (callPackage ../Programs/python-libs/unsloth_zoo/unsloth_zoo.nix {})
-
+        unsloth
+        smolagents
+          duckduckgo-search
+        unsloth-zoo
 
         #-> Basics
         uv
         pip
 
         pylint
-        pylance
+        # pylance
 
         pathlib2
         setuptools
@@ -49,10 +49,15 @@
             pyqt6-charts
             pyqt6-webengine
 
+            screeninfo
+            raylib-python-cffi
+
+
             #-> Juniper/jupter
             notebook
+            nbformat
+            ipynbname
             ipywidgets
-            jupyterlab
 
             #-> IpyKernal
             ipython
@@ -76,6 +81,7 @@
             #-> cryptography & Databases
             pandas
             sqlite
+            pymysql
             portalocker
             cryptography
 
@@ -121,11 +127,10 @@
 
 
         #-> torch
-        # jax
-        torch-bin
-        triton-bin
-        torchaudio-bin
-        torchvision-bin
+        torch
+        # triton
+        # torchaudio
+        # torchvision
 
         #-> Open telemetry
         opentelemetry-sdk
@@ -134,11 +139,20 @@
         #-> Ai
         nltk
         # vllm
+        # flash-attn
+        pypdf2
         datasets
         evaluate
         langchain
         langchain-community
-        sentence-transformers
+        # sentence-transformers
+
+          #-> Ollama
+          ollama
+            #! Ollama integration
+            langchain-ollama
+            llama-index-llms-ollama
+            llama-index-embeddings-ollama
 
           #-> ML
           peft
@@ -168,17 +182,13 @@
         ]
       )
     )
-  ]
-  # ++ customPythonPackages
-  ;
+  ];
 
   python-nixpkgs-extensions = with pkgs.vscode-extensions; [
     #* Python
     ms-python.python
     ms-python.debugpy
-    # ms-pyright.pyright
-    # charliermarsh.ruff
-    ms-python.vscode-pylance
+    charliermarsh.ruff
 
       #->Jupyter
       ms-toolsai.jupyter
@@ -190,19 +200,19 @@
   ];
 
   python-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
-    {
-      #https://open-vsx.org/extension/KevinRose/vsc-python-indent
-      name = "vsc-python-indent";
-      publisher = "KevinRose";
-      version = "1.18.0";
-      hash = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
-    }
-    {
-      #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
-      name = "pylint";
-      publisher = "ms-python";
-      version = "2023.11.13481007";  # Check for the latest version
-      hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";
-    }
+    # {
+    #   #https://open-vsx.org/extension/KevinRose/vsc-python-indent
+    #   name = "vsc-python-indent";
+    #   publisher = "KevinRose";
+    #   version = "1.18.0";
+    #   hash = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
+    # }
+    # {
+    #   #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
+    #   name = "pylint";
+    #   publisher = "ms-python";
+    #   version = "2023.11.13481007";  # Check for the latest version
+    #   hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";
+    # }
   ];
 }

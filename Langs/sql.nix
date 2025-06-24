@@ -2,7 +2,6 @@
 
 {
   sqlpackages = with pkgs; [
-   beekeeper-studio
    mysql-workbench
   ];
 
