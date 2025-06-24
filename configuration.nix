@@ -6,18 +6,12 @@ let
 
   customPackages = {
     #? .Nix
+    jsql = pkgs.callPackage ./Programs/Packages/jsql.nix {};
     lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
     wifi-honey = pkgs.callPackage ./Programs/Packages/wifi-honey.nix {};
     hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
-
-    jsql = pkgs.callPackage ./Programs/Packages/jsql.nix {};
-
-
-
-    #airgeddon = pkgs.callPackage ./Programs/Packages/airgeddon.nix {};
-    #custom-httrack = pkgs.libsForQt5.callPackage ./Programs/Packages/custom-httrack.nix {};
 
     #! Bash
     backup = pkgs.callPackage ./Programs/custom/backup.nix {};
@@ -30,18 +24,13 @@ let
     mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
 
     #> VENV
-    grayjay = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay.nix {};
+
+
+    #>! Binary / FHSenv
+    grayjay-bin = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay-bin2.nix {};
+
 
   };
-
-  # Define common paths
-  PyVersion = 312;
-  pythonSP = pkgs."python${toString PyVersion}";
-  pythonPackages = pkgs."python${toString PyVersion}Packages";
-
-
-  # inherit (config._module.args.secrets) searx-secret-key;
-
 
 in
 
@@ -58,7 +47,6 @@ in
       ./dev-shells/collector.nix
       ./Networking/Networking.nix
       ./hardware-configuration.nix
-
     ];
 
 
@@ -141,15 +129,20 @@ in
       #* First Class
       amiri
       iosevka-bin
+      nerd-fonts.iosevka
+      nerd-fonts.iosevka-term
       material-design-icons
 
       #> Second Class
-      noto-fonts
       dejavu_fonts
       liberation_ttf
-      noto-fonts-emoji
-      noto-fonts-cjk-sans
-      (nerdfonts.override { fonts = [ "Iosevka" ]; })
+
+        # Corporate fonts
+        vista-fonts
+
+        noto-fonts
+        noto-fonts-emoji
+        noto-fonts-cjk-sans
       ];
 
       fontconfig = {
@@ -170,7 +163,7 @@ in
         "nix-command"
       ];
 
-      cores = 0;                        # Restrict builds to use only N cores 0 to use all.
+      cores = 12;                       # Restrict builds to use only N cores 0 to use all.
       max-jobs = 1;                     # Limit the number of parallel build jobs.
       sandbox = true;                   # Enable sandboxing if not already enabled (it helps isolate builds).
       builders-use-substitutes = true;  # Prefer cached builds
@@ -187,10 +180,6 @@ in
       keep-outputs = false;
     };
 
-    # extraOptions = ''
-    # keep-outputs = true
-    # keep-derivations = true
-    # '';
   };
 
   nixpkgs = {
@@ -213,16 +202,14 @@ in
           waylandSupport = true;
         };
 
-        # jax = super.pythonPackages.jax.override {
-        #   torch = super.pythonPackages.torchWithCuda;
-        # };
-
         # realtime-stt = super.pythonPackages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
       })
     ];
     #-------------------------------------------------------------------->
     config = {
       allowUnfree = true;
+      # allowBroken = true;
+
       permittedInsecurePackages = [
         "electron-27.3.11"
         "qbittorrent-4.6.4"
@@ -246,12 +233,13 @@ in
   # customPackages.hostapd-wpe
   customPackages.mac-formatter
   customPackages.logisim-evolution
-  customPackages.super-productivity
+  # customPackages.super-productivity
   customPackages.evillimiter
-  customPackages.grayjay
+  # customPackages.grayjay-bin
   #customPackages.airgeddon
   #customPackages.custom-httrack
 
+  unstable.grayjay
 
   searxng
   nix-prefetch-git
@@ -280,7 +268,6 @@ in
 
   unzip
   #xterm
-  gparted #!has issues
   glxinfo
   pciutils
   hw-probe
@@ -331,6 +318,7 @@ in
   nvtopPackages.nvidia
 
   #-> Content
+  kew
   fzf
   yt-dlp
   haruna
@@ -338,12 +326,12 @@ in
   syncthing
   qbittorrent
 
-  unstable.ani-cli
   mpv               #! Needed for ani-cli operation
+  unstable.ani-cli
 
   brave
-  logseq
-  webcord
+  # logseq
+  # webcord
   keepassxc
   fastfetch
   authenticator
@@ -361,6 +349,11 @@ in
   alsa-tools
   pavucontrol
 
+  #-> Maintenance Utilities
+  gparted #!has issues
+  unstable.qdiskinfo
+  gnome-disk-utility
+
   #-> KDE Specific
   kdePackages.kgamma
   kdePackages.kscreen
@@ -374,10 +367,13 @@ in
   #-> Productivity
   gimp
   kooha
+  affine
   # blender
   thunderbird-bin
-  gnome-disk-utility
   libreoffice-qt6-still
+    hunspell
+    hunspellDicts.en_US
+  # onlyoffice-desktopeditors
 
     #-> PDF
     pdfarranger
@@ -468,6 +464,8 @@ in
   customPackages.jsql
   sqlmap
 
+  #> Evil Twin
+
 ];
 
   #?########################
@@ -489,6 +487,25 @@ in
       nix-direnv.enable = true;
     };
 
+  #--> Git // LFS
+    programs.git = {
+      enable = true;
+      lfs = {
+        enable = true;
+        package = unstable.git-lfs;
+      };
+
+      config = {
+        # Set your global git configuration here
+        user.name = "Masrkai";
+        user.email = secrets.Email;
+        # Add any other git config options you want
+        init.defaultBranch = "main";
+        # You can add more git configurations here
+      };
+    };
+
+
   #--> Wireshark
     programs.wireshark= {
       enable = true;
@@ -505,7 +522,7 @@ in
   #--> mlocate // "updatedb & locate"
     services.locate = {
       enable    = true;
-      localuser = null;
+      # localuser = null;
       package   = pkgs.mlocate;
     };
 
@@ -552,7 +569,7 @@ in
 
       };
       devices = {
-        "A71" = { id = "MTQLI6G-AEJW6KJ-VNJVYNP-4MLFCTF-K3A6U2X-FMTBMWW-YVFJFK4-RFLXWAP"; };
+        "A71" = { id = "NINHMAQ-LAPJ3LN-OOGEWBE-TG3XIWL-LFI2TOT-BBLCPY3-ASLU3IE-AXGDHAE"; };
         "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
         "Mariam's Laptop G15" = { id ="XR63JZR-33WFJNB-PPHDMWF-XF3V5WX-34XHJAB-SIL2L7L-QGPZI2U-BKRIOQO";};
         };
@@ -564,15 +581,19 @@ in
           versioning = {
             type = "simple";
               params = {
-              keep = "5"; # Keep 5 versions
+              keep = "1"; # Keep 5 versions
               };
           };
           type = "sendonly"; # Make folder send-only
-          ignorePaths = [
-          ".venv"
-          ".**"
-          ".*"
-          ];
+
+          ignorePatterns = ''
+          #include .stignore-shared
+          .git
+          .venv
+          *.gguf
+          *.safetensors
+
+          '';
         };
 
 
@@ -639,10 +660,16 @@ in
       extraCompatPackages = with pkgs; [
         proton-ge-bin
       ];
+    gamescopeSession.enable = true;
+
     remotePlay.openFirewall = false; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = false; # Open ports in the firewall for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = false; # Open ports in the firewall for Steam Local Network Game Transfers
   };
+
+  programs.gamescope.enable = true;
+
+  programs.gamemode.enable = true;
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;
@@ -650,5 +677,5 @@ in
   #--> NoiseTorch: Real-Time Microphone Noise Suppression
   programs.noisetorch.enable = true;
 
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.05";
 }

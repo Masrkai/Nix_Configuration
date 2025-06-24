@@ -56,7 +56,7 @@ mkMerge [
                 id = "USB";
                 type = "ethernet";
                 permissions = "";
-                interface-name = "eth1";              # Specify the interface name
+                interface-name = "usb0";              # Specify the interface name
                 autoconnect = true;
                 permanent = true;  # This makes the profile persistent
                 };
