@@ -18,7 +18,7 @@ in
     ffmpeg-full
     unstable.ruff
 
-    (python312.withPackages (ps: with ps; [
+    (lib.lowPrio (python312.withPackages (ps: with ps; [
 
         unsloth
         smolagents
@@ -105,6 +105,7 @@ in
         seaborn
 
         #-> DB
+        mysqlclient
         mysql-connector
 
         #-> Algos
@@ -173,14 +174,21 @@ in
           huggingface-hub
           # google-cloud-texttospeech
 
+          #> OCR
+          pytesseract
+
           #> speechrecognition
           soundfile
           # realtime-stt
           # arabic-reshaper
 
 
+          llama-cpp-python
+
+
         ]
       )
+    )
     )
   ];
 
@@ -200,19 +208,6 @@ in
   ];
 
   python-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
-    # {
-    #   #https://open-vsx.org/extension/KevinRose/vsc-python-indent
-    #   name = "vsc-python-indent";
-    #   publisher = "KevinRose";
-    #   version = "1.18.0";
-    #   hash = "sha256-hiOMcHiW8KFmau7WYli0pFszBBkb6HphZsz+QT5vHv0=";
-    # }
-    # {
-    #   #https://marketplace.visualstudio.com/items?itemName=ms-python.pylint
-    #   name = "pylint";
-    #   publisher = "ms-python";
-    #   version = "2023.11.13481007";  # Check for the latest version
-    #   hash = "sha256-rn+6vT1ZNpjzHwIy6ACkWVvQVCEUWG2abCoirkkpJts=";
-    # }
+
   ];
 }
