@@ -12,6 +12,7 @@ let
   nixX = import ./nix.nix { inherit pkgs lib ; };
   umlx = import ./UML.nix { inherit pkgs lib ; };
   rust = import ./rust.nix { inherit pkgs lib ; };
+  dartX = import ./dart.nix { inherit pkgs lib ; };
   pythonX = import ./python.nix{ inherit pkgs lib ; };
   generalX = import ./general.nix{ inherit pkgs lib ; };
 
@@ -22,6 +23,7 @@ in{
     cpp.cpppackages
     nixX.nixpackages
     rust.rustpackages
+    dartX.dartpackages
     pythonX.pythonpackages
     [
       (vscode-with-extensions.override {
@@ -69,7 +71,9 @@ in{
         ++ umlx.UML-nixpkgs-extensions
         ++ nixX.nix-nixpkgs-extensions
         ++ rust.rust-nixpkgs-extensions
+        ++ dartX.dart-nixpkgs-extensions
         ++ pythonX.python-nixpkgs-extensions
+        ++ generalX.general-nixpkgs-extensions
 
 
         ++ vscode-utils.extensionsFromVscodeMarketplace (
@@ -78,6 +82,7 @@ in{
           ++ umlx.UML-marketplace-extensions
           ++ nixX.nix-marketplace-extensions
           ++ rust.rust-marketplace-extensions
+          ++ dartX.dart-marketplace-extensions
           ++ pythonX.python-marketplace-extensions
           ++ generalX.general-marketplace-extensions
         );
