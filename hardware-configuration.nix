@@ -235,48 +235,6 @@
     enable = true;
   };
 
-  security.rtkit.enable = true;         #? Allow real-time priorities for audio tasks
-
-  # PipeWire Setup
-  services.pipewire = {
-      enable = true;
-      systemWide = false;  # Maintaining per-user audio sessions
-      audio.enable = true;
-
-      # Enable WirePlumber for intelligent session management
-      wireplumber.enable = true;
-
-      # Critical compatibility layers
-      alsa.enable = true;          # Native ALSA protocol support
-      jack.enable = true;          # Pro-audio JACK compatibility
-      pulse.enable = true;         # Essential PulseAudio compatibility layer
-
-        extraConfig = {
-          #? editing pipewire.conf
-          pipewire =  {
-            context.properties = {
-              default.clock.quantum       = 1024;
-              default.clock.min-quantum   = 1024;
-            };
-          };
-
-         #? editing pipewire-pulse.conf
-         pipewire-pulse = {
-            stream.properties = {
-              resample.quality = 10;
-            };
-
-            pulse.properties = {
-              pulse.min.req          = "1024/48000";
-              pulse.default.req      = "1024/48000";
-              pulse.min.frag         = "256/48000";
-              pulse.min.quantum      = "256/48000";
-            };
-         };
-
-        };
-    };
-
   services.asusd= {
     enable = true;
     enableUserService = true;
