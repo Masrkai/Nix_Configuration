@@ -1,10 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let
-  dbConfig = {
-    db       = "mainDB";
+  USER_NAME = {
     user     = "masrkai";
-    password = "1";
   };
 in {
   services.mysql = {
@@ -12,12 +10,12 @@ in {
     package = pkgs.mariadb;
     dataDir = "/var/lib/mysql";
 
-    user = "mysql";
+    user = USER_NAME.user;
     group = "mysql";
-    ensureDatabases = [ dbConfig.db ];
 
     ensureUsers = [{
-      name = dbConfig.user;
+      name = USER_NAME.user;
+      # password = USER_NAME.password;
       ensurePermissions = {
         "*.*" = "ALL PRIVILEGES";  # Correct database (mainDB.*)
       };
@@ -26,9 +24,10 @@ in {
     settings = {
       mysqld = {
         port = 3306;  # Standard MySQL port
-        max_connections = 200;
         bind-address = "127.0.0.1";
         socket = "/var/run/mysqld/mysqld.sock";
+
+        max_connections = 200;
 
         # Connection timeout settings
         wait_timeout = 600;         # Timeout for non-interactive connections

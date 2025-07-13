@@ -11,7 +11,6 @@ in
   lidSwitch = "ignore";
  };
 
-
  systemd = {
     enableEmergencyMode = true;
       oomd = {
@@ -50,6 +49,7 @@ in
     '';
 
     services = {
+      # nvidia-power-limit-high.path = [ config.hardware.nvidia.package ];
 
       # Example of a systemd service override for NetworkManager
       NetworkManager = {
