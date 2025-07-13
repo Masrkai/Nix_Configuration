@@ -27,6 +27,7 @@ let
 
 
     #>! Binary / FHSenv
+    proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
     grayjay-bin = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay-bin2.nix {};
 
 
@@ -36,7 +37,6 @@ in
 
 {
     imports = [
-      ./Ai.nix
       ./bash.nix
       ./desktop.nix
       ./systemd.nix
@@ -47,6 +47,10 @@ in
       ./dev-shells/collector.nix
       ./Networking/Networking.nix
       ./hardware-configuration.nix
+
+
+      #* Services
+      ./Services/ztop.nix
     ];
 
 
@@ -82,9 +86,11 @@ in
                         "networkmanager" "bluetooth"
                         "wireshark"
                         "qbittorrent" "jackett"
-                        "libvirtd" "kvm" "ubridge"
                         "video" "audio" "power"
                         "ollama"
+                        "libvirtd" "kvm" "ubridge"  #* Virtualization
+
+                        "tty" "dialout"             #* Allow access to serial device (for Arduino dev)
                       ];
       };
 
@@ -246,12 +252,6 @@ in
   nixos-generators
 
   #-> General
-    #-! GNS3 Specific Bullshit
-    vpcs
-    ubridge
-    gns3-gui
-    dynamips
-    gns3-server
 
   # git
   # git-lfs
@@ -310,12 +310,19 @@ in
   # koboldcpp
 
   #-> Monitoring
+  htop
   btop
   powertop
+  bandwhich
   dmidecode
   gsmartcontrol
   mission-center
   nvtopPackages.nvidia
+
+   #-> Repair
+  woeusb
+   ntfs3g #? Needed by woeusb
+  #  ventoy  #! this is a security concern after the XZ utils events
 
   #-> Content
   kew
@@ -339,7 +346,7 @@ in
 
   #-> Archivers
   pv
-  xz
+  # xz
   pigz
   tarlz
   p7zip
@@ -424,7 +431,6 @@ in
   zip2hashcat
   hashcat-utils
 
-
   #> Internet basics
   iw
   dig
@@ -495,14 +501,14 @@ in
         package = unstable.git-lfs;
       };
 
-      config = {
-        # Set your global git configuration here
-        user.name = "Masrkai";
-        user.email = secrets.Email;
-        # Add any other git config options you want
-        init.defaultBranch = "main";
-        # You can add more git configurations here
-      };
+      # config = {
+      #   # Set your global git configuration here
+      #   user.name = "Masrkai";
+      #   user.email = secrets.Email;
+      #   # Add any other git config options you want
+      #   init.defaultBranch = "main";
+      #   # You can add more git configurations here
+      # };
     };
 
 
@@ -548,117 +554,18 @@ in
     config.adminpassFile = "/etc/nextcloud-admin-pass";
   };
 
-  #---> Syncthing
-  services.syncthing = {
-        enable = true;
-        user = "masrkai";
-        dataDir = "/home/masrkai";
-        configDir = "/home/masrkai/Documents/.config/syncthing";
-
-    guiAddress = "127.0.0.1:8384";
-    systemService = true;
-    overrideDevices = true; #! Overrides devices added or deleted through the WebUI
-    overrideFolders = true; #! Overrides folders added or deleted through the WebUI
-    openDefaultPorts = true;
-    settings = {
-      options ={
-        urAccepted = -1;
-        relaysEnabled = false;
-        maxFolderConcurrency = 9;
-        localAnnounceEnabled = true;
-
-      };
-      devices = {
-        "A71" = { id = "NINHMAQ-LAPJ3LN-OOGEWBE-TG3XIWL-LFI2TOT-BBLCPY3-ASLU3IE-AXGDHAE"; };
-        "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
-        "Mariam's Laptop G15" = { id ="XR63JZR-33WFJNB-PPHDMWF-XF3V5WX-34XHJAB-SIL2L7L-QGPZI2U-BKRIOQO";};
-        };
-      folders = {
-
-        "College_shit" = {
-          path = "~/Documents/College/Current/";
-          devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
-          versioning = {
-            type = "simple";
-              params = {
-              keep = "1"; # Keep 5 versions
-              };
-          };
-          type = "sendonly"; # Make folder send-only
-
-          ignorePatterns = ''
-          #include .stignore-shared
-          .git
-          .venv
-          *.gguf
-          *.safetensors
-
-          '';
-        };
-
-
-        "Forbidden_Knowledge" = {
-          path = "~/Documents/Books/";
-          devices = [ "A71" ];
-          versioning = {
-            type = "simple";
-              params = {
-              keep = "5"; # Keep 5 versions
-              };
-          };
-          type = "sendonly"; # Make folder send-only
-        };
-
-
-
-        "Music" = {
-          path = "~/Music/";
-          devices = [ "A71" ];
-          ignorePerms = false;
-          # Add ignore patterns here
-          ignorePaths = [
-          # Common patterns
-          ".git"
-          "*.tmp"
-          "*.temp"
-          "node_modules"
-          #? Music crap
-
-          "/Telegram"
-          ".thumbnails"
-          "/.thumbnails"
-          ];
-        };
-
-
-      };
-    };
-  };
-
 
   # #---> Colord
   # services.colord.enable = true;
 
-  #---> Qbit_torrent x Jackett
-    services.jackett = {
-      port = 9117;
-      enable = true;
-      package = pkgs.jackett;
 
-      user = "jackett" ;
-      group = "jackett" ;
-
-      openFirewall = false;
-
-      dataDir = "/var/lib/jackett/";
-    };
 
   #> Steam
   programs.steam = {
     enable = true;
     extest.enable = false;
       extraCompatPackages = with pkgs; [
-        proton-ge-bin
+        customPackages.proton-ge-bin
       ];
     gamescopeSession.enable = true;
 
@@ -670,6 +577,31 @@ in
   programs.gamescope.enable = true;
 
   programs.gamemode.enable = true;
+
+
+  programs.obs-studio = {
+    enable = true;
+    enableVirtualCamera = true;
+
+    # optional Nvidia hardware acceleration
+    package = (
+      pkgs.obs-studio.override {
+        cudaSupport = true;
+      }
+    );
+
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      input-overlay
+      obs-backgroundremoval
+      obs-pipewire-audio-capture
+
+      # obs-vaapi #optional AMD hardware acceleration
+      obs-gstreamer
+      obs-vkcapture
+    ];
+  };
+
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;
