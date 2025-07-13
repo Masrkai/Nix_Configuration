@@ -10,36 +10,52 @@
     '';
   };
 
-  # Add this to your configuration.nix or home.nix
-  programs.nix-ld = {
-    enable = false;
+  # # Add this to your configuration.nix or home.nix
+  # programs.nix-ld = {
+  #   enable = true;
 
-    # Expose every library/tool Triton’s JIT might need:
-    libraries = with pkgs; [
-      # Standard compilers & runtime
-      gcc     # provides /run/current-system/sw/bin/gcc
-      libgcc  # libgcc_s, etc.
-      glibc_multi              # if you need multilib support
+  #   # Libraries needed for Flutter Linux development
+  #   libraries = with pkgs; [
+  #     # Build tools
+  #     cmake
+  #     clang
+  #     ninja
+  #     pkg-config
 
-      stdenv.cc                # C compiler environment
-      stdenv.cc.cc             # explicit cc
-      stdenv.cc.cc.lib
+  #     # C/C++ development essentials
+  #     stdenv.cc.cc.lib
 
-      # Common native libraries used during build
-      zlib              # compression
-      zstd              # compression
-      xz                # compression
-      bzip2             # compression
-      libssh           # SSH support (if needed)
-      openssl           # TLS, crypto
-      libxml2          # XML parsing (if your tooling needs it)
-      systemd           # for ldconfig and related
-      util-linux         # mount, etc.
-      acl               # access-control lists
-      attr              # file attributes
-      curl             # downloads
-    ];
-  };
+  #     glibc
+  #     libgcc
+  #     gcc.cc.lib  # instead of stdenv.cc.cc.lib
+
+  #     # CRITICAL: C++ standard library - this was missing!
+  #     libcxx  # Alternative C++ stdlib
+
+  #     # Clang/LLVM libraries and runtime
+  #     llvmPackages.clang
+  #     llvmPackages.libcxx
+  #     llvmPackages.libclang
+  #     llvmPackages.compiler-rt
+
+
+  #     # Common native libraries
+  #     zlib
+  #     zstd
+  #     xz
+  #     bzip2
+  #     openssl
+  #     libxml2
+  #     curl
+
+  #     # Additional libraries that might be needed
+  #     libdeflate
+  #     systemd
+  #     util-linux
+  #     acl
+  #     attr
+  #   ];
+  # };
 
 
 

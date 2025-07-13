@@ -2,39 +2,36 @@
 
 {
   cpppackages = with pkgs; [
-    # ? Builders
+    #* Build Systems
     cmake
     ninja
     gnumake
-    cppcheck
     pkg-config
 
-    # ? UIs
+    #* Static Analysis
+    cppcheck
+
+    #* UI Toolkits
     gtk3
     gtk4
-    qtcreator
-    kdePackages.qtbase
-    kdePackages.qttools
+    kdePackages.qtbase # Qt runtime
+    kdePackages.qttools # Qt development tools (qmake, designer)
 
-    # ? Libraries
+    #* IDE Support (Consider these optional based on your IDE)
+    qtcreator
+
+    #* Libraries
     eigen
     nlohmann_json
-    # (hiPrio boost185)
+    # (hiPrio boost185) # Consider specific boost modules instead of the whole library
 
-    # ! Compilers + Extras
+    #* GCC Toolchain (with higher priority to avoid collisions)
+    (hiPrio gcc14)
 
-    # Add these C/C++ development essentials
-    (lowPrio gdb)
-    (hiPrio gcc_multi)
-    gcc14
-    glibc
-    glibc.dev
-    gcc-unwrapped.lib
-
-    llvm
-    clang_multi
-    clang-tools
-    llvmPackages.libcxx
+    #* LLVM/Clang Toolchain
+    llvmPackages_20.clangWithLibcAndBasicRtAndLibcxx
+    llvmPackages_20.clang-tools
+    llvmPackages.bintools
   ];
 
   cpp-nixpkgs-extensions = with pkgs.vscode-extensions; [
