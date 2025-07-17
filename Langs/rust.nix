@@ -15,6 +15,9 @@
     # Language Server Protocol (LSP)
     rust-analyzer
 
+    # Flame-graphing
+     cargo-flamegraph
+
     # # Toolchain manager
     # rustup      # Manages Rust versions and targets
   ];

@@ -252,10 +252,6 @@ in
   nixos-generators
 
   #-> General
-
-  # git
-  # git-lfs
-
   bat
   eza
   acpi
@@ -498,17 +494,21 @@ in
       enable = true;
       lfs = {
         enable = true;
-        package = unstable.git-lfs;
+        package = pkgs.git-lfs;
       };
 
-      # config = {
-      #   # Set your global git configuration here
-      #   user.name = "Masrkai";
-      #   user.email = secrets.Email;
-      #   # Add any other git config options you want
-      #   init.defaultBranch = "main";
-      #   # You can add more git configurations here
-      # };
+      config = {
+        # Set your global git configuration here
+        user = {
+          name = "Masrkai";
+          email = secrets.Email;
+        };
+        # user.name = "Masrkai";
+        # user.email = secrets.Email;
+        # Add any other git config options you want
+        # init.defaultBranch = "main";
+        # You can add more git configurations here
+      };
     };
 
 

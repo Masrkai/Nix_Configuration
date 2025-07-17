@@ -74,6 +74,7 @@ in
             selenium
 
             pillow
+            piexif
 
             qrcode
             qrcode-terminal
