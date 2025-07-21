@@ -32,6 +32,7 @@
     llvmPackages_20.clangWithLibcAndBasicRtAndLibcxx
     llvmPackages_20.clang-tools
     llvmPackages.bintools
+
   ];
 
   cpp-nixpkgs-extensions = with pkgs.vscode-extensions; [

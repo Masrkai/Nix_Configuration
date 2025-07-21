@@ -23,13 +23,13 @@ let
     evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
     mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
 
-    #> VENV
-
-
     #>! Binary / FHSenv
     proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
     grayjay-bin = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay-bin2.nix {};
 
+
+    #? GO
+    evilginx = pkgs.callPackage ./Programs/Packages/evilginx.nix {};
 
   };
 
@@ -241,6 +241,7 @@ in
   customPackages.logisim-evolution
   # customPackages.super-productivity
   customPackages.evillimiter
+  # customPackages.evilginx
   # customPackages.grayjay-bin
   #customPackages.airgeddon
   #customPackages.custom-httrack
@@ -415,6 +416,12 @@ in
   linux-manual
   man-pages-posix
 
+
+
+  # config.boot.kernelPackages.perf
+  # flamegraph
+
+
 #!####################
 #! Pentration-Testing:
 #!####################
@@ -443,11 +450,12 @@ in
   bettercap
   burpsuite
 
-  #> DOS
+  #> DoS
   hping
 
   #> Wireless
   mdk4
+  airgorah
   aircrack-ng
   reaverwps-t6x
   linux-wifi-hotspot
