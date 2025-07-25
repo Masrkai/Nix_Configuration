@@ -42,8 +42,8 @@ in
       ./systemd.nix
       ./graphics.nix
       ./security.nix
-      ./Langs/ztop.nix
-      ./virtualisation.nix
+      ./Dev/ztop.nix
+      # ./virtualisation.nix
       ./dev-shells/collector.nix
       ./Networking/Networking.nix
       ./hardware-configuration.nix
@@ -330,8 +330,9 @@ in
   syncthing
   qbittorrent
 
-  mpv               #! Needed for ani-cli operation
   unstable.ani-cli
+    mpv               #! Needed for ani-cli operation
+
 
   brave
   # logseq
@@ -416,15 +417,11 @@ in
   linux-manual
   man-pages-posix
 
-
-
-  # config.boot.kernelPackages.perf
-  # flamegraph
-
-
 #!####################
 #! Pentration-Testing:
 #!####################
+  #> Terminals
+  xterm
 
   #> Password cracking
   crunch

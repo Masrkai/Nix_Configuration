@@ -37,6 +37,12 @@
 
   environment = lib.mkMerge [
     {
+      systemPackages = with pkgs; [
+        wl-clipboard-rs
+      ];
+    }
+
+    {
       variables = {
         GSK_RENDERER="nvidia";
         QT_QPA_PLATFORM="wayland";
