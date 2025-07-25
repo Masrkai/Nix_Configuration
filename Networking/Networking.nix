@@ -6,7 +6,6 @@
 #*#########################
 {
   imports = [
-    ./GNS.nix
     ./NetworkProfiles.nix
     ./Wireless_Regulation.nix
   ];
