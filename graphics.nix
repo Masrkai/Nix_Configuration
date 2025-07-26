@@ -10,56 +10,6 @@
     '';
   };
 
-  # # Add this to your configuration.nix or home.nix
-  # programs.nix-ld = {
-  #   enable = true;
-
-  #   # Libraries needed for Flutter Linux development
-  #   libraries = with pkgs; [
-  #     # Build tools
-  #     cmake
-  #     clang
-  #     ninja
-  #     pkg-config
-
-  #     # C/C++ development essentials
-  #     stdenv.cc.cc.lib
-
-  #     glibc
-  #     libgcc
-  #     gcc.cc.lib  # instead of stdenv.cc.cc.lib
-
-  #     # CRITICAL: C++ standard library - this was missing!
-  #     libcxx  # Alternative C++ stdlib
-
-  #     # Clang/LLVM libraries and runtime
-  #     llvmPackages.clang
-  #     llvmPackages.libcxx
-  #     llvmPackages.libclang
-  #     llvmPackages.compiler-rt
-
-
-  #     # Common native libraries
-  #     zlib
-  #     zstd
-  #     xz
-  #     bzip2
-  #     openssl
-  #     libxml2
-  #     curl
-
-  #     # Additional libraries that might be needed
-  #     libdeflate
-  #     systemd
-  #     util-linux
-  #     acl
-  #     attr
-  #   ];
-  # };
-
-
-
-
   boot = lib.mkMerge [
     {
       initrd.kernelModules = [
