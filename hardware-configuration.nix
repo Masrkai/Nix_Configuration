@@ -18,7 +18,7 @@
 
     # Set the hardened kernel as your base kernel
     kernelPackages =
-      pkgs.linuxKernel.packages.linux_6_13           #! testing
+      pkgs.linuxKernel.packages.linux_6_15           #! testing
       # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
       ;
 
@@ -38,6 +38,7 @@
     # Add the rtl8188eus-aircrack module to your kernel modules
     extraModulePackages = with config.boot.kernelPackages; [
       # rtl8188eus-aircrack
+      # rtl8812au
     ];
 
 
