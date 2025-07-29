@@ -513,7 +513,11 @@ in
         # Add any other git config options you want
         # init.defaultBranch = "main";
         # You can add more git configurations here
+        init.defaultBranch = "main";
+        safe.directory = "/etc/nixos";
+        # safe.directory = "/home/yourusername/.dotfiles";
       };
+
     };
 
 
