@@ -41,7 +41,7 @@
       # rtl8812au
       # rtl88xxau-aircrack    # see https://discourse.nixos.org/t/solved-how-to-correctly-add-kernel-module/24974/2
 
-      rtw88
+      # rtw88
 
     ];
 
