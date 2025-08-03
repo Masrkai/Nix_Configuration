@@ -8,32 +8,7 @@
   imports = [
     ./NetworkProfiles.nix
     ./Wireless_Regulation.nix
-  ];
-
-  boot.kernel.sysctl = lib.mkMerge [
-    {
-      "net.ipv4.ip_forward" = lib.mkDefault 1;                           #? For Hotspot & Bridges
-
-      "net.ipv4.tcp_base_mss" = lib.mkDefault 1024;                      #? Set the initial MTU probe size (in bytes)
-      "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;                      #? MTU Probing
-
-      "net.ipv4.tcp_rmem" = lib.mkForce "4096 1048576 16777216";  # min/default/max
-      "net.ipv4.tcp_wmem" = lib.mkForce "4096 1048576 16777216";  # min/default/max
-
-      "net.ipv4.tcp_timestamps" = lib.mkDefault 1;                       #? TCP timestamps
-      "net.ipv4.tcp_max_tso_segments" =  lib.mkDefault 2;                #? limit on the maximum segment size
-
-      #? Enable BBR congestion control algorithm
-      "net.core.default_qdisc" = lib.mkDefault "fq";
-      "net.ipv4.tcp_congestion_control" = lib.mkDefault "bbr";
-
-      #? Memory preserving
-      "vm.min_free_kbytes" = lib.mkForce 65536;
-
-      #? Multipath TCP
-      "net.mptcp.enabled" = 1;
-      "net.mptcp.checksum_enabled" = 1;
-    }
+    ./Network_Kernel_Parameters.nix
   ];
 
   networking = {
@@ -98,6 +73,8 @@
       dns = "none";  #-> Disable NetworkManager's DNS management
       enable = true;
       logLevel = "INFO";
+      ensureProfiles.environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
+
       ethernet.macAddress = "random";  #? Enable random MAC during Ethernet_Connection
 
       wifi.powersave = true;
@@ -208,7 +185,7 @@
 
       # Enable performance optimizations
       # prefetch = true;             # Enable prefetching for faster responses
-      timeout = 2000;             # 2 second timeout (lower than default)
+      timeout = 2000;                # 2 second timeout (lower than default)
 
       upstream_recursive_servers = [
         {
@@ -319,44 +296,6 @@
     services.hostapd = {
       enable = false;
       package = pkgs.hostapd;
-      radios = {
-
-        # # Simple 2.4GHz AP
-        # wlan0 = {
-        #   # countryCode = "US";
-        #   networks.wlan0 = {
-        #     ssid = "AP 1";
-        #     authentication.saePasswords = [{ password = "a flakey password"; }]; # Use saePasswordsFile if possible.
-        #   };
-        # };
-
-        # WiFi 5 (5GHz) with two advertised networks
-        # wlan1 = {
-        #   band = "5g";
-        #   channel = 0; # Enable automatic channel selection (ACS). Use only if your hardware supports it.
-        #   # countryCode = "US";
-        #   networks.wlan1 = {
-        #     ssid = "My AP";
-        #     authentication.saePasswords = [{ password = "a flakey password"; }]; # Use saePasswordsFile if possible.
-        #   };
-        #   networks.wlan1-2 = {
-        #     ssid = "Open AP with WiFi5";
-        #     authentication.mode = "none";
-        #   };
-        # };
-
-        # Legacy WPA2 example
-        wlan0 = {
-          # countryCode = "US";
-          networks.wlan0 = {
-            ssid = "AP 2";
-            authentication = {
-              mode = "wpa2-sha256";
-              wpaPassword = "a flakey password"; # Use wpaPasswordFile if possible.
-            };
-          };
-        };
-      };
     };
 
     # Make sure time synchronization is properly handled
