@@ -89,4 +89,11 @@ in{
       })
     ]
   ];
+
+
+  system.userActivationScripts.vscode-config = ''
+    mkdir -p ~/.config/VSCodium/User
+    cp ${./vscode_config.jsonc} ~/.config/VSCodium/User/settings.json
+  '';
+
 }
