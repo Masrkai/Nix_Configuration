@@ -466,6 +466,7 @@ in
   # armitage
   exploitdb
   metasploit
+  armitage
 
   #> SQL
   customPackages.jsql
