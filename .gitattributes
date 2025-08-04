@@ -5,6 +5,9 @@
 *.yml linguist-detectable=true
 *.yaml linguist-detectable=true
 
+# JSON
+*.json linguist-detectable=true
+
 # Markdown Documentation
 *.md merge=union
 *.md linguist-detectable=true
