@@ -14,14 +14,15 @@ let
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
 
     #! Bash
-    backup = pkgs.callPackage ./Programs/custom/backup.nix {};
-    setupcpp = pkgs.callPackage ./Programs/custom/setupcpp.nix {};
+    # backup = pkgs.callPackage ./Programs/custom/backup.nix {};
+    # setupcpp = pkgs.callPackage ./Programs/custom/setupcpp.nix {};
 
     #? Python
-    ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
-    MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+    # ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
+    # MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
+    # mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
+
     evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
-    mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
 
     #>! Binary / FHSenv
     proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
@@ -47,6 +48,9 @@ in
       ./dev-shells/collector.nix
       ./Networking/Networking.nix
       ./hardware-configuration.nix
+
+
+      ./Programs/custom/ztop.nix
 
 
       #* Services
@@ -231,13 +235,13 @@ in
   #*############
 
   #-> Custom
-  customPackages.ctj
-  customPackages.MD-PDF
-  customPackages.backup
-  customPackages.setupcpp
+  # customPackages.ctj
+  # customPackages.MD-PDF
+  # customPackages.backup
+  # customPackages.setupcpp
   customPackages.wifi-honey
   # customPackages.hostapd-wpe
-  customPackages.mac-formatter
+  # customPackages.mac-formatter
   customPackages.logisim-evolution
   # customPackages.super-productivity
   customPackages.evillimiter
