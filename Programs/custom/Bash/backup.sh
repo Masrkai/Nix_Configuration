@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Define color variables
 Cyan='\033[0;36m'
@@ -84,3 +84,6 @@ if [ "$offline_mode" = true ]; then
 else
     echo -e "${LightGreen}The Configuration of ${Cyan}nixos ${LightGreen}was copied, committed, and pushed to GitHub ${Cyan}successfully.${NC}"
 fi
+
+# Call the extract function with all arguments passed to the script
+copy_commit_and_push "$@"
