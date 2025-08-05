@@ -6,7 +6,7 @@ This is a very specialized configuration, I really put my heart into over 2 year
 
 - I have been learning Nix since 2023 until the last update of this configuration, I am no expert like some others maybe are so take my choices with a grain of salt
 
-- Reviewed README on 01/08/2025 in DD/MM/YYYY
+- Reviewed README on 08/08/2025 in DD/MM/YYYY
 
 ## Programming languages support:
   Primarily I use VScode, so In configuration I added support for:
