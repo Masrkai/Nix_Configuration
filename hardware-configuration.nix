@@ -225,7 +225,7 @@
 
   services.acpid.enable= true;
 
-  services.power-profiles-daemon.enable= true;
+
 
   # services.udev.extraRules = ''
   # ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"

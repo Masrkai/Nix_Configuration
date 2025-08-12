@@ -29,9 +29,15 @@
     (hiPrio gcc14)
 
     #* LLVM/Clang Toolchain
-    llvmPackages_20.clangWithLibcAndBasicRtAndLibcxx
+    #
+    # llvmPackages_20.clangWithLibcAndBasicRtAndLibcxx
+    llvmPackages_20.clang
     llvmPackages_20.clang-tools
     llvmPackages.bintools
+
+    #* Tests
+    gtest
+    coreutils-prefixed
 
   ];
 
