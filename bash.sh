@@ -290,7 +290,8 @@ function compress {
                 fi
 
                 if command -v pigz >/dev/null; then
-                    tar cf - "$n" | eval "$pv_cmd" | pigz -"$level" -p"$THREADS" > "${filename}.tar.gz"
+                    # Optimized pigz with block size and rsyncable
+                    tar cf - "$n" | eval "$pv_cmd" | pigz -"$level" -p"$THREADS" --rsyncable -b 128 > "${filename}.tar.gz"
                 else
                     echo "Notice: pigz not found, using single-threaded gzip"
                     tar cf - "$n" | eval "$pv_cmd" | gzip -"$level" > "${filename}.tar.gz"
@@ -309,9 +310,16 @@ function compress {
                 ;;
 
             "--tar.zst")
-                # Add zstd compression option for better multithreaded compression
+                local size=$(du -sb "$n" 2>/dev/null | awk '{print $1}')
+                if [ -z "$size" ]; then
+                    local pv_cmd="pv"
+                else
+                    local pv_cmd="pv -s $size"
+                fi
+                
                 if command -v zstd >/dev/null; then
-                    tar cf - "$n" | eval "$pv_cmd" | zstd -"$level" -T"$THREADS" > "${filename}.tar.zst"
+                    # Optimized zstd with adaptive mode
+                    tar cf - "$n" | eval "$pv_cmd" | zstd -"$level" -T"$THREADS" --adapt > "${filename}.tar.zst"
                 else
                     echo "Error: zstd not installed"
                     return 1

@@ -7,7 +7,7 @@
 {
   imports = [
     ./NetworkProfiles.nix
-    ./Wireless_Regulation.nix
+    # ./Wireless_Regulation.nix
     ./Network_Kernel_Parameters.nix
   ];
 
@@ -223,18 +223,26 @@
       stateDir = "/var/lib/unbound";
       settings = {
         server = {
+          interface = [
+            # "0.0.0.0"
+            "127.0.0.1" # Listen on localhost
+            # "192.168.125.1"  # Listen on hotspot interface
+          ];
+
+          # interface-automatic = "yes";
+
           access-control = [
             "0.0.0.0/0 refuse"     # Refuse all other networks by default
 
             "10.0.0.0/8 allow"     # Another private network range
             "192.0.0.0/8 allow"    # Private network range
-            "127.0.0.0/8 allow"    # Localhost
             "172.16.0.0/12 allow"  # Another private network range
             "192.168.0.0/16 allow" # Common home/local network range
+
+            "127.0.0.0/8 allow"    # Localhost
+            "192.168.125.0/24 allow"  # Allow hotspot clients
           ];
-          interface = [
-            "127.0.0.1" # Listen on localhost
-          ];
+
 
           # Performance and caching optimization settings
           num-threads = 4;
@@ -247,7 +255,7 @@
           prefetch = "yes";
           prefetch-key = "yes";
           rrset-roundrobin = "yes";
-          
+
           # Significantly extended cache times
           cache-min-ttl = 300;        # Minimum 5 minutes (extended from 60 seconds)
           cache-max-ttl = 604800;     # 7 days maximum cache (extended from 24 hours)

@@ -4,38 +4,59 @@
   iproute2,
   nftables,
   python3Packages,
+  makeWrapper,
 }:
 
 python3Packages.buildPythonApplication rec {
-  pname = "Evillimiter";
-  version = "1.6.1";
-  pyproject = true;
+  pname = "evillimiter";
+  version = "1.7.5";
+  format = "other";
 
   src = fetchFromGitHub {
     owner = "Masrkai";
     repo = "Evillimiter";
-    # tag = "v${version}";
-    # hash = "sha256-g7OZLAzH47RrqvnEQC+ExsGxiRlVvRlihct8ltGVlOY=";
-
-    tag = "dev.04";
-    # hash = lib.fakeHash;
-    hash = "sha256-NpSGVoJ0On4UYspbEkfaOlmm6CusSo3j8OMeFk+2XJo=";
-    # hash = "sha256-uVsPxDbC3uNwDxlA4n3YPPwqmzijiPuEgUjhoauCfj0=";
+    tag = "1.7.5";
+    hash = "sha256-BEFvtHFsoI9ampG/CidpxIBLO1Md/IjIQj4L7/h8LOg=";
   };
 
-  build-system = with python3Packages; [ setuptools-scm ];
+  nativeBuildInputs = [ makeWrapper ];
 
-  dependencies = with python3Packages; [
+  propagatedBuildInputs = with python3Packages; [
     tqdm
     scapy
     netaddr
     colorama
+    netifaces
+    terminaltables
+    setuptools
+  ] ++ [
     iproute2
     nftables
-    netifaces
-    setuptools
-    terminaltables
   ];
+
+  # No build phase needed since we're not using setup.py
+  dontBuild = true;
+
+  installPhase = ''
+    runHook preInstall
+
+    # Create the target directory
+    mkdir -p $out/lib/python${python3Packages.python.pythonVersion}/site-packages/evillimiter
+    
+    # Copy the entire evillimiter directory
+    cp -r evillimiter/* $out/lib/python${python3Packages.python.pythonVersion}/site-packages/evillimiter/
+    
+    # Create bin directory and wrapper script
+    mkdir -p $out/bin
+    
+    # Create the main executable wrapper
+    makeWrapper ${python3Packages.python}/bin/python $out/bin/evillimiter \
+      --add-flags "$out/lib/python${python3Packages.python.pythonVersion}/site-packages/evillimiter/evillimiter.py" \
+      --prefix PATH : ${lib.makeBinPath [ iproute2 nftables ]} \
+      --set PYTHONPATH "$out/lib/python${python3Packages.python.pythonVersion}/site-packages:$PYTHONPATH"
+
+    runHook postInstall
+  '';
 
   # Project has no tests
   doCheck = false;
@@ -51,6 +72,7 @@ python3Packages.buildPythonApplication rec {
     homepage = "https://github.com/Masrkai/Evillimiter";
     license = licenses.mit;
     maintainers = with maintainers; [ offline ];
-    mainProgram = "Evillimiter";
+    mainProgram = "evillimiter";
+    platforms = platforms.linux;
   };
 }

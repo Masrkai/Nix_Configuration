@@ -6,36 +6,15 @@ let
 
   customPackages = {
     #? .Nix
-    jsql = pkgs.callPackage ./Programs/Packages/jsql.nix {};
     lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
-    wifi-honey = pkgs.callPackage ./Programs/Packages/wifi-honey.nix {};
-    hostapd-wpe = pkgs.callPackage ./Programs/Packages/hostapd-wpe.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
 
-    #! Bash
-    # backup = pkgs.callPackage ./Programs/custom/backup.nix {};
-    # setupcpp = pkgs.callPackage ./Programs/custom/setupcpp.nix {};
-
-    #? Python
-    # ctj = pkgs.callPackage ./Programs/custom/ctj.nix {};
-    # MD-PDF = pkgs.callPackage ./Programs/custom/MD-PDF.nix {};
-    # mac-formatter = pkgs.callPackage ./Programs/custom/mac-formatter.nix {};
-
-    evillimiter = pkgs.callPackage ./Programs/Packages/evillimiter.nix {};
-
     #>! Binary / FHSenv
-    proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
+    # proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
     grayjay-bin = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay-bin2.nix {};
-
-
-    #? GO
-    evilginx = pkgs.callPackage ./Programs/Packages/evilginx.nix {};
-
   };
-
 in
-
 {
     imports = [
       ./bash.nix
@@ -239,12 +218,11 @@ in
   # customPackages.MD-PDF
   # customPackages.backup
   # customPackages.setupcpp
-  customPackages.wifi-honey
   # customPackages.hostapd-wpe
   # customPackages.mac-formatter
   customPackages.logisim-evolution
   # customPackages.super-productivity
-  customPackages.evillimiter
+  # customPackages.evillimiter
   # customPackages.evilginx
   # customPackages.grayjay-bin
   #customPackages.airgeddon
@@ -310,6 +288,7 @@ in
 
   # koboldcpp
 
+
   #-> Monitoring
   htop
   btop
@@ -363,6 +342,14 @@ in
   unstable.qdiskinfo
   gnome-disk-utility
 
+  #-> System Utilities
+  file
+  ethtool
+  mlocate
+  busybox
+  pciutils
+
+
   #-> KDE Specific
   kdePackages.kgamma
   kdePackages.kscreen
@@ -388,27 +375,7 @@ in
     pdfarranger
     pdfmixtool
 
-  #-> Gaming
-  lutris
-  bottles
-  heroic-unwrapped
-
-  dxvk
-  # vkd3d
-  mangohud
-
-  winetricks
-  # wineWowPackages.stableFull
-
-  #Games
-  unciv
   mindustry-wayland
-
-  #System
-  mlocate
-  busybox
-  pciutils
-  translate-shell
 
   #Spell_check
   aspell
@@ -420,64 +387,6 @@ in
   man-pages
   linux-manual
   man-pages-posix
-
-#!####################
-#! Pentration-Testing:
-#!####################
-  #> Terminals
-  xterm
-
-  #> Password cracking
-  crunch
-  hashcat
-  hcxtools
-  hcxdumptool
-  zip2hashcat
-  hashcat-utils
-
-  #> Internet basics
-  iw
-  dig
-  nmap
-  getdns
-  linssid
-  tcpdump
-  ettercap
-  iproute2
-  arp-scan
-  inetutils
-  traceroute
-
-  bettercap
-  burpsuite
-
-  #> DoS
-  hping
-
-  #> Wireless
-  mdk4
-  airgorah
-  aircrack-ng
-  reaverwps-t6x
-  linux-wifi-hotspot
-
-  #> Utilities
-  tmux
-  asleap
-  lighttpd
-
-  #> Exploitation
-  # armitage
-  exploitdb
-  metasploit
-  armitage
-
-  #> SQL
-  customPackages.jsql
-  sqlmap
-
-  #> Evil Twin
-
 ];
 
   #?########################
@@ -571,26 +480,6 @@ in
 
   # #---> Colord
   # services.colord.enable = true;
-
-
-
-  #> Steam
-  programs.steam = {
-    enable = true;
-    extest.enable = false;
-      extraCompatPackages = with pkgs; [
-        customPackages.proton-ge-bin
-      ];
-    gamescopeSession.enable = true;
-
-    remotePlay.openFirewall = false; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = false; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = false; # Open ports in the firewall for Steam Local Network Game Transfers
-  };
-
-  programs.gamescope.enable = true;
-
-  programs.gamemode.enable = true;
 
 
   programs.obs-studio = {

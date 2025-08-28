@@ -29,6 +29,9 @@ in
         uv
         pip
 
+        #-> Networks
+        netutils
+
         pylint
         # pylance
 
