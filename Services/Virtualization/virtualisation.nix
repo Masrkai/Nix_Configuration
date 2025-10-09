@@ -1,22 +1,29 @@
 { lib, pkgs, config, ... }:
+
+let
+  virtualizationGroups = [ "libvirt" "libvirtd" "kvm" "ubridge" ];
+in
+
 {
 
-  environment.systemPackages = with pkgs; [
-    #> Virtualization
-    qemu-utils
-    virt-viewer
-    virt-manager
-    spice
-    spice-protocol
-    virglrenderer  # Required for 3D acceleration
-  ];
+    environment.systemPackages = with pkgs; [
+      #> Virtualization
+      qemu-utils
+      virt-viewer
+      virt-manager
+      spice
+      spice-protocol
+      virglrenderer  # Required for 3D acceleration
+    ];
 
+    users.groups =
+      lib.mkIf config.virtualisation.libvirtd.enable
+        (builtins.listToAttrs (map (g: {
+          name = g;
+          value.members = [ "masrkai" ];
+        }) virtualizationGroups));
 
-  users.groups.libvirt = {
-  members = [ "masrkai" ];
-  };
-
-   #--> Qemu KVM & VirtualBox
+    #--> Qemu KVM & VirtualBox
     virtualisation = lib.mkForce {
     spiceUSBRedirection.enable = true;
       libvirtd = {
@@ -60,18 +67,6 @@
     services.spice-vdagentd.enable = true;
     programs.virt-manager.enable   = true;
     programs.dconf.enable = true;
-
-    # environment.sessionVariables = {
-    #   # Required for NVIDIA GL context sharing
-    #   # OR explicitly reference the NVIDIA package:
-    #   LIBGL_DRIVERS_PATH = "${config.hardware.nvidia.package}/lib/dri";
-    #   __EGL_VENDOR_LIBRARY_DIRS = "${pkgs.mesa.drivers}/share/glvnd/egl_vendor.d";
-    # };
-
-    # # Render node permissions
-    # services.udev.extraRules = ''
-    #   KERNEL=="renderD128", GROUP="libvirt", MODE="0660"
-    # '';
 
 
 }

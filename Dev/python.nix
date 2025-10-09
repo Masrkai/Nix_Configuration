@@ -18,6 +18,9 @@ in
     ffmpeg-full
     unstable.ruff
 
+    honcho
+    chromedriver
+    geckodriver
     (lib.lowPrio (python312.withPackages (ps: with ps; [
 
         unsloth
@@ -123,6 +126,7 @@ in
         netifaces
         markdown2
         matplotlib
+        matplotlib-inline
         weasyprint
         markdown-it-py
 
@@ -131,11 +135,24 @@ in
         transformers
 
 
+        #> TDD & BDD
+        pytest
+        pytest-cov
+        pytest-html
+        pytest-sugar
+          #? Web Testing
+          selenium
+          chromedriver
+
+
+        netifaces
+
         #-> torch
-        torch
         # triton
-        # torchaudio
-        # torchvision
+        torch
+        torchaudio
+        torchcrepe
+        torchvision
 
         #-> Open telemetry
         opentelemetry-sdk
@@ -185,10 +202,52 @@ in
           soundfile
           # realtime-stt
           # arabic-reshaper
-
-
           llama-cpp-python
 
+
+          # Pinned dependencies that cause breakage
+          werkzeug
+          sqlalchemy
+
+          # Runtime dependencies
+          flask
+          flask-sqlalchemy
+          psycopg2-binary
+
+          # Runtime tools
+          gunicorn
+
+          # Code quality
+          flake8
+          black
+
+          # Testing dependencies
+          # nose2
+          # nose2pytest
+          # pinocchio
+          factory-boy
+          coverage
+          httpie
+
+          # Behavior Driven Development
+          behave
+          # compare
+          requests
+
+          # FFmpeg stuff
+          av
+          ffmpy
+          ffmpeg-python
+
+          #> made by facebook
+          faiss
+          # fairseq2
+
+          librosa
+          pyworld
+          parselmouth
+
+          # mlxtend
 
         ]
       )

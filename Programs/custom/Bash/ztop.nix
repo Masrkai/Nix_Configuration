@@ -1,9 +1,9 @@
 { pkgs }:
 
 {
-  backup = pkgs.writeScriptBin "backup" ''
-    ${builtins.readFile ./backup.sh}
-  '';
+  # backup = pkgs.writeScriptBin "backup" ''
+  #   ${builtins.readFile ./backup.sh}
+  # '';
 
   extract = pkgs.writeScriptBin "extract" ''
     ${builtins.readFile ./extract.sh}

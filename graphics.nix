@@ -10,8 +10,7 @@
     '';
   };
 
-  boot = lib.mkMerge [
-    {
+  boot ={
       initrd.kernelModules = [
       "nvidia" "nvidia_drm" "nvidia_uvm" "nvidia_modeset"
       ];
@@ -38,8 +37,7 @@
       "nvidiafb"
       "nvidia_wmi_ec_backlight"
       ];
-    }
-  ];
+    };
 
   #! Enable OpenGL
   hardware.graphics = {
@@ -93,9 +91,10 @@
   };
 
   # Add CUDA toolkit to system packages
-  environment = lib.mkMerge [
-
-    {
+  environment ={
+      variables = {
+        __NV_DISABLE_EXPLICIT_SYNC="1";
+      };
       systemPackages = with pkgs; [
 
           #? CUDA
@@ -120,16 +119,11 @@
           libva-utils  # VA-API diagnostics
           vulkan-tools  # Vulkan utilities
 
-          #? Gaming
-          mangohud
-
           #? videoAcceleration
           libva-vdpau-driver
           vaapiVdpau
           nv-codec-headers-12
       ];
-
-    }
-  ];
+    };
 
 }

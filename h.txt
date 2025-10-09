@@ -1,3 +1,0 @@
->>>>>>Hi Masrkai! ~
-18:31:55[masrkai_NixOS]$ cat /sys/class/dmi/id/product_name
-ASUS TUF Gaming A15 FA507NVR_FA507NVR

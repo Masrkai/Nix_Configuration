@@ -8,7 +8,7 @@ in
 {
 
   environment.systemPackages = with pkgs; [
-    Bashpkgs.backup
+    # Bashpkgs.backup
     Bashpkgs.extract
     Bashpkgs.setupcpp
 

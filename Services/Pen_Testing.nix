@@ -29,6 +29,12 @@ in
         #> Terminals
         xterm
 
+        #> Excution
+        ghidra
+        strace
+        ltrace
+
+
         #> Password cracking
         crunch
         hashcat
@@ -41,11 +47,12 @@ in
         iw
         dig
         nmap
+        rustscan
         getdns
         linssid
         tcpdump
         ettercap
-        iproute2
+        (lowPrio iproute2)
         arp-scan
         inetutils
         traceroute

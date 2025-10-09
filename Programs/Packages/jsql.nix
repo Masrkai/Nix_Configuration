@@ -10,11 +10,12 @@
   makeBinaryWrapper,
 
   copyDesktopItems,
+  nix-update-script,
 }:
 
 let
   pname = "jsql-injection";
-  version = "0.111"; # ! Latest = v0.111
+  version = "0.112";
 
   icon = fetchurl {
     url = "https://www.kali.org/tools/jsql/images/jsql-logo.svg";
@@ -29,7 +30,7 @@ stdenvNoCC.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/ron190/jsql-injection/releases/download/v${version}/jsql-injection-v${version}.jar";
-    hash = "sha256-TQWhlD1xbW5Xxdy5yf6P6aAMHkodM4qEfP9CGRs73MA=";
+    hash = "sha256-7zBcgEOkncVICnkzeX/nXeCVL8pADE3+6ZittZI22K8=";
   };
 
   nativeBuildInputs = [
@@ -38,6 +39,7 @@ stdenvNoCC.mkDerivation {
   ];
 
   dontUnpack = true;
+  passthru.updateScript = nix-update-script { };
 
   desktopItems = [
     (makeDesktopItem {

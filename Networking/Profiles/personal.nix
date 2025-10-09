@@ -14,7 +14,7 @@ lib.mkMerge [
                 wifi = {
                   ssid = "Repel";
                   mode = "infrastructure";
-                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                  #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                 };
                 wifi-security = {
                   key-mgmt = "wpa-psk";
@@ -43,7 +43,7 @@ lib.mkMerge [
                 wifi = {
                   ssid = "AfafAfaf";
                   mode = "infrastructure";
-                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                  #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                 };
                 wifi-security = {
                   key-mgmt = "wpa-psk";
@@ -71,7 +71,7 @@ lib.mkMerge [
                 wifi = {
                   ssid = "Meemoo";
                   mode = "infrastructure";
-                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                  #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                 };
                 wifi-security = {
                   key-mgmt = "wpa-psk";
@@ -99,7 +99,7 @@ lib.mkMerge [
                 wifi = {
                   ssid = "ALY2";
                   mode = "infrastructure";
-                  mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                  #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                   # mac-address = "00:11:22:33:44:55";   # Set your desired MAC address here
                 };
                 wifi-security = {
@@ -130,7 +130,7 @@ lib.mkMerge [
                   ssid = "Hello!";
                   mode = "infrastructure";
                   bssid = "46:FB:5A:D1:93:49";
-                  mac-address-randomization = 0;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                  #mac-address-randomization = 0;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                   cloned-mac-address= "\${Hello_device_mac}";
                 };
                 wifi-security = {
@@ -162,7 +162,7 @@ lib.mkMerge [
                   ssid = "M1";
                   mode = "infrastructure";
                   bssid = "D8:0D:17:AA:E4:1D";
-                  mac-address-randomization = "never";  #? or "default" or "never"
+                  #mac-address-randomization = "never";  #? or "default" or "never"
                   cloned-mac-address= "\${M1_device_mac}";
                 };
                 wifi-security = {

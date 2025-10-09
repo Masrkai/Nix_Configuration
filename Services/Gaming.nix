@@ -1,10 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 let
-  unstable = import <unstable> {config.allowUnfree = true;};
-  secrets = import ./Sec/secrets.nix;
   customPackages = {
-
     #>! Binary / FHSenv
     proton-ge-bin = pkgs.callPackage ../Programs/Packages/proton-ge-bin.nix {};
   };
@@ -12,7 +9,6 @@ in
 {
 
  environment.systemPackages = with pkgs; [
-  #-> Gaming
   lutris
   bottles
   heroic-unwrapped

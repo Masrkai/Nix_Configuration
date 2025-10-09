@@ -1,0 +1,3 @@
+In this Section I am keeping the Nix shells I created for certain projects to operate them without the limitations of them with nixos
+
+it's not because Nix/NixOS is limiting but because it's a superpower and i believe that this is how software engineering should be done and these languages having these limitations to blame for and i am not going to change my OS or believes for a programming language.

@@ -7,6 +7,12 @@
   imports =
     [
       (modulesPath + "/installer/scan/not-detected.nix")
+
+      ./ID/ID.nix
+      # Auto-import the generated hardware config (will be created after first boot)
+      (if builtins.pathExists /etc/nixos/Sec/hardware-detected.nix
+      then /etc/nixos/Sec/hardware-detected.nix
+      else {})
     ];
 
   boot = {
@@ -109,7 +115,7 @@
       "nowatchdog"
       "intel_pstate=disable"
 
-      # "preempt=full"           # Better for desktop/low-latency in 
+      # "preempt=full"           # Better for desktop/low-latency in
       # "mce=ignore_ce"          # Ignore non-fatal Correctable Errors (reduces log noise)
       "scsi_mod.use_blk_mq=1"  # Use multi-queue for faster I/O
 
@@ -165,20 +171,45 @@
   };
 
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/df148324-a3b5-4dd3-a1f3-621da1a9db8f";
+# Need an if statment that using "Mine" in case config.hardware.isAsusTuf = true;
+# and "Maryam's" in case config.hardware.isDellG15 = True;
+fileSystems =
+  if config.hardware.isAsusTuf then {
+    # Mine
+    "/" = {
+      device = "/dev/disk/by-uuid/df148324-a3b5-4dd3-a1f3-621da1a9db8f";
       fsType = "ext4";
     };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/3D8A-0E92";
+    "/boot" = {
+      device = "/dev/disk/by-uuid/3D8A-0E92";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
+  }
+  else if config.hardware.isDellG15 then {
+    # Maryam's
+    "/" = {
+      device = "/dev/disk/by-uuid/4da72334-f27f-40b5-923b-02507a8f741c";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/2BE1-6550";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+  }
+  else {
+    # Default/fallback configuration if neither condition is true
+    # You might want to throw an error or provide a default config here
+    throw = "No valid hardware configuration found";
+  };
+
+
 
 
   services.smartd = {
     enable = true;
+    autodetect = true;
     notifications = {
       # Enable email notifications (requires mail server setup)
       mail.enable = false;
@@ -207,13 +238,18 @@
 
   # Add zram-based swap since you have no swap configured
   zramSwap = {
-    enable = true;
+    enable = false;
     algorithm = "zstd";
     priority = 10;
     memoryPercent = 50;  # Use up to 10% of RAM for zram swap
   };
 
   hardware.cpu = {
+
+    # intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+
+
     amd = {
       updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
@@ -235,15 +271,7 @@
   # ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
   # '';
 
-  #--> Better scheduling for better CPU cycles & audio performance
-  services.system76-scheduler = {
-    enable = true;
-  };
 
-  services.asusd= {
-    enable = true;
-    enableUserService = true;
-  };
 
   hardware.bluetooth = {
   enable = true; # enables support for Bluetooth

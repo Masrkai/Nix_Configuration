@@ -1,17 +1,22 @@
 {
   imports = [
     ./Ai.nix
-    ./GNS.nix
     ./Gaming.nix
     ./Jackett.nix
     ./PipeWire.nix
     ./Syncthing.nix
     ./Pen_Testing.nix
-    ./virtualisation.nix
-
-
-    ../ID.nix
-
     ./PowerManagment.nix
+
+    #Virtualization
+    ./Virtualization/GNS.nix
+    ./Virtualization/virtualisation.nix
+
+
+    ./App_configs/apply_configs.nix
+
+
+    ../ID/ID.nix
+
   ];
 }

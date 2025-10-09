@@ -9,6 +9,7 @@ let
     lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
+    CiscoPacketTracer8 = pkgs.callPackage ./Programs/Packages/CiscoPacketTracer8.nix {};
 
     #>! Binary / FHSenv
     # proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
@@ -17,12 +18,12 @@ let
 in
 {
     imports = [
-      ./bash.nix
       ./desktop.nix
       ./systemd.nix
       ./graphics.nix
       ./security.nix
       ./Dev/ztop.nix
+      ./Terminal/bash.nix
       # ./virtualisation.nix
       ./dev-shells/collector.nix
       ./Networking/Networking.nix
@@ -41,15 +42,21 @@ in
   i18n={
     #? Select internationalisation properties.
     defaultLocale = "en_US.UTF-8";
-      supportedLocales = [
+
+    extraLocales =  [
       "C.UTF-8/UTF-8"
       "en_US.UTF-8/UTF-8"
       "ru_RU.UTF-8/UTF-8"
       "ar_EG.UTF-8/UTF-8"
       "de_DE.UTF-8/UTF-8"
-      ];
+    ];
+
+    supportedLocales = [
+     "all"
+    ];
 
     extraLocaleSettings = {
+    LC_ALL = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
     LC_NAME = "en_US.UTF-8";
     LC_PAPER = "en_US.UTF-8";
@@ -71,7 +78,7 @@ in
                         "qbittorrent" "jackett"
                         "video" "audio" "power"
                         "ollama"
-                        "libvirtd" "kvm" "ubridge"  #* Virtualization
+                        # "libvirtd" "kvm" "ubridge"  #* Virtualization
 
                         "tty" "dialout"             #* Allow access to serial device (for Arduino dev)
                       ];
@@ -227,8 +234,14 @@ in
   # customPackages.grayjay-bin
   #customPackages.airgeddon
   #customPackages.custom-httrack
-
   unstable.grayjay
+  # ciscoPacketTracer8
+
+
+
+  kitty
+  ghostty
+  alacritty
 
   searxng
   nix-prefetch-git
@@ -242,7 +255,6 @@ in
   less
   most
   sass
-  ghostty
 
 
   unzip
@@ -362,9 +374,10 @@ in
 
   #-> Productivity
   gimp
-  kooha
+  # kooha
   affine
   # blender
+  # davinci-resolve
   thunderbird-bin
   libreoffice-qt6-still
     hunspell
@@ -387,6 +400,46 @@ in
   man-pages
   linux-manual
   man-pages-posix
+
+  # (customPackages.CiscoPacketTracer8.override { packetTracerSource = /etc/nixos/Programs/Packages/Packet_Tracer822_amd64_signed.deb; })
+
+  # (pkgs.ciscoPacketTracer8.overrideAttrs (old: {
+  #   # override the installPhase
+  #   installPhase = ''
+  #     runHook preInstall
+
+  #     mkdir -p $out/bin
+
+  #     makeWrapper "$out/opt/pt/bin/PacketTracer" "$out/bin/packettracer8" \
+  #       "''${qtWrapperArgs[@]}" \
+  #       --prefix LD_LIBRARY_PATH : "$out/opt/pt/bin" \
+  #       --set QT_QPA_PLATFORM_PLUGIN_PATH "$out/opt/pt/plugins/platforms" \
+  #       --prefix QT_PLUGIN_PATH : "$out/opt/pt/plugins" \
+  #       --prefix XDG_DATA_DIRS : "$out/share"
+
+  #     install -D $out/opt/pt/art/app.png $out/share/icons/hicolor/128x128/apps/ciscoPacketTracer8.png
+
+  #     rm -f $out/opt/pt/bin/libQt5*
+
+  #     runHook postInstall
+  #   '';
+
+  #   # add extra dependencies if not already there
+  #   buildInputs = (old.buildInputs or []) ++ [
+  #     pkgs.xorg.libX11
+  #     pkgs.xorg.libXext
+  #     pkgs.xorg.libXrender
+  #     pkgs.xorg.libXtst
+  #     pkgs.xorg.libXi
+  #     pkgs.xorg.libSM
+  #     pkgs.xorg.libICE
+  #   ];
+
+  #   # optionally override source if desired
+  #   packetTracerSource = /etc/nixos/Programs/Packages/Packet_Tracer822_amd64_signed.deb;
+  # }))
+
+
 ];
 
   #?########################
@@ -408,32 +461,6 @@ in
       nix-direnv.enable = true;
     };
 
-  #--> Git // LFS
-    programs.git = {
-      enable = true;
-      lfs = {
-        enable = true;
-        package = pkgs.git-lfs;
-      };
-
-      config = {
-        # Set your global git configuration here
-        user = {
-          name = "Masrkai";
-          email = secrets.Email;
-        };
-        # user.name = "Masrkai";
-        # user.email = secrets.Email;
-        # Add any other git config options you want
-        # init.defaultBranch = "main";
-        # You can add more git configurations here
-        init.defaultBranch = "main";
-        safe.directory = "/etc/nixos";
-        # safe.directory = "/home/yourusername/.dotfiles";
-      };
-
-    };
-
 
   #--> Wireshark
     programs.wireshark= {
@@ -442,7 +469,7 @@ in
     };
 
 
-  #--> KDE connect Specific
+  #--> KDE connect
     programs.kdeconnect = lib.mkForce {
       enable = true;
       package =  pkgs.kdePackages.kdeconnect-kde;

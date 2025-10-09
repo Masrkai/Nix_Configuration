@@ -1,5 +1,9 @@
 { config, pkgs, lib, ... }:
 
+let
+   secrets = import ./../../Sec/secrets.nix;
+in
+
 {
 
    services.gns3-server = {
@@ -7,9 +11,12 @@
     package = pkgs.gns3-server;
 
       auth = {
-        enable = true;
+        enable = false;
         user = "masrkai";
-        passwordFile = "/var/lib/secrets/gns3_password";
+          passwordFile = pkgs.writeTextFile {
+          name = "gns3_password";
+          text = secrets.gns3_password;
+          };
       };
 
       ssl = {
@@ -52,6 +59,25 @@
       };
    };
 
-  environment.systemPackages = with pkgs; [ gns3-gui];
+  systemd.services.gns3-server.serviceConfig = lib.mkForce {
+
+    AmbientCapabilities = [ "CAP_NET_ADMIN" "CAP_NET_RAW" ];
+    CapabilityBoundingSet = [ "CAP_NET_ADMIN" "CAP_NET_RAW" ];
+    PrivateUsers = false;
+
+    ProtectHome = "no";
+    ProtectSystem = "no";
+  };
+
+  environment.systemPackages = with pkgs; lib.optionals config.services.gns3-server.enable [
+     gns3-gui
+        #> needs:
+        gns3-server
+
+        #> Additionally:
+        vpcs
+        ubridge
+        dynamips
+      ];
 
 }
