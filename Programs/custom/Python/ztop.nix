@@ -1,35 +1,19 @@
 { pkgs }:
 
-{
-  ctj = let
-    pythonWithPackages = pkgs.python312.withPackages (ps: with ps; [
-      pyvips
-    ]);
-  in
-  pkgs.writeScriptBin "ctj" ''
-    #!${pythonWithPackages}/bin/python
-    ${builtins.readFile ./ctj.py}
-  '';
+let
+  mkPythonScript = { name, deps ? [] }:
+    let
+      pythonEnv = pkgs.python312.withPackages (ps: with ps; deps);
+    in
+    pkgs.writeScriptBin name ''
+      #!${pythonEnv}/bin/python
+      ${builtins.readFile ./${name}.py}
+    '';
 
-  mac-formatter = let
-    pythonWithPackages = pkgs.python312.withPackages (ps: with ps; [
-      # Add your dependencies here
-    ]);
-  in
-  pkgs.writeScriptBin "mac-formatter" ''
-    #!${pythonWithPackages}/bin/python
-    ${builtins.readFile ./mac-formatter.py}
-  '';
-
-  MD-PDF = let
-    pythonWithPackages = pkgs.python312.withPackages (ps: with ps; [
-      fire
-      markdown2
-      weasyprint
-    ]);
-  in
-  pkgs.writeScriptBin "MD-PDF" ''
-    #!${pythonWithPackages}/bin/python
-    ${builtins.readFile ./MD-PDF.py}
-  '';
+in {
+  ctj = mkPythonScript { name = "ctj"; deps = [ pkgs.python312Packages.pyvips ]; };
+  mac-formatter = mkPythonScript { name = "mac-formatter"; };
+  MD-PDF = mkPythonScript { name = "MD-PDF";
+    deps = with pkgs.python312Packages; [ fire markdown2 weasyprint ];
+  };
 }

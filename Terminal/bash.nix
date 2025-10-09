@@ -6,9 +6,13 @@ let
   nixos_specific  = builtins.readFile ./Functions/nixos_specific.sh;
 
   # Import shell script functions
+  extract = builtins.readFile ./Functions/extract.sh;
   compress = builtins.readFile ./Functions/compress.sh;
-  convert_ppts_to_pdf = builtins.readFile ./Functions/convert_ppts_to_pdf.sh;
+
+
   convert_to_mp4 = builtins.readFile ./Functions/convert_to_mp4.sh;
+  convert_ppts_to_pdf = builtins.readFile ./Functions/convert_ppts_to_pdf.sh;
+
   journalctl = builtins.readFile ./Functions/journalctl.sh;
   sector_copy = builtins.readFile ./Functions/sector_copy.sh;
   yt_downloader = builtins.readFile ./Functions/yt_downlaoder.sh;
@@ -50,6 +54,7 @@ in
 
       # Import shell script functions
       ${compress}
+      ${extract}
       ${convert_ppts_to_pdf}
       ${convert_to_mp4}
       ${journalctl}
