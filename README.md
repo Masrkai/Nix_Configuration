@@ -2,47 +2,72 @@
 
 ![NixOS](https://img.shields.io/badge/-NixOS-5277C3?style=flat-square&logo=nixos&logoColor=black) ![Nix](https://img.shields.io/badge/-Nix-7EBAFF?style=flat-square&logo=nixos&logoColor=black)
 
-This is a very specialized configuration, I really put my heart into over 2 years to have redundancy for my system because this is the whole point of NixOS in the first place
+This is a **highly specialized NixOS configuration**, meticulously crafted over **two years** to ensure redundancy, reliability, and security. NixOS’s declarative nature allows for reproducible and resilient system setups, and this configuration reflects my journey in leveraging those strengths.
 
-- I have been learning Nix since 2023 until the last update of this configuration, I am no expert like some others maybe are so take my choices with a grain of salt
+> **Note:** I’ve been learning Nix since 2023, and while I’m passionate about this setup, I’m not an expert. Use this configuration as inspiration, but always validate choices for your own needs.
+> **Last reviewed:** 10/10/2025 (DD/MM/YYYY)
 
-- Reviewed README on 06/08/2025 in DD/MM/YYYY
+---
 
-## Programming languages support:
-  Primarily I use VScode, so In configuration I added support for:
-  - C++
-  - Rust
-  - python
-  - SQL / MySQL server
-  - jupyter notebooks / server
+## 🌐 Networking
+The networking stack is designed for **security, privacy, and reliability**:
 
-  with development shells for:
-  - Python
-  - JavaScript
+- **Network Management:** Uses `NetworkManager` with `wpa_supplicant` as the backend for wireless networks.
+- **DNS:**
+  - **DNSSEC** and **DNS-over-TLS** via `Stubby`.
+  - **Caching** with `Unbound` for faster and more efficient queries.
+- **Time Synchronization:** Uses `chrony` with the **NTS protocol** for secure time synchronization.
+- **Firewall:** A robust firewall configuration with **kernel hardening** and **security-focused parameters**.
 
-## AI workflow
-here you will find almost all AI libraries you may need.
-from sci-kit learn (sklearn) to pytorch (using torch-bin), transformers, langchain, smolagents, flash-attn, streamlit, gradio and more !
+### Key Files:
+| Configuration Area | File Link |
+|--------------------|-----------|
+| Networking Overview | [/Networking](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking) |
+| Firewall Rules | [Firewall.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/Firewall.nix) |
+| Kernel Hardening | [Network_Kernel_Parameters.nix](https://github.com/Masrkai/Nix_Configuration/Networking/hardening/Network_Kernel_Parameters.nix) |
+| NetworkManager Hardening | [NetworkManager_hardening.nix](https://github.com/Masrkai/Nix_Configuration/Networking/hardening/NetworkManager_hardening.nix) |
+| DNS Caching | [cache.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/DNS/cache.nix) |
+| DNS Resolver | [resolver.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/DNS/resolver.nix) |
 
-it's mostly python libraries so check the [/Langs/python.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Langs/python.nix "python_specifci_configuration") file
+---
 
-## Configuration Schematic
-1. Programs and my own hand made things are in [/Programs](https://github.com/Masrkai/Nix_Configuration/tree/main/Programs "Programs") which currently include:
+## 💻 Programming Language Support
+I primarily use **VSCode**, and this configuration includes support for:
 
-Using python:
-* [CTJ](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/ctj.py "CTJ") "Current *images* To JPEG"
-* [MD-PDF](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/MD-PDF.py "MD-PDF.py") "Converts markdown files to PDF"
+- **Languages:** C++, Rust, Python, SQL (MySQL & PostgreSQL servers included).
+- **Tools:** Jupyter Notebooks/Server.
+- **Development Shells:** C++, Python, JavaScript.
 
-Using bash:
-* [Backup](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/backup.sh "backup.sh") "*What alllows me to publish my configuration on Github*"
-* [Setupcpp](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/setupcpp.sh "setupcpp.sh") "Sets up a C++ Project"
+---
 
-2. And there are some handy security configuration in [security.nix](https://github.com/Masrkai/Nix_Configuration/blob/main/security.nix "security.nix") which currently include:
+## 🤖 AI Workflow
+This configuration includes **almost all AI libraries** you might need:
 
-* Kernel parameters
-* Banned file formats
-* Disabling of CUPS service
+- **Python Libraries:** `scikit-learn`, `PyTorch` (with `torch-bin`), `transformers`, `langchain`, `smolagents`, `flash-attn`, `streamlit`, `gradio`, and more.
+- **Configuration File:** [Dev/python.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Dev/python.nix)
 
-## I Have More!
+---
 
-_It's too long to document but i am going to soon_
+## 📂 Configuration Schematic
+
+### 1. Custom Programs
+I’ve developed several **custom tools** to streamline workflows:
+
+| Tool | Description | File Link |
+|------|-------------|-----------|
+| **CTJ** | Converts current images to JPEG | [ctj.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/ctj.py) |
+| **MD-PDF** | Converts Markdown files to PDF | [MD-PDF.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/MD-PDF.py) |
+| **mac-formatter** | Formats MAC addresses | [mac-formatter.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/mac-formatter.py) |
+
+### 2. Security Configuration
+The [security.nix](https://github.com/Masrkai/Nix_Configuration/blob/main/security.nix) file includes:
+- Kernel parameter hardening.
+- Banned file formats.
+- Disabling of the `CUPS` service.
+
+---
+
+## 🔜 More to Come!
+This configuration is **constantly evolving**. I’ll be documenting additional features and improvements soon.
+
+---
