@@ -45,7 +45,7 @@
     {
       variables = {
         GSK_RENDERER="nvidia";
-        QT_QPA_PLATFORM="wayland";
+        QT_QPA_PLATFORM="wayland;xcb"; # necessary for some proprietary applications that do not use the system's implementation of Qt. QT_QPA_PLATFORM="wayland;xcb" allows Qt to use the xcb (X11) plugin instead if Wayland is not available.
         QT_SSL_FORCE_TLSV1_3 = "1";  # Enforce TLS 1.3 for Qt applications
         QT_SSL_FORCE_TLSV1_2 = "0";  # Disable TLS 1.2 (set to "1" if compatibility is required)
       };
@@ -59,7 +59,6 @@
         PLASMA_USE_QT_SCALING=1;
         PLASMA_NOTIFICATION_DEBUG = "0";
 
-        #QT_QPA_PLATFORM = "wayland";
         GDK_BACKEND = "wayland";
         WLR_NO_HARDWARE_CURSORS = "1";
       };

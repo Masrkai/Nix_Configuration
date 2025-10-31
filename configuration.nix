@@ -9,7 +9,6 @@ let
     lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
-    CiscoPacketTracer8 = pkgs.callPackage ./Programs/Packages/CiscoPacketTracer8.nix {};
 
     #>! Binary / FHSenv
     # proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
@@ -135,6 +134,7 @@ in
 
         # Corporate fonts
         vista-fonts
+        corefonts
 
         noto-fonts
         noto-fonts-emoji
@@ -207,8 +207,10 @@ in
       # allowBroken = true;
 
       permittedInsecurePackages = [
-        "electron-27.3.11"
+        # "electron-27.3.11"
         "qbittorrent-4.6.4"
+        "electron-35.7.5"
+
       ];
     };
   };
@@ -235,13 +237,18 @@ in
   #customPackages.airgeddon
   #customPackages.custom-httrack
   unstable.grayjay
-  # ciscoPacketTracer8
+
+
+
+
+  # typst
 
 
 
   kitty
-  ghostty
-  alacritty
+  # ghostty
+  # unstable.wezterm
+  # alacritty
 
   searxng
   nix-prefetch-git
@@ -255,6 +262,9 @@ in
   less
   most
   sass
+
+
+  # pure-ftpd
 
 
   unzip
@@ -274,8 +284,6 @@ in
   scrcpy
   android-tools
 
-  nodePackages.katex
-
   #-> MicroChips
   esptool
   usbutils
@@ -285,7 +293,9 @@ in
 
   #-->UML
   mermerd
-  texliveMedium
+
+  (texliveMedium.withPackages (ps: with ps; [ fontspec ]))
+
 
   #-> Benshmarking
   furmark
@@ -380,6 +390,9 @@ in
   # davinci-resolve
   thunderbird-bin
   libreoffice-qt6-still
+
+
+
     hunspell
     hunspellDicts.en_US
   # onlyoffice-desktopeditors
@@ -401,45 +414,6 @@ in
   linux-manual
   man-pages-posix
 
-  # (customPackages.CiscoPacketTracer8.override { packetTracerSource = /etc/nixos/Programs/Packages/Packet_Tracer822_amd64_signed.deb; })
-
-  # (pkgs.ciscoPacketTracer8.overrideAttrs (old: {
-  #   # override the installPhase
-  #   installPhase = ''
-  #     runHook preInstall
-
-  #     mkdir -p $out/bin
-
-  #     makeWrapper "$out/opt/pt/bin/PacketTracer" "$out/bin/packettracer8" \
-  #       "''${qtWrapperArgs[@]}" \
-  #       --prefix LD_LIBRARY_PATH : "$out/opt/pt/bin" \
-  #       --set QT_QPA_PLATFORM_PLUGIN_PATH "$out/opt/pt/plugins/platforms" \
-  #       --prefix QT_PLUGIN_PATH : "$out/opt/pt/plugins" \
-  #       --prefix XDG_DATA_DIRS : "$out/share"
-
-  #     install -D $out/opt/pt/art/app.png $out/share/icons/hicolor/128x128/apps/ciscoPacketTracer8.png
-
-  #     rm -f $out/opt/pt/bin/libQt5*
-
-  #     runHook postInstall
-  #   '';
-
-  #   # add extra dependencies if not already there
-  #   buildInputs = (old.buildInputs or []) ++ [
-  #     pkgs.xorg.libX11
-  #     pkgs.xorg.libXext
-  #     pkgs.xorg.libXrender
-  #     pkgs.xorg.libXtst
-  #     pkgs.xorg.libXi
-  #     pkgs.xorg.libSM
-  #     pkgs.xorg.libICE
-  #   ];
-
-  #   # optionally override source if desired
-  #   packetTracerSource = /etc/nixos/Programs/Packages/Packet_Tracer822_amd64_signed.deb;
-  # }))
-
-
 ];
 
   #?########################
@@ -453,21 +427,6 @@ in
   enable = true;
   binfmt = true;
   };
-
-  #--> direnv
-    programs.direnv = {
-      enable = true;
-      loadInNixShell = true;
-      nix-direnv.enable = true;
-    };
-
-
-  #--> Wireshark
-    programs.wireshark= {
-      enable = true;
-      package = pkgs.wireshark;
-    };
-
 
   #--> KDE connect
     programs.kdeconnect = lib.mkForce {

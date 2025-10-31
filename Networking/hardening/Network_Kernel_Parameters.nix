@@ -83,9 +83,9 @@
     # CONSIDERATION: Disabling IPv6 entirely may cause issues with some applications
     # that expect IPv6 to be available. Consider if this is necessary for your use case
     {
-      "net.ipv6.conf.lo.disable_ipv6" = lib.mkForce 1;                  #? Disable IPv6 on loopback
-      "net.ipv6.conf.all.disable_ipv6" = lib.mkForce 1;                 #? Disable IPv6 on all interfaces
-      "net.ipv6.conf.default.disable_ipv6" = lib.mkForce 1;             #? Disable IPv6 on future interfaces
+      "net.ipv6.conf.lo.disable_ipv6" = lib.mkForce 0;                  #? Disable IPv6 on loopback
+      "net.ipv6.conf.all.disable_ipv6" = lib.mkForce 0;                 #? Disable IPv6 on all interfaces
+      "net.ipv6.conf.default.disable_ipv6" = lib.mkForce 0;             #? Disable IPv6 on future interfaces
     }
 
     # ============================================================================
@@ -134,7 +134,8 @@
     # ============================================================================
     # Reverse path filtering helps prevent IP spoofing attacks
     {
-      "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;                    #? Enable strict reverse path filtering (mode 1) - prevents IP spoofing
+      # "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;                  #? Enable strict reverse path filtering (mode 1) - prevents IP spoofing
+      "net.ipv4.conf.all.rp_filter" = lib.mkForce 2;  # Loose mode      #? Enable strict reverse path filtering (mode 1) - prevents IP spoofing
       "net.ipv4.conf.default.rp_filter" = lib.mkForce 1;                #? Apply to new interfaces by default
     }
 
@@ -145,7 +146,7 @@
     # RECOMMENDATION: Consider removing this unless you have specific security requirements
     # Path MTU Discovery relies on ICMP and disabling it can cause connectivity issues
     {
-      "net.ipv4.icmp_echo_ignore_all" = lib.mkForce 1;                  #? Ignore all ICMP echo requests (prevents ping) - may break PMTU discovery!
+      "net.ipv4.icmp_echo_ignore_all" = lib.mkForce 0;                  #! Ignore all ICMP echo requests (prevents ping) - may break PMTU or even DHCP discovery!
     }
 
     # ============================================================================

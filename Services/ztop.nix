@@ -10,6 +10,7 @@
 
     #Virtualization
     ./Virtualization/GNS.nix
+    ./Virtualization/simulation.nix
     ./Virtualization/virtualisation.nix
 
 

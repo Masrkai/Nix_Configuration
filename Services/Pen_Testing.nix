@@ -8,10 +8,6 @@ let
     #? Python
     evillimiter = pkgs.callPackage ../Programs/Packages/evillimiter.nix {};
 
-    #? GO
-    evilginx    = pkgs.callPackage ./Programs/Packages/evilginx.nix {};
-
-
     #! Unknown (Need Looking)
     wifi-honey  = pkgs.callPackage ../Programs/Packages/wifi-honey.nix {};
     hostapd-wpe = pkgs.callPackage ../Programs/Packages/hostapd-wpe.nix {};
@@ -19,6 +15,13 @@ let
   };
 in
 {
+
+
+    #--> Wireshark
+    programs.wireshark= {
+      enable = true;
+      package = pkgs.wireshark;
+    };
 
     environment.systemPackages = with pkgs;
     [

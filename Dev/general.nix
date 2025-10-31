@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
 
@@ -7,28 +7,56 @@
   ];
 
   general-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
-      # {
-      #   # https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.aws-toolkit-vscode
-      #   name = "aws-toolkit-vscode";
-      #   publisher = "AmazonWebServices";
-      #   version = "3.55.0";
-      #   hash = "sha256-cipckVnoqgX8Sll2Qkm05E3L9cja1x8hzKIv3HvnPyU=";
-
-      # }
-      # {
-      #   #AmazonWebServices.amazon-q-vscode
-      #   name = "amazon-q-vscode";
-      #   publisher = "AmazonWebServices";
-      #   version = "1.60.0";
-      #   hash = "sha256-w3rsYEmIAkDtCsUlsrksMo9XYrrpdLCGhOufogWil2E=";
-
-      # }
       {
         #https://open-vsx.org/extension/lukinco/lukin-vscode-theme
         name = "lukin-vscode-theme";
         publisher = "lukinco";
         version = "0.1.5";
         hash = "sha256-T6yCPCy2AprDqNTJk2ucN2EsCrODn4j/1oldSnQNigU=";
+      }
+
+
+
+
+
+      {
+        # https://marketplace.visualstudio.com/items?itemName=TheQtCompany.qt-core
+        name = "qt-core";
+        publisher = "TheQtCompany";
+        version = "1.9.0";
+        hash = "sha256-IpqsDfhx9UIA3jm/BkPW9mzMkr+muvvhak/wPZb8HQA=";
+      }
+      {
+        # https://marketplace.visualstudio.com/items?itemName=TheQtCompany.qt-cpp
+        name = "qt-cpp";
+        publisher = "TheQtCompany";
+        version = "1.9.0";
+        hash = "sha256-S2r2vPRHeYXKwdq6Lu3z7ayecs7vY2BQaXtn5uTvsH4=";
+      }
+      {
+        # https://marketplace.visualstudio.com/items?itemName=TheQtCompany.qt-qml
+        name = "qt-qml";
+        publisher = "TheQtCompany";
+        version = "1.9.0";
+        hash = "sha256-cWS3xUAbPiH/Mqohs0reWNyfMLiSO7tXdIp7/GbTysw=";
+      }
+      {
+        # https://marketplace.visualstudio.com/items?itemName=TheQtCompany.qt-ui
+        name = "qt-ui";
+        publisher = "TheQtCompany";
+        version = "1.9.0";
+        hash = "sha256-L0kgPbiF1KiLnfhyB5TK3XG5pCLZrNvfbV+kwbhXPks=";
+      }
+
+
+
+      {
+        #https://marketplace.visualstudio.com/items?itemName=LucasFA.octaveexecution
+        name = "octaveexecution";
+        publisher = "LucasFA";
+        version = "0.7.6";
+        # hash = lib.fakeHash;
+        hash = "sha256-oQ8Bwo7bCb0ecHrJz84Uisc4WgbuByfEol3luHZfSB8=";
       }
       {
         #https://open-vsx.org/extension/eliostruyf/screendown

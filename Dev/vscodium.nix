@@ -26,6 +26,9 @@ in{
     dartX.dartpackages
     pythonX.pythonpackages
     [
+      pandoc
+      pandoc-include
+
       (vscode-with-extensions.override {
         vscode = vscodium;
         vscodeExtensions = with vscode-extensions; [
@@ -42,6 +45,7 @@ in{
                             #* Markdown
                             bierner.markdown-mermaid
                             shd101wyy.markdown-preview-enhanced
+                            garlicbreadcleric.pandoc-markdown-syntax
 
                             #* Yamal
                             redhat.vscode-yaml
@@ -65,6 +69,9 @@ in{
                             #? SSH
                             ms-vscode-remote.remote-ssh
                             ms-vscode-remote.remote-ssh-edit
+
+                            #? MATLAB
+                            # MathWorks.language-matlab
         ]
         ++ sql.sql-nixpkgs-extensions
         ++ cpp.cpp-nixpkgs-extensions

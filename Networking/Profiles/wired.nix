@@ -15,7 +15,7 @@ lib.mkMerge [
 
                     };
                     ethernet = {
-                      #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                      cloned-mac-address = "random";  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                     };
                     ipv4 = {
                       method = "auto";         #? Use DHCP for IPv4
@@ -38,7 +38,7 @@ lib.mkMerge [
 
                     };
                     ethernet = {
-                      #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                      cloned-mac-address = "random";  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                     };
                     ipv4 = {
                       method = "manual";
@@ -62,7 +62,7 @@ lib.mkMerge [
 
                     };
                     ethernet = {
-                      #mac-address-randomization = 2;  #? options:  "never" = 0, "default" = 1, or "always" = 2.
+                      cloned-mac-address = "random";  #? options:  "never" = 0, "default" = 1, or "always" = 2.
                     };
                     ipv4 = {
                       method = "auto";         #? Use DHCP for IPv4

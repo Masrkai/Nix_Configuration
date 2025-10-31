@@ -6,6 +6,7 @@ let
   # Copy files into the Nix store instead of reading them
   configFiles = {
     btop = /etc/nixos/Services/App_configs/btop.conf;
+    octave = /etc/nixos/Services/App_configs/octaverc;
     kitty = /etc/nixos/Services/App_configs/kitty.conf;
     ghostty = /etc/nixos/Services/App_configs/ghostty.conf;
   };
@@ -25,6 +26,9 @@ in
         # kitty
         mkdir -p ~/.config/kitty/
         ${pkgs.coreutils}/bin/cp ${configFiles.kitty} ~/.config/kitty/kitty.conf
+
+        # Octave
+        ${pkgs.coreutils}/bin/cp ${configFiles.octave} ~/.octaverc
 
         # ghostty
         mkdir -p ~/.config/ghostty/

@@ -1,44 +1,48 @@
-
 # ani-cli-batch function wrapper
 ani-cli-batch() {
     # Variables
     local BASHLOCATION=$(which bash)
-    local command="ani-cli -d"
 
-    # Functions
-    
-    # Display a menu
-    function showmenufor() {
-        echo "Choose an option by selecting it's S.no:"
-        local i=1
-        local j=1
-        for option in "$@"; do
-            if [[ $j -eq 1 ]]; then
-                let "j++"
-            else
-                echo"";
-                echo -n "   $i."; echo "$option"
-                echo;
-                let "i++"
+    # Function to run ani-cli command with source fallback
+    function run_with_source_fallback() {
+        local animename="$1"
+        local selection="$2"
+        local range="$3"
+        local quality_spec="$4"
+
+        # If a specific source is requested, try it first
+        if [ -n "$quality_spec" ] && [ "$quality_spec" != "0" ]; then
+            echo "Trying source $quality_spec: ani-cli -d '$animename' -S $selection -r $range -q $quality_spec"
+            if PATH=$PATH "$BASHLOCATION" -c "ani-cli -d '$animename' -S $selection -r $range -q $quality_spec"; then
+                return 0
             fi
-        done
-        read -n 1 choice
-        echo ""
-        local a=1
-        local b=1
-        for option in "$@"; do
-            if [[ $b -eq 1 ]]; then
-                let "b++"
-            else
-                if [[ $a -eq $choice ]]; then
-                    firstarg=$1
-                    eval "$(echo "$firstarg")=$option"
-                    break
-                else
-                    let "a++"
-                fi
-            fi
-        done
+        fi
+
+        # Try source 1 (first source)
+        echo "Trying source 1 (first source): ani-cli -d '$animename' -S $selection -r $range -q 1"
+        if PATH=$PATH "$BASHLOCATION" -c "ani-cli -d '$animename' -S $selection -r $range -q 1"; then
+            return 0
+        fi
+
+        # Try source 2 (second source)
+        echo "Trying source 2 (second source): ani-cli -d '$animename' -S $selection -r $range -q 2"
+        if PATH=$PATH "$BASHLOCATION" -c "ani-cli -d '$animename' -S $selection -r $range -q 2"; then
+            return 0
+        fi
+
+        # Try source 3 (third source)
+        echo "Trying source 3 (third source): ani-cli -d '$animename' -S $selection -r $range -q 3"
+        if PATH=$PATH "$BASHLOCATION" -c "ani-cli -d '$animename' -S $selection -r $range -q 3"; then
+            return 0
+        fi
+
+        # Finally try without specifying source (let ani-cli choose)
+        echo "Trying default (auto-select source): ani-cli -d '$animename' -S $selection -r $range"
+        if PATH=$PATH "$BASHLOCATION" -c "ani-cli -d '$animename' -S $selection -r $range"; then
+            return 0
+        fi
+
+        return 1
     }
 
     # Main code
@@ -57,7 +61,7 @@ ani-cli-batch() {
         echo "Please provide a download location:"
         read directory
     done
-    
+
     if [[ "" == "$directory" ]]; then
         echo "Keeping current directory."
     else
@@ -69,6 +73,7 @@ ani-cli-batch() {
     # Asking for instructions
     local addanime=true
     local validchoice=false
+    local download_queue=()
 
     while [ $addanime == true ]; do
         echo "What do you want to download?"
@@ -78,65 +83,86 @@ ani-cli-batch() {
         echo "Running ani-cli's search operation"
         echo "Exit after finding the correct S.no and episode range"
         echo ""
-        ani-cli -d $animename
+        ani-cli -d "$animename"
         echo ""
 
         echo "What number on the list was your anime?"
         read selection
 
-        command=$(echo $command $animename -S $selection)
-
         echo
         echo "What range of episodes do you want to download? (startep-endep)(eg:- 1-17)"
         read range
 
-        command=$(echo $command -r $range)
-
         echo
-        echo "Do you want to specify a download quality (default is 1080p)? (y/n)"
-        echo "(ani-cli will default to the highest quality if specified video quality is not found)"
+        echo "Do you want to specify which source to use? (y/n)"
+        echo "(1=first source, 2=second source, etc. Default will try 1→2→3→auto)"
         read -n 1 qualitychoice
 
+        local quality_spec="0"  # 0 means no specific source requested
         if [ $qualitychoice == y ]; then
             echo
-            echo
-            showmenufor quality 240p 360p 480p 720p
-            command=$(echo $command -q $quality)
-        else 
+            echo "Enter source number (1 for first, 2 for second, etc.):"
+            read quality
+            quality_spec="$quality"
+        else
             echo
         fi
+
+        # Add to download queue
+        download_queue+=("$animename|$selection|$range|$quality_spec")
 
         until [ $validchoice == true ]; do
             clear
             echo "What do you want to do?"
             echo "1.Add more anime (add)"
             echo "2.Start Downloading (download)"
-            echo "3.Print the download command (print)"
+            echo "3.Print the download queue (print)"
             echo "4.Cancel and quit (cancel)"
             read instruction
 
             case $instruction in
                 1|add)
-                    command=$(echo $command "; ani-cli -d" )
                     addanime=true
                     validchoice=true
                     ;;
                 2|download)
-                    PATH=$PATH "$BASHLOCATION" -c "$command"
-                    if [ $? == 0 ]; then
-                        echo "Download Successful"
-                        addanime=false
+                    local all_success=true
+                    for anime_info in "${download_queue[@]}"; do
+                        IFS='|' read -r animename selection range quality_spec <<< "$anime_info"
+
+                        echo
+                        echo "Downloading: $animename (S$selection, range $range)"
+                        echo "========================================"
+
+                        if run_with_source_fallback "$animename" "$selection" "$range" "$quality_spec"; then
+                            echo "✓ SUCCESS: $animename"
+                        else
+                            echo "✗ FAILED: $animename"
+                            all_success=false
+                        fi
+                    done
+
+                    if [ $all_success == true ]; then
+                        echo
+                        echo "🎉 All downloads completed successfully!"
                     else
-                        echo "Download failed! Printing the download command."
-                        echo $command
-                        addanime=false
+                        echo
+                        echo "⚠️  Some downloads failed."
                     fi
+                    addanime=false
                     validchoice=true
                     ;;
                 3|print)
-                    clear && echo "Printing the download command."
+                    clear && echo "Current download queue:"
                     echo
-                    echo $command
+                    for anime_info in "${download_queue[@]}"; do
+                        IFS='|' read -r animename selection range quality_spec <<< "$anime_info"
+                        if [ "$quality_spec" != "0" ]; then
+                            echo "• $animename (S$selection, range $range, source $quality_spec)"
+                        else
+                            echo "• $animename (S$selection, range $range, auto-source)"
+                        fi
+                    done
                     validchoice=false
                     echo
                     echo "Press any key to continue."

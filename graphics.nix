@@ -29,6 +29,8 @@
       # Additional parameters for better performance and stability
       "nvidia.NVreg_UsePageAttributeTable=1"
       "nvidia.NVreg_EnableResizableBAR=1"
+      "nvidia.NVreg_EnableGpuFirmware=0"
+
       ];
 
       # Blacklist specific kernel modules

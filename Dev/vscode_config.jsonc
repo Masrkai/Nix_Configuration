@@ -86,6 +86,7 @@
   "files.exclude": {
     "**/.git": false
   },
+
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "explorer.confirmPasteNative": false,
@@ -514,5 +515,6 @@
     "xhci",
     "zram",
     "zstd",
-  ]
+  ],
+
 }

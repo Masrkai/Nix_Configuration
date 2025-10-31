@@ -40,7 +40,8 @@
     networkmanager = {
       # Let your custom DNS handle resolution
       dns = "default";
-      dhcp = "internal";
+      # dhcp = "internal";
+      dhcp = "dhcpcd";
       enable = true;
       logLevel = "INFO";
       ensureProfiles.environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
@@ -55,12 +56,8 @@
 
       settings = {
         connection = {
-          "connection.llmnr" = 2;
-          "connection.mdns" = 2;
-
-          # # Add fallback DNS for DHCP process
-          # "ipv4.dns" = "1.1.1.1,8.8.8.8";
-          # "ipv4.dns-priority" = "50";  # Lower priority than your custom DNS
+          "connection.llmnr" = 1;
+          "connection.mdns" = 1;
         };
       };
     };
@@ -70,4 +67,10 @@
     enable = false;
     package = pkgs.hostapd;
   };
+
+
+  environment.systemPackages = with pkgs; [
+    dhcpcd
+  ];
+
 }

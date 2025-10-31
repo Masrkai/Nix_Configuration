@@ -15,11 +15,12 @@
         ReadWritePaths = [
           "+/run/NetworkManager/"
           "/proc/sys/net/"
-          "/var/lib/NetworkManager/"
           "/etc/machine-id"
           "/etc/resolv.conf"
           "/etc/NetworkManager/"
-          # Removed the ~/.cert line - add full path if actually needed
+
+          "+/var/lib/dhcpcd/"
+          "+/var/lib/NetworkManager/"
         ];
 
         # Enhanced process isolation

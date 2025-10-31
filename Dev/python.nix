@@ -23,10 +23,13 @@ in
     geckodriver
     (lib.lowPrio (python312.withPackages (ps: with ps; [
 
-        unsloth
-        smolagents
-          duckduckgo-search
-        unsloth-zoo
+        # # unsloth
+        # # unsloth-zoo
+        # smolagents
+        #   duckduckgo-search
+
+
+        jax
 
         #-> Basics
         uv
@@ -81,6 +84,7 @@ in
 
             pillow
             piexif
+            onnxruntime
 
             qrcode
             qrcode-terminal
@@ -92,162 +96,162 @@ in
             portalocker
             cryptography
 
-        #-> Web Scraping
-        beautifulsoup4
-        types-beautifulsoup4
+        # #-> Web Scraping
+        # beautifulsoup4
+        # types-beautifulsoup4
 
-        #-> RPC
-        grpcio
-        grpcio-tools
+        # #-> RPC
+        # grpcio
+        # grpcio-tools
 
-        h5py
-        lxml
-        tqdm
-        scapy
-        curio
-        numpy
-        # cupy
-        pyvips
-        netaddr
-        seaborn
+        # h5py
+        # lxml
+        # tqdm
+        # scapy
+        # curio
+        # numpy
+        # # cupy
+        # pyvips
+        # netaddr
+        # seaborn
 
-        #-> DB
-        mysqlclient
-        mysql-connector
+        # #-> DB
+        # mysqlclient
+        # mysql-connector
 
-        #-> Algos
-        opencv
-        openusd
+        # #-> Algos
+        # opencv
+        # openusd
 
-        networkx
-        openpyxl
-        requests
-        colorama
-        netifaces
-        markdown2
-        matplotlib
-        matplotlib-inline
-        weasyprint
-        markdown-it-py
+        # networkx
+        # openpyxl
+        # requests
+        # colorama
+        # netifaces
+        # markdown2
+        # matplotlib
+        # matplotlib-inline
+        # weasyprint
+        # markdown-it-py
 
-        optimum
-        diffusers
-        transformers
-
-
-        #> TDD & BDD
-        pytest
-        pytest-cov
-        pytest-html
-        pytest-sugar
-          #? Web Testing
-          selenium
-          chromedriver
+        # optimum
+        # diffusers
+        # transformers
 
 
-        netifaces
-
-        #-> torch
-        # triton
-        torch
-        torchaudio
-        torchcrepe
-        torchvision
-
-        #-> Open telemetry
-        opentelemetry-sdk
-        opentelemetry-exporter-otlp
-
-        #-> Ai
-        nltk
-        # vllm
-        # flash-attn
-        pypdf2
-        datasets
-        evaluate
-        langchain
-        langchain-community
-        # sentence-transformers
-
-          #-> Ollama
-          ollama
-            #! Ollama integration
-            langchain-ollama
-            llama-index-llms-ollama
-            llama-index-embeddings-ollama
-
-          #-> ML
-          peft
-          bitsandbytes
-          scikit-learn
-          scikit-image
-
-          #> UI
-          pydub
-          gradio
-           gradio-pdf
-           gradio-client
-          streamlit
-
-          #> Platforms
-          openai
-          replicate
-          huggingface-hub
-          # google-cloud-texttospeech
-
-          #> OCR
-          pytesseract
-
-          #> speechrecognition
-          soundfile
-          # realtime-stt
-          # arabic-reshaper
-          llama-cpp-python
+        # #> TDD & BDD
+        # pytest
+        # pytest-cov
+        # pytest-html
+        # pytest-sugar
+        #   #? Web Testing
+        #   selenium
+        #   chromedriver
 
 
-          # Pinned dependencies that cause breakage
-          werkzeug
-          sqlalchemy
+        # netifaces
 
-          # Runtime dependencies
-          flask
-          flask-sqlalchemy
-          psycopg2-binary
+        # #-> torch
+        # # triton
+        # torch
+        # torchaudio
+        # torchcrepe
+        # torchvision
 
-          # Runtime tools
-          gunicorn
+        # #-> Open telemetry
+        # opentelemetry-sdk
+        # opentelemetry-exporter-otlp
 
-          # Code quality
-          flake8
-          black
+        # #-> Ai
+        # nltk
+        # # vllm
+        # # flash-attn
+        # pypdf2
+        # datasets
+        # evaluate
+        # langchain
+        # langchain-community
+        # # sentence-transformers
 
-          # Testing dependencies
-          # nose2
-          # nose2pytest
-          # pinocchio
-          factory-boy
-          coverage
-          httpie
+        #   #-> Ollama
+        #   ollama
+        #     #! Ollama integration
+        #     langchain-ollama
+        #     llama-index-llms-ollama
+        #     llama-index-embeddings-ollama
 
-          # Behavior Driven Development
-          behave
-          # compare
-          requests
+        #   #-> ML
+        #   peft
+        #   bitsandbytes
+        #   scikit-learn
+        #   scikit-image
 
-          # FFmpeg stuff
-          av
-          ffmpy
-          ffmpeg-python
+        #   #> UI
+        #   pydub
+        #   gradio
+        #    gradio-pdf
+        #    gradio-client
+        #   streamlit
 
-          #> made by facebook
-          faiss
-          # fairseq2
+        #   #> Platforms
+        #   openai
+        #   replicate
+        #   huggingface-hub
+        #   # google-cloud-texttospeech
 
-          librosa
-          pyworld
-          parselmouth
+        #   #> OCR
+        #   pytesseract
 
-          # mlxtend
+        #   #> speechrecognition
+        #   soundfile
+        #   # realtime-stt
+        #   # arabic-reshaper
+        #   llama-cpp-python
+
+
+        #   # Pinned dependencies that cause breakage
+        #   werkzeug
+        #   sqlalchemy
+
+        #   # Runtime dependencies
+        #   flask
+        #   flask-sqlalchemy
+        #   psycopg2-binary
+
+        #   # Runtime tools
+        #   gunicorn
+
+        #   # Code quality
+        #   flake8
+        #   black
+
+        #   # Testing dependencies
+        #   # nose2
+        #   # nose2pytest
+        #   # pinocchio
+        #   factory-boy
+        #   coverage
+        #   httpie
+
+        #   # Behavior Driven Development
+        #   behave
+        #   # compare
+        #   requests
+
+        #   # FFmpeg stuff
+        #   av
+        #   ffmpy
+        #   ffmpeg-python
+
+        #   #> made by facebook
+        #   faiss
+        #   # fairseq2
+
+        #   librosa
+        #   pyworld
+        #   parselmouth
+
+        #   # mlxtend
 
         ]
       )

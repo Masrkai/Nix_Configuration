@@ -15,11 +15,19 @@
     # Databases
     ./MySQL.nix
     ./PostgreSQL.nix
+    ./nvim.nix
   ];
 
 
+
+  #--> direnv
+  programs.direnv = {
+    enable = true;
+    loadInNixShell = true;
+    nix-direnv.enable = true;
+  };
+
   environment.systemPackages = with pkgs; [
-    zed-editor-fhs
   ];
 
 

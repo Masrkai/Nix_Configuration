@@ -5,7 +5,7 @@
 This is a **highly specialized NixOS configuration**, meticulously crafted over **two years** to ensure redundancy, reliability, and security. NixOS’s declarative nature allows for reproducible and resilient system setups, and this configuration reflects my journey in leveraging those strengths.
 
 > **Note:** I’ve been learning Nix since 2023, and while I’m passionate about this setup, I’m not an expert. Use this configuration as inspiration, but always validate choices for your own needs.
-> **Last reviewed:** 10/10/2025 (DD/MM/YYYY)
+> **Last reviewed:** 31/10/2025 (DD/MM/YYYY)
 
 ---
 

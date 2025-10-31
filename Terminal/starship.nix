@@ -17,7 +17,7 @@
       # "╭─ $directory$\{custom.giturl} $git_branch$git_status $python$nodejs$rust$java$golang$docker$package $cmd_duration\n╰─ $username$hostname $time$character";
       let
         line1 = "╭─ $directory\${custom.giturl} $git_branch$git_status $python$nodejs$rust$java$golang$docker$package $cmd_duration";
-        line2 = "╰─ $username$hostname $time$character";
+        line2 = "╰─ $username$hostname $time$character ";
       in
       "${line1}\n${line2}";
 

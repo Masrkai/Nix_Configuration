@@ -21,6 +21,7 @@ let
 
   ani_cli_batch = builtins.readFile ./Functions/ani-cli-batch.sh;
   sync_nixos_config = builtins.readFile ./Functions/sync_nixos_config.sh;
+  pandocmarkdowntopdf = builtins.readFile ./Functions/pandocmarkdowntopdf.sh;
 
 in
 
@@ -34,6 +35,7 @@ in
   programs.bash = {
     enableLsColors = lib.mkForce false;
     completion.enable = true;
+    blesh.enable = false;
 
     # Remove custom PS1 since Starship handles it
     interactiveShellInit = ''
@@ -63,6 +65,7 @@ in
       ${sudo}
       ${sync_nixos_config}
       ${ani_cli_batch}
+      ${pandocmarkdowntopdf}
 
 
       # Source fzf-bash-completion
@@ -97,10 +100,11 @@ in
 
 
       # Replacing List command with eza
-      lss = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links";
-      ls  = "eza --color=always --group-directories-first --long --git --icons=always --links";
-      la  = "eza --color=always --group-directories-first --long --git --icons=always --links -A";
-      l   = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
+      lss  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links";
+      lsg  = "eza --color=always --group-directories-first --long --git --icons=always --links --group";
+      ls   = "eza --color=always --group-directories-first --long --git --icons=always --links";
+      la   = "eza --color=always --group-directories-first --long --git --icons=always --links -A";
+      l    = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
 
       checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 12 '#include <...> search starts here:'";
     };
@@ -109,6 +113,9 @@ in
   environment.systemPackages = with pkgs; [
     viddy
     hwatch
+
+
+    moreutils
 
     eza
     ripgrep
