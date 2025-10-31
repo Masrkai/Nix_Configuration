@@ -20,14 +20,14 @@ The networking stack is designed for **security, privacy, and reliability**:
 - **Firewall:** A robust firewall configuration with **kernel hardening** and **security-focused parameters**.
 
 ### Key Files:
-| Configuration Area | File Link |
-|--------------------|-----------|
-| Networking Overview | [/Networking](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking) |
-| Firewall Rules | [Firewall.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/Firewall.nix) |
-| Kernel Hardening | [Network_Kernel_Parameters.nix](https://github.com/Masrkai/Nix_Configuration/Networking/hardening/Network_Kernel_Parameters.nix) |
-| NetworkManager Hardening | [NetworkManager_hardening.nix](https://github.com/Masrkai/Nix_Configuration/Networking/hardening/NetworkManager_hardening.nix) |
-| DNS Caching | [cache.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/DNS/cache.nix) |
-| DNS Resolver | [resolver.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/DNS/resolver.nix) |
+| Configuration Area       | File Link                                                                                                                        |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| Networking Overview      | [/Networking](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking)                                                 |
+| Firewall Rules           | [Firewall.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/Firewall.nix)                                   |
+| Kernel Hardening         | [Network_Kernel_Parameters.nix](https://github.com/Masrkai/Nix_Configuration/Networking/hardening/Network_Kernel_Parameters.nix) |
+| NetworkManager Hardening | [NetworkManager_hardening.nix](https://github.com/Masrkai/Nix_Configuration/Networking/hardening/NetworkManager_hardening.nix)   |
+| DNS Caching              | [cache.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/DNS/cache.nix)                                     |
+| DNS Resolver             | [resolver.nix](https://github.com/Masrkai/Nix_Configuration/tree/main/Networking/DNS/resolver.nix)                               |
 
 ---
 
@@ -53,11 +53,11 @@ This configuration includes **almost all AI libraries** you might need:
 ### 1. Custom Programs
 I’ve developed several **custom tools** to streamline workflows:
 
-| Tool | Description | File Link |
-|------|-------------|-----------|
-| **CTJ** | Converts current images to JPEG | [ctj.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/ctj.py) |
-| **MD-PDF** | Converts Markdown files to PDF | [MD-PDF.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/MD-PDF.py) |
-| **mac-formatter** | Formats MAC addresses | [mac-formatter.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/mac-formatter.py) |
+| Tool              | Description                     | File Link                                                                                                          |
+|-------------------|---------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| **CTJ**           | Converts current images to JPEG | [ctj.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/ctj.py)                     |
+| **MD-PDF**        | Converts Markdown files to PDF  | [MD-PDF.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/MD-PDF.py)               |
+| **mac-formatter** | Formats MAC addresses           | [mac-formatter.py](https://github.com/Masrkai/Nix_Configuration/blob/main/Programs/custom/Python/mac-formatter.py) |
 
 ### 2. Security Configuration
 The [security.nix](https://github.com/Masrkai/Nix_Configuration/blob/main/security.nix) file includes:
