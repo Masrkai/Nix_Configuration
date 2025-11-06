@@ -13,6 +13,7 @@
 
     ./Firewall.nix
     ./TimeSync.nix
+    ./Wireless_Regulation.nix
   ];
 
 
