@@ -16,6 +16,11 @@ in
 
     user = "ollama";
     group = "ollama";
+
+
+    environmentVariables = {
+            OLLAMA_MODELS="/home/masrkai/AI";
+      };
   };
 
   services.open-webui = {
@@ -43,6 +48,7 @@ in
         ANONYMIZED_TELEMETRY = "False";
         WEBUI_SESSION_COOKIE_SECURE = "True";
         WEBUI_SESSION_COOKIE_SAME_SITE = "strict";
+
 
       #! NONSENSE IN MY HUMBLE OPINION
       ENABLE_OPENAI_API = "False";
