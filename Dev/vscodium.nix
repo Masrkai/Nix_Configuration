@@ -26,8 +26,14 @@ in{
     dartX.dartpackages
     pythonX.pythonpackages
     [
-      pandoc
-      pandoc-include
+      # pandoc
+      # pandoc-include
+      # # pandoc-ext-diagram
+      # pandoc-ext-diagram
+      # mermaid-filter
+      #     librsvg
+      #     mermaid-cli
+      # pandoc-lua-filters
 
       (vscode-with-extensions.override {
         vscode = vscodium;

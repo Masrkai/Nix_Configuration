@@ -6,11 +6,11 @@ garbage(){
     echo "Optimizing store..."
     nix-store --optimise || { echo "Store optimization failed"; return 1; }
 
-    # Check if pip exists before trying to purge
-    if command -v pip &> /dev/null; then
-        echo "Purging pip cache..."
-        pip cache purge || echo "Warning: pip cache purge failed"
-    fi
+    # # Check if pip exists before trying to purge
+    # if command -v pip &> /dev/null; then
+    #     echo "Purging pip cache..."
+    #     pip cache purge || echo "Warning: pip cache purge failed"
+    # fi
 
     echo "Cleanup complete!"
 }

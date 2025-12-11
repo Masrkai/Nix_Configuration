@@ -16,6 +16,7 @@
     ./MySQL.nix
     ./PostgreSQL.nix
     ./nvim.nix
+    ./Pandoc.nix
   ];
 
 

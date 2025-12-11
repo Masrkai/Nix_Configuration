@@ -1,5 +1,10 @@
 { lib, ... }:
 
+let
+  secrets = import ../../Sec/secrets.nix;
+
+in
+
 lib.mkMerge [
     {
         networking.networkmanager.ensureProfiles.profiles = {
@@ -68,23 +73,23 @@ lib.mkMerge [
             connection = {
               id = "GU-Wifi";
               type = "wifi";
-              uuid = "916ee28c-e288-47ba-b06a-b672d739c14a";
+              uuid = "535699d5-fea6-4be2-b5b2-67da5bebb50a";
               permissions = "";
               autoconnect = false;
-              autoconnect-priority = 2;
+              # autoconnect-priority = 2 ;
             };
             wifi = {
               hidden = false;
               ssid = "GU-WiFi";
               mode = "infrastructure";
-              cloned-mac-address = "random";
+              cloned-mac-address = secrets.GU_Wifi_mac;
             };
             ipv4 = {
               method = "auto";
               dns = "127.0.0.1";
-              dhcp-timeout = 90;           # Increase timeout
               ignore-auto-dns = true;
-              dhcp-send-hostname = false;  # Some Cisco networks reject hostname
+              # dhcp-timeout = 90;           # Increase timeout
+              # dhcp-send-hostname = false;  # Some Cisco networks reject hostname
             };
             ipv6 = {
               method = "disabled";
@@ -95,17 +100,17 @@ lib.mkMerge [
             connection = {
               type = "wifi";
               id   = "Gu_EMP";
-              uuid = "a92cb91e-7a05-3f23-8092-9bc829ddc87d";
+              uuid = "da611e1d-fbc4-4256-98ed-df5e09c7e222";
               permissions = "";
-              autoconnect = false;
-              autoconnect-priority = 3;
+              autoconnect = true;
+              autoconnect-priority = 1;
             };
             wifi = {
               hidden = false;
               ssid = "Gu_EMP";
               mode = "infrastructure";
               #mac-address-randomization = 0;
-              # cloned-mac-address= "\${Gu_EMP_mac}";
+              cloned-mac-address= secrets.Gu_EMP_mac2 ;
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
@@ -115,6 +120,8 @@ lib.mkMerge [
             ipv4 = {
               method = "auto";
               dns = "127.0.0.1";
+              # method = "manual";
+              # address1 = "172.17.36.201/24,172.17.32.1";
               ignore-auto-dns = true;
             };
             ipv6 = {

@@ -24,7 +24,7 @@
       };
       devices = {
         "A71" = { id = "NINHMAQ-LAPJ3LN-OOGEWBE-TG3XIWL-LFI2TOT-BBLCPY3-ASLU3IE-AXGDHAE"; };
-        "Tablet" = { id = "5TS7LC7-MUAD4X6-7WGVLGK-UCRTK7O-EATBVA3-HNBTIOJ-2XW2SUT-DAKNSQC"; };
+        "Tablet" = { id = "LFRE73C-E6RPZJG-MPBMNLA-422AN62-BSIJSLD-XJGZULE-B27ZY5W-L4O4WAY"; };
         "Mariam's Laptop G15" = { id ="XR63JZR-33WFJNB-PPHDMWF-XF3V5WX-34XHJAB-SIL2L7L-QGPZI2U-BKRIOQO";};
         };
       folders = {
@@ -40,20 +40,18 @@
           };
           type = "sendonly"; # Make folder send-only
 
-          ignorePatterns = ''
-          #include .stignore-shared
-          .git
-          .venv
-          *.gguf
-          *.safetensors
-
-          '';
+          ignorePatterns = [
+          ".git"
+          "*/.venv"
+          "*.gguf"
+          "*.safetensors"
+          ];
         };
 
 
         "Forbidden_Knowledge" = {
           path = "~/Documents/Books/";
-          devices = [ "A71" ];
+          devices = [ "A71" "Tablet" ];
           versioning = {
             type = "simple";
               params = {

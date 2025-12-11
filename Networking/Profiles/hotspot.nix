@@ -7,7 +7,7 @@ lib.mkMerge [
                 connection = {
                   type = "wifi";
                   id   = "Nix_Hotspot";
-                  uuid = "902355cd-5047-3733-809q-d279d2fecb21";
+                  uuid = "f883c74a-39f0-402e-8596-dd636abc1445";
                   permissions = "";
                   autoconnect = false;
                 };
@@ -37,7 +37,7 @@ lib.mkMerge [
                   # addresses = "192.0.2.1/24";
                   address1 = "192.168.125.1/24,192.168.125.1";
 
-                  dns      = "8.8.8.8;8.8.4.4";  # Google DNS servers
+                  # dns      = "8.8.8.8;8.8.4.4";  # Google DNS servers
                 };
                 ipv6.method = "disabled";
               };

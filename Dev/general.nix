@@ -101,5 +101,15 @@
         hash = "sha256-dcxtgUfn2GhVVyTxd+6mC0bhwMeLUxB6T9mPBUbgxbA=";
       }
 
+      # {
+      #   # https://open-vsx.org/extension/quarto/quarto
+      #   name = "quarto";
+      #   publisher = "quarto";
+      #   version = "1.126.0";  # Check for the latest version
+      #   hash = "sha256-tt/rMTf6chRRLfrsJytUFPvlcgcUE7/7GvPxyZVyvbA=";
+      # }
+
+
+
   ];
 }

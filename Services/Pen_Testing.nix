@@ -50,15 +50,18 @@ in
         iw
         dig
         nmap
+        # unstable.nmapsi4
         rustscan
         getdns
         linssid
         tcpdump
         ettercap
-        (lowPrio iproute2)
+        (lib.lowPrio iproute2)
         arp-scan
         inetutils
         traceroute
+
+        ligolo-ng
 
         bettercap
         burpsuite

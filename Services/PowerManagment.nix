@@ -21,9 +21,15 @@
     };
 
     services.supergfxd.enable = false;
-    services.asusd= {
-      enable = config.hardware.isAsusTuf;
-      enableUserService = config.hardware.isAsusTuf;
+
+
+    services.asusd = lib.mkIf config.hardware.isAsusTuf {
+      enable = true;
+      enableUserService = true;
+    };
+
+    systemd.services.asusd = lib.mkIf config.services.asusd.enable {
+      environment.RUST_LOG = "asusd=warn";
     };
 
 

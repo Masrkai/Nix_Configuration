@@ -3,6 +3,7 @@
   stdenvNoCC,
   requireFile,
   autoPatchelfHook,
+  dpkg,
   makeWrapper,
   alsa-lib,
   dbus,
@@ -14,16 +15,16 @@
   libpulseaudio,
   libudev0-shim,
   libxkbcommon,
-  libxml2,
+  libxml2_13,
   libxslt,
   nspr,
-  wayland,
   nss,
+  wayland,
   xorg,
-  dpkg,
   buildFHSEnv,
   copyDesktopItems,
   makeDesktopItem,
+  libsForQt5,
   version ? "8.2.2",
   packetTracerSource ? null,
 }:
@@ -54,9 +55,13 @@ let
           url = "https://www.netacad.com";
         };
 
-    buildInputs = [
+    nativeBuildInputs = [
       autoPatchelfHook
+      dpkg
       makeWrapper
+    ];
+
+    buildInputs = [
       alsa-lib
       dbus
       expat
@@ -67,7 +72,7 @@ let
       libpulseaudio
       libudev0-shim
       libxkbcommon
-      libxml2
+      libxml2_13
       libxslt
       nspr
       nss
@@ -97,7 +102,7 @@ let
     unpackPhase = ''
       runHook preUnpack
 
-      ${lib.getExe' dpkg "dpkg-deb"} -x $src $out
+      dpkg-deb -x $src $out
       chmod 755 "$out"
 
       runHook postUnpack
@@ -107,19 +112,18 @@ let
       runHook preInstall
 
       makeWrapper "$out/opt/pt/bin/PacketTracer" "$out/bin/packettracer8" \
+        --set XDG_CURRENT_DESKTOP GNOME \
         --prefix LD_LIBRARY_PATH : "$out/opt/pt/bin"
 
       runHook postInstall
     '';
+
   };
 
   fhs-env = buildFHSEnv {
     name = "ciscoPacketTracer8-fhs-env";
     runScript = lib.getExe' unwrapped "packettracer8";
-    targetPkgs = pkgs: [ libudev0-shim ];
-    profile = ''
-      export QT_QPA_PLATFORM="wayland;xcb"
-    '';
+    targetPkgs = _: [ libudev0-shim ];
   };
 in
 
@@ -139,6 +143,11 @@ stdenvNoCC.mkDerivation {
     mkdir -p $out/bin
     ln -s ${fhs-env}/bin/${fhs-env.name} $out/bin/packettracer8
 
+    mkdir -p $out/share/icons/hicolor/48x48/apps
+    ln -s ${unwrapped}/opt/pt/art/app.png $out/share/icons/hicolor/48x48/apps/cisco-packet-tracer-8.png
+    ln -s ${unwrapped}/usr/share/icons/gnome/48x48/mimetypes $out/share/icons/hicolor/48x48/mimetypes
+    ln -s ${unwrapped}/usr/share/mime $out/share/mime
+
     runHook postInstall
   '';
 
@@ -146,12 +155,18 @@ stdenvNoCC.mkDerivation {
     (makeDesktopItem {
       name = "cisco-pt8.desktop";
       desktopName = "Cisco Packet Tracer 8";
-      icon = "${unwrapped}/opt/pt/art/app.png";
+      icon = "cisco-packet-tracer-8";
       exec = "packettracer8 %f";
       mimeTypes = [
         "application/x-pkt"
         "application/x-pka"
         "application/x-pkz"
+        "application/x-pksz"
+        "application/x-pks"
+      ];
+
+      categories = [
+        "Development"
       ];
     })
   ];
@@ -166,5 +181,12 @@ stdenvNoCC.mkDerivation {
     ];
     platforms = [ "x86_64-linux" ];
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
+    knownVulnerabilities = [
+      ''
+        Cisco Packet Tracer 8 ships with qt5 qtwebengine.
+
+        ${lib.head libsForQt5.qtwebengine.meta.knownVulnerabilities}
+      ''
+    ];
   };
 }

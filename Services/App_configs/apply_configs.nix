@@ -51,7 +51,7 @@ in
         mkdir -p ~/.local/share/qBittorrent/nova3/engines/
         ${pkgs.coreutils}/bin/cat > ~/.local/share/qBittorrent/nova3/engines/jackett.json << 'EOF'
         {
-            "api_key": "n1asleravzpgw5pq7jxtpsmg3oc5inyc",
+            "api_key": "3ywhz4iwvzsv1qnb1k4np6bq2qbpd1jl",
             "thread_count": 20,
             "tracker_first": false,
             "url": "http://127.0.0.1:9117"

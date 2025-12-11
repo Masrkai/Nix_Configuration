@@ -40,26 +40,25 @@ in
             win-spice
             virtiofsd
             virtio-win
-            win-virtio
             virglrenderer
           ];
 
-          verbatimConfig = ''
-          cgroup_device_acl = [
-            "/dev/null", "/dev/full", "/dev/zero",
-            "/dev/random", "/dev/urandom", "/dev/ptmx",
-            "/dev/kvm", "/dev/dri/renderD128"
-          ]
-          nvram = [ "${pkgs.OVMFFull}/FV/OVMF.fd:${pkgs.OVMFFull}/FV/OVMF_VARS.fd" ]
-          '';
+          # verbatimConfig = ''
+          # cgroup_device_acl = [
+          #   "/dev/null", "/dev/full", "/dev/zero",
+          #   "/dev/random", "/dev/urandom", "/dev/ptmx",
+          #   "/dev/kvm", "/dev/dri/renderD128"
+          # ]
+          # nvram = [ "${pkgs.OVMFFull}/FV/OVMF.fd:${pkgs.OVMFFull}/FV/OVMF_VARS.fd" ]
+          # '';
 
-          ovmf = {
-            enable = true;
-            packages = [(pkgs.OVMFFull.override {
-            secureBoot = true;
-            tpmSupport = true;
-          }).fd];
-          };
+          # ovmf = {
+          #   enable = true;
+          #   packages = [(pkgs.OVMFFull.override {
+          #   secureBoot = true;
+          #   tpmSupport = true;
+          # }).fd];
+          # };
         };
       };
 

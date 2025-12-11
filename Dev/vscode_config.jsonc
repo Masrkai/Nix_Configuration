@@ -331,6 +331,9 @@
   "markdown-preview-enhanced.previewColorScheme": "systemColorScheme",
   "markdown-preview-enhanced.revealjsTheme": "black.css",
   "markdown-preview-enhanced.previewTheme": "atom-dark.css",
+  "markdown-preview-enhanced.usePandocParser": true,
+  "markdown-preview-enhanced.latexEngine": "xelatex",
+  "markdown-preview-enhanced.mathRenderingOption": "MathJax",
 
   // ============================================================================
   // EXTENSION: LIVE SERVER

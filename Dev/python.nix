@@ -14,7 +14,7 @@ in
   pythonpackages = with pkgs; [
 
     opencv
-    llama-cpp
+    # llama-cpp
     ffmpeg-full
     unstable.ruff
 

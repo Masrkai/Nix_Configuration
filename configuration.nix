@@ -124,6 +124,8 @@ in
       #* First Class
       amiri
       iosevka-bin
+      cm_unicode
+      newcomputermodern
       nerd-fonts.iosevka
       nerd-fonts.iosevka-term
       material-design-icons
@@ -137,8 +139,8 @@ in
         corefonts
 
         noto-fonts
-        noto-fonts-emoji
         noto-fonts-cjk-sans
+        noto-fonts-color-emoji
       ];
 
       fontconfig = {
@@ -160,7 +162,7 @@ in
       ];
 
       cores = 12;                       # Restrict builds to use only N cores 0 to use all.
-      max-jobs = 1;                     # Limit the number of parallel build jobs.
+      max-jobs = 4;                     # Limit the number of parallel build jobs.
       sandbox = true;                   # Enable sandboxing if not already enabled (it helps isolate builds).
       builders-use-substitutes = true;  # Prefer cached builds
       system-features = [ "big-parallel" "kvm" ];
@@ -208,8 +210,10 @@ in
 
       permittedInsecurePackages = [
         # "electron-27.3.11"
-        "qbittorrent-4.6.4"
-        "electron-35.7.5"
+        # "qbittorrent-4.6.4"
+        # "electron-35.7.5"
+        # "python3.12-ecdsa-0.19.1"
+        "ciscoPacketTracer8-8.2.2"
 
       ];
     };
@@ -223,34 +227,12 @@ in
   #*############
 
   #-> Custom
-  # customPackages.ctj
-  # customPackages.MD-PDF
-  # customPackages.backup
-  # customPackages.setupcpp
-  # customPackages.hostapd-wpe
-  # customPackages.mac-formatter
-  customPackages.logisim-evolution
-  # customPackages.super-productivity
-  # customPackages.evillimiter
-  # customPackages.evilginx
-  # customPackages.grayjay-bin
-  #customPackages.airgeddon
-  #customPackages.custom-httrack
   unstable.grayjay
-
-
-
-
-  # typst
-
-
+  customPackages.logisim-evolution
 
   kitty
-  # ghostty
-  # unstable.wezterm
-  # alacritty
 
-  searxng
+
   nix-prefetch-git
   nixos-generators
 
@@ -268,13 +250,11 @@ in
 
 
   unzip
-  #xterm
-  glxinfo
   pciutils
   hw-probe
   unrar-wrapper
   rustdesk-flutter
-  (lowPrio bash-completion)
+  # (lib.lowPrio bash-completion)
 
   #-> Engineering
   #kicad
@@ -294,8 +274,33 @@ in
   #-->UML
   mermerd
 
-  (texliveMedium.withPackages (ps: with ps; [ fontspec ]))
 
+  # (unstable.pkgs.texlive.combine {
+  #   inherit (texlive) scheme-basic
+  #   xetex
+  #   fontspec
+  #   unicode-math
+  #   lm
+  #   lm-math
+  #   iftex
+  #   geometry
+  #   hyperref
+  #   xcolor
+  #   amsmath
+  #   booktabs
+  #   amsfonts
+  #   footnoterange
+
+  #   fvextra
+  #   fancyvrb
+  #   ;
+  # })
+
+
+  (texliveMedium.withPackages (ps: with ps; [
+    fontspec
+
+  ]))
 
   #-> Benshmarking
   furmark
@@ -332,7 +337,6 @@ in
   yt-dlp
   haruna
   amberol
-  syncthing
   qbittorrent
 
   unstable.ani-cli
@@ -340,8 +344,6 @@ in
 
 
   brave
-  # logseq
-  # webcord
   keepassxc
   fastfetch
   authenticator
@@ -349,7 +351,6 @@ in
 
   #-> Archivers
   pv
-  # xz
   pigz
   tarlz
   p7zip
@@ -373,6 +374,7 @@ in
 
 
   #-> KDE Specific
+  kdePackages.kclock
   kdePackages.kgamma
   kdePackages.kscreen
   kdePackages.kdenlive
@@ -390,12 +392,8 @@ in
   # davinci-resolve
   thunderbird-bin
   libreoffice-qt6-still
-
-
-
     hunspell
     hunspellDicts.en_US
-  # onlyoffice-desktopeditors
 
     #-> PDF
     pdfarranger
@@ -479,7 +477,7 @@ in
       }
     );
 
-    plugins = with pkgs.obs-studio-plugins; [
+    plugins = with unstable.pkgs.obs-studio-plugins; [
       wlrobs
       input-overlay
       obs-backgroundremoval

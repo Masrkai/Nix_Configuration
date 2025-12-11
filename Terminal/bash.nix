@@ -19,9 +19,11 @@ let
   fzf_bash_completion = builtins.readFile ./Functions/fzf-bash-completion.sh;
   sudo = builtins.readFile ./Functions/sudo.sh;
 
+  listfonts = builtins.readFile ./Functions/listfonts.sh;
   ani_cli_batch = builtins.readFile ./Functions/ani-cli-batch.sh;
   sync_nixos_config = builtins.readFile ./Functions/sync_nixos_config.sh;
   pandocmarkdowntopdf = builtins.readFile ./Functions/pandocmarkdowntopdf.sh;
+
 
 in
 
@@ -65,6 +67,7 @@ in
       ${sudo}
       ${sync_nixos_config}
       ${ani_cli_batch}
+      ${listfonts}
       ${pandocmarkdowntopdf}
 
 

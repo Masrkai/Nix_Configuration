@@ -23,10 +23,9 @@
     #* Libraries
     eigen
     nlohmann_json
-    # (hiPrio boost185) # Consider specific boost modules instead of the whole library
 
     #* GCC Toolchain (with higher priority to avoid collisions)
-    (hiPrio gcc14)
+    (lib.hiPrio gcc14)
 
     #* LLVM/Clang Toolchain
     #
@@ -44,6 +43,7 @@
   cpp-nixpkgs-extensions = with pkgs.vscode-extensions; [
     twxs.cmake
     vadimcn.vscode-lldb
+    ms-vscode.cmake-tools
     llvm-vs-code-extensions.vscode-clangd
   ];
 

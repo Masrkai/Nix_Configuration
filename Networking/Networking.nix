@@ -17,7 +17,7 @@
   ];
 
 
-  services.nscd.enable = false; system.nssModules = lib.mkForce [];   #> TESTING, As i think it's not needing as unbound is used for caching
+  services.nscd.enable = false; system.nssModules = lib.mkForce [];   #> TESTING, As i think it's not needed as unbound is used for caching
   systemd.services.ModemManager.enable = false;                       #> This is for Cellular networks like 5G,4G PLEASE ENABLE THIS in case you need it, i don't so i won't
   systemd.services.NetworkManager-dispatcher.enable = false;          #> IF you have or rely or will do scripts, PLEASE ENABLE THIS i don't so i won't.
   systemd.services.NetworkManager-wait-online.enable = false;         #? takes 6 secs and is not necessary at all!
@@ -41,8 +41,8 @@
     networkmanager = {
       # Let your custom DNS handle resolution
       dns = "default";
-      # dhcp = "internal";
-      dhcp = "dhcpcd";
+      dhcp = "internal";
+      # dhcp = "dhcpcd";
       enable = true;
       logLevel = "INFO";
       ensureProfiles.environmentFiles = [ "/etc/nixos/Sec/network-manager.env" ];
@@ -70,8 +70,8 @@
   };
 
 
-  environment.systemPackages = with pkgs; [
-    dhcpcd
-  ];
+  # environment.systemPackages = with pkgs; [
+  #   dhcpcd
+  # ];
 
 }

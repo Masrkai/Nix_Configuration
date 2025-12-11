@@ -45,9 +45,10 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    # extraPackages = with pkgs; [
-    #   libvdpau-va-gl
-    # ];
+    extraPackages = with pkgs; [
+      # libvdpau-va-gl
+      ocl-icd
+    ];
   };
 
   nix.settings = lib.mkMerge [
@@ -117,13 +118,12 @@
 
           #? Diagnostics
           clinfo     # OpenCL information
-          glxinfo    # GLX diagnostics
+          mesa-demos    # GLX diagnostics (renamed from glxinfo)
           libva-utils  # VA-API diagnostics
           vulkan-tools  # Vulkan utilities
 
           #? videoAcceleration
           libva-vdpau-driver
-          vaapiVdpau
           nv-codec-headers-12
       ];
     };

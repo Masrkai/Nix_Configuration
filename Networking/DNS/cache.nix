@@ -113,19 +113,23 @@ in
           do-udp = "yes";
           do-tcp = "yes";
 
-          qname-minimisation = "yes";
           hide-identity = "yes";
           hide-version = "yes";
-          use-caps-for-id = "yes";
+
           harden-glue = "yes";
-          harden-dnssec-stripped = "yes";
           harden-referral-path = "yes";
+          harden-algo-downgrade = "yes";
+          harden-below-nxdomain = "yes";
+          harden-dnssec-stripped = "yes";
+
+          use-caps-for-id = "no";
+          qname-minimisation = "yes";
 
           # Minimal logging for performance
-          verbosity = 1;
-          log-queries = "no";
-          log-replies = "no";
-          statistics-interval = 5;
+          verbosity = 0;
+          log-queries = "yes";
+          log-replies = "yes";
+          statistics-interval = 0;
         };
 
         forward-zone = [

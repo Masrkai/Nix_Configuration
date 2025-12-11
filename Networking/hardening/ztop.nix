@@ -1,6 +1,6 @@
 {
     imports = [
-    ./NetworkManager_hardening.nix
+    # ./NetworkManager_hardening.nix
     ./Network_Kernel_Parameters.nix
   ];
 

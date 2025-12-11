@@ -2,7 +2,7 @@
 
 {
   sqlpackages = with pkgs; [
-   mysql-workbench
+  #  mysql-workbench
   ];
 
   sql-nixpkgs-extensions = with pkgs.vscode-extensions; [

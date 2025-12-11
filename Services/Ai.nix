@@ -139,7 +139,7 @@ in
           bind_address = "127.0.0.1";
           base_url = "http://localhost/";
           secret_key = secrets.searx-secret-key;
-          limiter = true;  # Enable rate limiting
+          limiter = false;  # Enable rate limiting
           ratelimit_low = 30;
           ratelimit_high = 50;
         };
@@ -183,9 +183,10 @@ in
             "searx.plugins.self_info.SXNGPlugin"
             "searx.plugins.tracker_url_remover.SXNGPlugin"
             "searx.plugins.unit_converter.SXNGPlugin"
-            "searx.plugins.ahmia_filter.SXNGPlugin"
             "searx.plugins.hostnames.SXNGPlugin"
             "searx.plugins.oa_doi_rewrite.SXNGPlugin"
+
+            # "searx.plugins.ahmia_filter.SXNGPlugin" # Deep web one
           ];
           inactivePlugins = map (name: mkPlugin name false) [
           ];
@@ -194,14 +195,18 @@ in
 
         engines = [
           { name = "bing";       engine = "bing";       disabled = false; timeout = 6.0; }
-          { name = "brave";      engine = "brave";      disabled = false; timeout = 6.0; }
           { name = "google";     engine = "google";     disabled = false; timeout = 6.0; }
-          { name = "wikipedia";  engine = "wikipedia";  disabled = false; timeout = 6.0; }
           { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; timeout = 6.0; }
+
+          { name = "wikipedia";  engine = "wikipedia";  disabled = false; timeout = 6.0; }
+          { name = "wikidata";   engine = "wikidata";   disabled = false; timeout = 6.0; }
+
+          #! Disabled
+          { name = "brave";      engine = "brave";      disabled = true;  timeout = 10.0; }
         ];
         outgoing = {
           pool_maxsize = 20;       # Maximum concurrent connections
-          request_timeout = 10.0;
+          request_timeout = 12.0;
           pool_connections = 100;  # Increased connection pool
           max_request_timeout = 15.0;
           dns_resolver = {
