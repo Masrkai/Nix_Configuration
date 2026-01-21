@@ -1,11 +1,11 @@
 { config, lib, pkgs, ... }:
 
 let
-  secrets = import ../Sec/secrets.nix;
+  secrets = import ../../Sec/secrets.nix;
 
 in{
   services.postgresql = {
-    enable = true;
+    enable = false;
     enableTCPIP = true;
 
     authentication = pkgs.lib.mkOverride 10 ''

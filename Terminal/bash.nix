@@ -107,6 +107,9 @@ in
       lsg  = "eza --color=always --group-directories-first --long --git --icons=always --links --group";
       ls   = "eza --color=always --group-directories-first --long --git --icons=always --links";
       la   = "eza --color=always --group-directories-first --long --git --icons=always --links -A";
+      lsa  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links -A";
+      las  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links -A";
+
       l    = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
 
       checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 12 '#include <...> search starts here:'";

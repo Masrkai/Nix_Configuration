@@ -19,5 +19,8 @@
 
     ../ID/ID.nix
 
+    ./radicale.nix
+
+
   ];
 }

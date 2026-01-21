@@ -1,19 +1,6 @@
 {pkgs, ... }:
 
 {
-  nixpackages = with pkgs; [
-    #-> Nix
-    nixd
-    alejandra
-
-    direnv
-    nix-tree
-    nix-init
-    nix-direnv
-    nix-eval-jobs
-    nix-output-monitor
-    nixpkgs-review gh
-  ];
 
   nix-nixpkgs-extensions = with pkgs.vscode-extensions; [
     mkhl.direnv

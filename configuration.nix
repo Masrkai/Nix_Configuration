@@ -271,37 +271,6 @@ in
   arduino-ide
   arduino-core
 
-  #-->UML
-  mermerd
-
-
-  # (unstable.pkgs.texlive.combine {
-  #   inherit (texlive) scheme-basic
-  #   xetex
-  #   fontspec
-  #   unicode-math
-  #   lm
-  #   lm-math
-  #   iftex
-  #   geometry
-  #   hyperref
-  #   xcolor
-  #   amsmath
-  #   booktabs
-  #   amsfonts
-  #   footnoterange
-
-  #   fvextra
-  #   fancyvrb
-  #   ;
-  # })
-
-
-  (texliveMedium.withPackages (ps: with ps; [
-    fontspec
-
-  ]))
-
   #-> Benshmarking
   furmark
 
@@ -351,9 +320,10 @@ in
 
   #-> Archivers
   pv
-  pigz
+  zstd
+  # pigz
   tarlz
-  p7zip
+  # p7zip
 
   #-> Audio
   pamixer
@@ -378,6 +348,7 @@ in
   kdePackages.kgamma
   kdePackages.kscreen
   kdePackages.kdenlive
+  kdePackages.skanlite
   kdePackages.filelight
   kdePackages.colord-kde
   kdePackages.breeze-icons
@@ -411,6 +382,9 @@ in
   man-pages
   linux-manual
   man-pages-posix
+
+
+  btrfs-progs
 
 ];
 

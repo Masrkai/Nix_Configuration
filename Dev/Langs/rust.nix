@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  rustpackages = with pkgs; [
+     environment.systemPackages = with pkgs; [
     # Compiler
     rustc
 
@@ -22,13 +22,4 @@
     # rustup      # Manages Rust versions and targets
   ];
 
-  rust-nixpkgs-extensions = with pkgs.vscode-extensions; [
-    fill-labs.dependi
-    rust-lang.rust-analyzer
-    tamasfe.even-better-toml
-  ];
-
-  rust-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [
-
-  ];
 }

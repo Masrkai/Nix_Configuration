@@ -16,7 +16,7 @@
       format =
       # "╭─ $directory$\{custom.giturl} $git_branch$git_status $python$nodejs$rust$java$golang$docker$package $cmd_duration\n╰─ $username$hostname $time$character";
       let
-        line1 = "╭─ $directory\${custom.giturl} $git_branch$git_status $python$nodejs$rust$java$golang$docker$package $cmd_duration";
+        line1 = "╭─ $directory\${custom.giturl} $git_branch$git_status $python$nodejs$rust$java$golang$docker$nix_shell$package $cmd_duration";
         line2 = "╰─ $username$hostname $time$character ";
       in
       "${line1}\n${line2}";
@@ -60,16 +60,32 @@
       };
 
       git_status = {
-        conflicted = "⚡";
-        ahead = "⇡";
-        behind = "⇣";
-        diverged = "⇕";
-        untracked = "?";
-        stashed = "$";
-        modified = "!";
-        staged = "+";
-        renamed = "»";
-        deleted = "✘";
+        format = "([$all_status$ahead_behind]($style))";
+        style = "bold red";
+
+        # Add ${count} to each symbol to show numbers
+        conflicted = "⚡\${count}";
+        ahead = "⇡\${count}";
+        behind = "⇣\${count}";
+        diverged = "⇕⇡\${ahead_count}⇣\${behind_count}";
+        untracked = "?\${count}";
+        stashed = "$\${count}";
+        modified = "!\${count}";
+        staged = "+\${count}";
+        renamed = "»\${count}";
+        deleted = "✘\${count}";
+      };
+
+
+      # Nix shell indicator
+      nix_shell = {
+        disabled = false;
+        impure_msg = "[impure shell](bold red)";
+        pure_msg = "[pure shell](bold green)";
+        unknown_msg = "[unknown shell](bold yellow)";
+        format = " via [$state( \($name\))]($style)";
+        style = "bold blue";
+        symbol = "❄️ ";
       };
 
       # Python - only show in Python projects

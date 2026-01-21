@@ -149,7 +149,7 @@
   // LANGUAGE: C/C++
   // ============================================================================
   "clangd.arguments": [
-    "--compile-commands-dir=${workspaceFolder}/build"
+    "--compile-commands-dir=${workspaceFolder}"
   ],
 
   // ============================================================================
@@ -518,6 +518,12 @@
     "xhci",
     "zram",
     "zstd",
+  ],
+  "qt-core.additionalQtPaths": [
+    {
+      "name": "Qt-6.10.1-linux-g++_from_PATH",
+      "path": "/run/current-system/sw/bin/qtpaths"
+    }
   ],
 
 }

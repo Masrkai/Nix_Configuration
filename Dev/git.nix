@@ -6,11 +6,11 @@ let
 
   # Hardware-specific git configs
   gitConfigs = {
-    asus = {
+    isAsusTuf = {
       name = "Masrkai";
       email = secrets.Masrkai_GitHub_Mail;
     };
-    dell = {
+    isDellG15 = {
       name = "maryam-othmann5";
       email = secrets.Maryam_GitHub_Mail;
     };
@@ -18,8 +18,8 @@ let
 
   # Select appropriate config
   userConfig =
-    if config.hardware.isAsusTuf then gitConfigs.asus
-    else if config.hardware.isDellG15 then gitConfigs.dell
+    if config.hardware.isAsusTuf then gitConfigs.isAsusTuf
+    else if config.hardware.isDellG15 then gitConfigs.isDellG15
     else throw "Undetected hardware: No matching hardware configuration found to configure git";
 
 in

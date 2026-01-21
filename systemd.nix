@@ -2,10 +2,11 @@
 
 
 {
- services.logind = {
-  # enable = true;
-  lidSwitch = "ignore";
- };
+#  services.logind = {
+#   # enable = true;
+#   lidSwitch = "ignore";
+#  };
+services.logind.settings.Login.HandleLidSwitch = "ignore";
 
  systemd = {
     enableEmergencyMode = true;
@@ -14,7 +15,7 @@
         enableRootSlice = true;               # Manage memory pressure for root processes
         enableUserSlices = true;              # Manage memory for user sessions, reducing per-user memory pressure
         enableSystemSlice = true;             # Monitor and manage system services to avoid OOM issues
-          extraConfig = {
+          settings.OOM = {
             MemoryPressureDurationSec="10s";             # Faster response to memory issues
             DefaultMemoryPressureThresholdPercent=50;    # More aggressive memory protection
           };

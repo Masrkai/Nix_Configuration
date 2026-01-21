@@ -7,16 +7,18 @@
     # ./android.nix
     ./git.nix
     ./overlays.nix
-    ./vscodium.nix
+    ./nix-ld.nix
+    ./Langs/ztop.nix
 
     # Environments
-    ./nix-ld.nix
+    ./Domain_Specific/Pandoc.nix
 
     # Databases
-    ./MySQL.nix
-    ./PostgreSQL.nix
-    ./nvim.nix
-    ./Pandoc.nix
+    ./Domain_Specific/MySQL.nix
+    ./Domain_Specific/PostgreSQL.nix
+
+    ./IDEs/nvim.nix
+    ./IDEs/vscodium.nix
   ];
 
 
@@ -29,6 +31,7 @@
   };
 
   environment.systemPackages = with pkgs; [
+    gource
   ];
 
 

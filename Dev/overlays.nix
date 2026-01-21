@@ -48,16 +48,18 @@ in
                 jaxlib = py-prev.jaxlib-bin;
 
                 #> torch to torch-bin
-                torch = py-prev.torch-bin.overrideAttrs (oldAttrs: {
-                            passthru = (oldAttrs.passthru or {}) // {
-                              # Add the missing attributes that torch-dependent packages expect
-                              cudaPackages     = final.cudaPackages;
-                              cudaSupport      = final.config.cudaSupport or false;
-                              cudaCapabilities = final.config.cudaCapabilities or [];
+                torch = py-prev.torch-bin;
+                
+                # .overrideAttrs (oldAttrs: {
+                #             passthru = (oldAttrs.passthru or {}) // {
+                #               # Add the missing attributes that torch-dependent packages expect
+                #               cudaPackages     = final.cudaPackages;
+                #               cudaSupport      = final.config.cudaSupport or false;
+                #               cudaCapabilities = final.config.cudaCapabilities or [];
 
-                              # Preserve any existing passthru attributes from torch-bin
-                            } // (oldAttrs.passthru or {});
-                          });
+                #               # Preserve any existing passthru attributes from torch-bin
+                #             } // (oldAttrs.passthru or {});
+                #           });
 
 
                 torchaudio = py-final.torchaudio-bin;

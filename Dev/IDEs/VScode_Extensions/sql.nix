@@ -1,9 +1,6 @@
 { lib, pkgs, ... }:
 
 {
-  sqlpackages = with pkgs; [
-  #  mysql-workbench
-  ];
 
   sql-nixpkgs-extensions = with pkgs.vscode-extensions; [
    jebbs.plantuml

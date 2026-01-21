@@ -7,33 +7,17 @@
 let
   # unstable = import <unstable> {config.allowUnfree = true;};
 
-  sql = import ./sql.nix { inherit pkgs lib ; };
-  cpp = import ./cpp.nix { inherit pkgs lib ; };
-  nixX = import ./nix.nix { inherit pkgs lib ; };
-  umlx = import ./UML.nix { inherit pkgs lib ; };
-  rust = import ./rust.nix { inherit pkgs lib ; };
-  dartX = import ./dart.nix { inherit pkgs lib ; };
-  pythonX = import ./python.nix{ inherit pkgs lib ; };
-  generalX = import ./general.nix{ inherit pkgs lib ; };
+  sql      = import ./VScode_Extensions/sql.nix { inherit pkgs lib ; };
+  cpp      = import ./VScode_Extensions/cpp.nix { inherit pkgs lib ; };
+  nixX     = import ./VScode_Extensions/nix.nix { inherit pkgs lib ; };
+  umlx     = import ./VScode_Extensions/UML.nix { inherit pkgs lib ; };
+  rust     = import ./VScode_Extensions/rust.nix { inherit pkgs lib ; };
+  dartX    = import ./VScode_Extensions/dart.nix { inherit pkgs lib ; };
+  pythonX  = import ./VScode_Extensions/python.nix{ inherit pkgs lib ; };
+  generalX = import ./VScode_Extensions/general.nix{ inherit pkgs lib ; };
 
 in{
-  environment.systemPackages = with pkgs;
-  lib.flatten [  # Flatten the lists of packages
-    sql.sqlpackages
-    cpp.cpppackages
-    nixX.nixpackages
-    rust.rustpackages
-    dartX.dartpackages
-    pythonX.pythonpackages
-    [
-      # pandoc
-      # pandoc-include
-      # # pandoc-ext-diagram
-      # pandoc-ext-diagram
-      # mermaid-filter
-      #     librsvg
-      #     mermaid-cli
-      # pandoc-lua-filters
+  environment.systemPackages = with pkgs; [
 
       (vscode-with-extensions.override {
         vscode = vscodium;
@@ -100,7 +84,6 @@ in{
           ++ generalX.general-marketplace-extensions
         );
       })
-    ]
   ];
 
 

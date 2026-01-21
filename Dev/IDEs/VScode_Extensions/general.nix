@@ -17,6 +17,17 @@
 
 
 
+      {
+        # https://marketplace.visualstudio.com/items?itemName=aykutsarac.jsoncrack-vscode
+        name = "jsoncrack-vscode";
+        publisher = "aykutsarac";
+        version = "5.0.0";
+        hash = "sha256-ctJdpLeZLTm+IsuPHw2pvSVoiiNG9Nzm/YVmaz7jQKQ=";
+        # hash = lib.fakeHash;
+      }
+
+
+
 
 
       {
