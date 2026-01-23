@@ -70,8 +70,8 @@
   };
 
 
-  # environment.systemPackages = with pkgs; [
-  #   dhcpcd
-  # ];
+  environment.systemPackages = with pkgs; [
+    wgcf
+  ];
 
 }
