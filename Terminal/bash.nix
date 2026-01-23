@@ -82,7 +82,9 @@ in
     '';
 
     shellAliases = {
-      cl = "clear";
+      # cl = "printf '\033c'";
+      cl = "printf '\\033c'";
+
       sudo = "sudo ";
       code = "codium";
       ff = "fastfetch";
