@@ -4,6 +4,7 @@
 
   general-nixpkgs-extensions = with pkgs.vscode-extensions; [
     continue.continue
+    davidanson.vscode-markdownlint
   ];
 
   general-marketplace-extensions = with pkgs.vscode-utils.extensionsFromVscodeMarketplace; [

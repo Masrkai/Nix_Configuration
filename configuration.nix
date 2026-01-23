@@ -24,7 +24,7 @@ in
       ./Dev/ztop.nix
       ./Terminal/bash.nix
       # ./virtualisation.nix
-      ./dev-shells/collector.nix
+      # ./dev-shells/collector.nix
       ./Networking/Networking.nix
       ./hardware-configuration.nix
 
