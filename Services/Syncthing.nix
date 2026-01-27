@@ -7,7 +7,7 @@
         enable = true;
         user = "masrkai";
         dataDir = "/home/masrkai";
-        configDir = "/home/masrkai/Documents/.config/syncthing";
+        configDir = "/home/masrkai/.config/syncthing";
 
     guiAddress = "127.0.0.1:8384";
     systemService = true;
