@@ -68,6 +68,7 @@ in
 
         #> DoS
         hping
+        dsniff
 
         #> Wireless
         mdk4
