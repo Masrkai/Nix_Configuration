@@ -200,7 +200,13 @@ in
           waylandSupport = true;
         };
 
+      ffmpeg-full = super.ffmpeg-full.override {
+        withWhisper = false;
+      };
         # realtime-stt = super.pythonPackages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
+
+        # whisper-cpp = super.callPackage ./Programs/Packages/whisper-cpp.nix { };
+
       })
     ];
     #-------------------------------------------------------------------->
