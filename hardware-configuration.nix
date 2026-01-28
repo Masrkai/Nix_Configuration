@@ -24,7 +24,7 @@
 
     # Set the hardened kernel as your base kernel
     kernelPackages =
-      pkgs.linuxKernel.packages.linux_6_17           #! testing
+      pkgs.linuxKernel.packages.linux_6_18           #! testing
       # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
       ;
 
