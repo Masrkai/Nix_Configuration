@@ -1,6 +1,8 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 let
+  unstable = import <unstable> {config.allowUnfree = true;};
+
   customPackages = {
     #? Java
     jsql        = pkgs.callPackage ../Programs/Packages/jsql.nix {};
@@ -91,6 +93,9 @@ in
         tmux
         asleap
         lighttpd
+
+        #> Memory
+        unstable.pince
 
         #> Exploitation
         # armitage
