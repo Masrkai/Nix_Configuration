@@ -2,7 +2,7 @@
 
 {
   cpp-nixpkgs-extensions = with pkgs.vscode-extensions; [
-    twxs.cmake
+    # twxs.cmake
     vadimcn.vscode-lldb
     ms-vscode.cmake-tools
     llvm-vs-code-extensions.vscode-clangd

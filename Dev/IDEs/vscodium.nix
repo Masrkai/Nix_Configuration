@@ -35,7 +35,7 @@ in{
                             #* Markdown
                             bierner.markdown-mermaid
                             shd101wyy.markdown-preview-enhanced
-                            garlicbreadcleric.pandoc-markdown-syntax
+                            # garlicbreadcleric.pandoc-markdown-syntax
 
                             #* Yamal
                             redhat.vscode-yaml

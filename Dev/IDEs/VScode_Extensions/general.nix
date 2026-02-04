@@ -24,10 +24,26 @@
         publisher = "aykutsarac";
         version = "5.0.0";
         hash = "sha256-ctJdpLeZLTm+IsuPHw2pvSVoiiNG9Nzm/YVmaz7jQKQ=";
-        # hash = lib.fakeHash;
       }
 
 
+
+      {
+        # https://marketplace.visualstudio.com/items?itemName=dtoplak.vscode-glsllint
+        name = "vscode-glsllint";
+        publisher = "dtoplak";
+        version = "1.9.1";
+        hash = "sha256-59RNmILdshkAYjpeNz+gjq+WuDKZ/IMNVdzVl8HLFaA=";
+        # hash = lib.fakeHash;
+      }
+      {
+        # https://open-vsx.org/extension/slevesque/shader
+        name = "shader";
+        publisher = "slevesque";
+        version = "1.1.5";
+        hash = "sha256-Pf37FeQMNlv74f7LMz9+CKscF6UjTZ7ZpcaZFKtX2ZM=";
+        # hash = lib.fakeHash;
+      }
 
 
 
@@ -98,13 +114,13 @@
         version = "3.6.0";  # Check for the latest version
         hash = "sha256-FZTiNGSY+8xk3DJsTKQu4AHy1UFvg0gbrzPpjqRlECI=";
       }
-      {
-        #https://marketplace.visualstudio.com/items?itemName=goessner.mdmath
-        name = "mdmath";
-        publisher = "goessner";
-        version = "2.7.4";  # Check for the latest version
-        hash = "sha256-DCh6SG7nckDxWLQvHZzkg3fH0V0KFzmryzSB7XTCj6s=";
-      }
+      # {
+      #   #https://marketplace.visualstudio.com/items?itemName=goessner.mdmath
+      #   name = "mdmath";
+      #   publisher = "goessner";
+      #   version = "2.7.4";  # Check for the latest version
+      #   hash = "sha256-DCh6SG7nckDxWLQvHZzkg3fH0V0KFzmryzSB7XTCj6s=";
+      # }
       {
         #https://marketplace.visualstudio.com/items?itemName=shellscape.shellscape-brackets
         name = "shellscape-brackets";

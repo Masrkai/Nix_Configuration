@@ -320,6 +320,17 @@
   // ============================================================================
   "bashIde.explainshellEndpoint": "http://localhost:5000",
 
+
+  // ============================================================================
+  // EXTENSION: Cmake Tools
+  // ============================================================================
+  "cmake.enableAutomaticKitScan": false,
+  "cmake.automaticReconfigure": false,
+  "cmake.autoSelectActiveFolder": false,
+  "cmake.configureOnOpen": false,
+  "cmake.configureOnEdit": false,
+  "cmake.ctest.testExplorerIntegrationEnabled": false,
+
   // ============================================================================
   // EXTENSION: MARKDOWN PREVIEW ENHANCED
   // ============================================================================
@@ -525,5 +536,4 @@
       "path": "/run/current-system/sw/bin/qtpaths"
     }
   ],
-
 }
