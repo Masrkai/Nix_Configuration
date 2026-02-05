@@ -24,6 +24,9 @@ let
   sync_nixos_config = builtins.readFile ./Functions/sync_nixos_config.sh;
   pandocmarkdowntopdf = builtins.readFile ./Functions/pandocmarkdowntopdf.sh;
 
+  usb_power_map = builtins.readFile ./Functions/usb_power_map.sh;
+  clean_stale_mount = builtins.readFile ./Functions/clean_stale_mount.sh;
+
 
 in
 
@@ -69,6 +72,8 @@ in
       ${ani_cli_batch}
       ${listfonts}
       ${pandocmarkdowntopdf}
+      ${usb_power_map}
+      ${clean_stale_mount}
 
 
       # Source fzf-bash-completion
