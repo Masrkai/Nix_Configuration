@@ -80,11 +80,11 @@
     powerManagement.enable = true;        # because there is no other GPU to handle desktop
     forceFullCompositionPipeline = false;  # Better screen tearing prevention
     package =
-      config.boot.kernelPackages.nvidiaPackages.latest                           #* 6.14 (since writing this comment)
+      config.boot.kernelPackages.nvidiaPackages.latest
 
-      # #! Manually pin pointed
+      # #! Manually pin pointed Nvidia Driver
       # config.boot.kernelPackages.nvidiaPackages.mkDriver {
-      #   version = "570.86.16";                                                 #? 6.13
+      #   version = "570.86.16";
       #   sha256_64bit = "sha256-RWPqS7ZUJH9JEAWlfHLGdqrNlavhaR1xMyzs8lJhy9U=";
       #   openSha256 = "sha256-DuVNA63+pJ8IB7Tw2gM4HbwlOh1bcDg2AN2mbEU9VPE=";
       #   settingsSha256 = "sha256-9rtqh64TyhDF5fFAYiWl3oDHzKJqyOW3abpcf2iNRT8=";
