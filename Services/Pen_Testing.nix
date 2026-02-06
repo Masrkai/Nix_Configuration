@@ -112,6 +112,8 @@ in
         dhcpcd
         cni-plugins
         customPackages.hostapd-wpe
+
+        foremost
     ];
 
 
