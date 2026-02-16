@@ -9,10 +9,10 @@ let
     src = (pkgs.fetchFromGitHub {
       owner = "StevenBlack";
       repo = "hosts";
-      rev = "3.16.15";
+      rev = "3.16.59";
       sha256 =
       # lib.fakeHash;
-     "sha256-FlYlQZ/NqG0Z6tyakwVYJihs0jYi/gBoKF2694O/TSw=";
+     "sha256-gPG7wu3K0wLwpV0nPJt7sIrLP3PrgOS/4POM5zwerVs=";
     } + "/hosts");
 
     phases = [ "installPhase" ];
