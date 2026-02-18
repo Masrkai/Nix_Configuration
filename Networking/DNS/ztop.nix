@@ -1,6 +1,8 @@
 {
     imports = [
-    ./cache.nix
-    ./resolver.nix
+    # ./cache.nix
+    # ./resolver.nix
+
+    ./test.nix
   ];
 }
