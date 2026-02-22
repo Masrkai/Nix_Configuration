@@ -17,6 +17,9 @@
     ninja
     pkg-config
     binutils         # Includes ld, ar, etc.
+
+    # Debug
+    # gdb
   ];
 
  environment.variables = {

@@ -38,6 +38,10 @@
     gtest
     coreutils-prefixed
 
+    #* debuggers
+    (lib.hiPrio pkgs.gdb)
+
+
   ];
 
 }

@@ -114,6 +114,9 @@ in
         customPackages.hostapd-wpe
 
         foremost
+
+        (lib.setPrio 1 bind)
+
     ];
 
 

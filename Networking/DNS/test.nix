@@ -25,11 +25,11 @@ in
   services.unbound = {
     enable = true;
     stateDir = "/var/lib/unbound";
-    
+
     settings = {
       server = {
         interface = [ "127.0.0.1@53" ];
-        
+
         access-control = [
           "0.0.0.0/0 refuse"
           "10.0.0.0/8 allow"
@@ -46,17 +46,17 @@ in
           "192.168.0.0/16"
           "127.0.0.0/8"
         ];
-        
+
         private-domain = [ "local" "localhost" "internal" ];
 
         # TLS Configuration (replaces Stubby's functionality)
         # tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
         tls-upstream = true;  # Enable TLS for upstream queries
-        
+
         # TLS 1.3 cipher suites only (effectively enforces TLS 1.3)
         # By only allowing TLS 1.3 ciphers, TLS 1.2 connections will fail
         tls-ciphersuites = "";
-        
+
         # Disable older TLS ciphers to prevent downgrade attacks
         tls-ciphers = "";
 
@@ -69,54 +69,63 @@ in
         rrset-cache-slabs = 4;
         infra-cache-slabs = 4;
         key-cache-slabs = 4;
-        
+
         prefetch = "yes";
         prefetch-key = "yes";
         rrset-roundrobin = "yes";
-        
+
         cache-min-ttl = 300;
         cache-max-ttl = 604800;
         serve-expired = "yes";
         serve-expired-ttl = 14400;
-        
+
         msg-cache-size = "512m";
         rrset-cache-size = "1024m";
         key-cache-size = "256m";
         neg-cache-size = "128m";
-        
+
         tcp-idle-timeout = 60000;
-        
+
         # Protocol settings
         do-ip4 = "yes";
         do-ip6 = "no";
         do-udp = "yes";
         do-tcp = "yes";
-        
+
         # Security hardening (DNSSEC + privacy)
         hide-identity = "yes";
         hide-version = "yes";
-        
+
         harden-glue = "yes";
         harden-referral-path = "yes";
         harden-algo-downgrade = "yes";
         harden-below-nxdomain = "yes";
         harden-dnssec-stripped = "yes";
-        
+
         use-caps-for-id = "no";
         qname-minimisation = "yes";
-        
-        # DNSSEC validation
-        val-clean-additional = "yes";
-        
+
+        # # DNSSEC validationval-clean-additional
+        # val-clean-additional = "yes";
+
         # Logging
         verbosity = 1;
         log-queries = "yes";
         log-replies = "yes";
         statistics-interval = 0;
-        
+
         # Query padding for privacy (equivalent to your stubby padding)
         pad-queries = "yes";
         pad-queries-block-size = 128;
+
+
+
+        # DNSSEC trust anchor - REQUIRED for validation
+        auto-trust-anchor-file = "/var/lib/unbound/root.key";
+
+        # Enable DNSSEC validation
+        val-clean-additional = "yes";
+
       };
 
       # Forward zones with DoT (replaces Stubby upstreams)
@@ -124,14 +133,14 @@ in
         {
           name = ".";
           forward-tls-upstream = true;
-          
+
           # Cloudflare DoT with SNI authentication
           forward-addr = [
             "1.1.1.1@853#cloudflare-dns.com"
             "1.0.0.1@853#cloudflare-dns.com"
             # "2606:4700:4700::1111@853#cloudflare-dns.com"
             # "2606:4700:4700::1001@853#cloudflare-dns.com"
-            
+
             # Google DoT (backup)
             "8.8.8.8@853#dns.google"
             "8.8.4.4@853#dns.google"
@@ -143,14 +152,4 @@ in
     };
   };
 
-  # Ensure CA certificates are available for TLS validation
-  # security.pki.certificateFiles = [ "/etc/ssl/certs/ca-certificates.crt" ];
-  
-  # # Add a health check or monitoring
-  # systemd.services.unbound = {
-  #   serviceConfig = {
-  #     Restart = "always";
-  #     RestartSec = "5";
-  #   };
-  # };
 }

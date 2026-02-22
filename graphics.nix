@@ -108,13 +108,13 @@
           cudaPackages.nccl
           cudaPackages.cuda_nvcc
 
-          cudaPackages.cudnn
+          # cudaPackages.cudnn
           cudaPackages.libnpp
           cudaPackages.cuda_cccl
           cudaPackages.cuda_nvcc
           cudaPackages.cuda_cudart
 
-          cudaPackages.cuda_opencl
+          # cudaPackages.cuda_opencl
 
           #? Diagnostics
           clinfo     # OpenCL information

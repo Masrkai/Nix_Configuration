@@ -263,7 +263,7 @@ in
   # (lib.lowPrio bash-completion)
 
   #-> Engineering
-  #kicad
+  kicad
   #freecad
 
   #-> Phone
@@ -273,7 +273,6 @@ in
   #-> MicroChips
   esptool
   usbutils
-  esptool-ck
   arduino-ide
   arduino-core
 
