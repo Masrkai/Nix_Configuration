@@ -1,6 +1,8 @@
 { pkgs, lib, ... }:
 
 let
+  StateDirectory = "dnscrypt-proxy";
+
   adblockLocalZones = pkgs.stdenv.mkDerivation {
     name = "unbound-zones-adblock";
     src = (pkgs.fetchFromGitHub {
@@ -17,11 +19,48 @@ let
 
 in
 {
-  # Disable resolved and stubby completely
   services.resolved.enable = lib.mkForce false;
   services.stubby.enable = lib.mkForce false;
 
-  # Single unified Unbound service with DoT
+  services.dnscrypt-proxy = {
+    enable = true;
+    settings = {
+      listen_addresses = [ "127.0.0.1:5300" ];
+
+      sources.public-resolvers = {
+        urls = [
+          "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"
+          "https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md"
+        ];
+        minisign_key = "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
+        cache_file = "/var/lib/${StateDirectory}/public-resolvers.md";
+      };
+
+      server_names = [
+        "cloudflare"
+        "cloudflare-security"
+        "google"
+        "quad9-doh-ip4-port443-filter-ecs-pri"
+      ];
+
+      require_dnssec = true;
+      require_nolog = true;
+      require_nofilter = false;
+
+      ipv6_servers = false;
+      block_ipv6 = true;
+
+      keepalive = 30;
+
+      fallback_resolvers = [ "9.9.9.9:53" "8.8.8.8:53" ];
+      ignore_system_dns = true;
+
+      log_level = 2;
+    };
+  };
+
+  systemd.services.dnscrypt-proxy2.serviceConfig.StateDirectory = StateDirectory;
+
   services.unbound = {
     enable = true;
     stateDir = "/var/lib/unbound";
@@ -29,9 +68,7 @@ in
     settings = {
       server = {
         interface = [ "127.0.0.1@53" ];
-
         ip-freebind = "no";
-
 
         access-control = [
           "0.0.0.0/0 refuse"
@@ -52,21 +89,8 @@ in
 
         private-domain = [ "local" "localhost" "internal" ];
 
-        # TLS Configuration (replaces Stubby's functionality)
-        # tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
-        tls-upstream = true;  # Enable TLS for upstream queries
-
-        # TLS 1.3 cipher suites only (effectively enforces TLS 1.3)
-        # By only allowing TLS 1.3 ciphers, TLS 1.2 connections will fail
-        tls-ciphersuites = "";
-
-        # Disable older TLS ciphers to prevent downgrade attacks
-        tls-ciphers = "";
-
-        # Include adblock zones
         include = [ "${adblockLocalZones}" ];
 
-        # Performance settings (maintained from your config)
         num-threads = 4;
         msg-cache-slabs = 4;
         rrset-cache-slabs = 4;
@@ -89,13 +113,11 @@ in
 
         tcp-idle-timeout = 60000;
 
-        # Protocol settings
         do-ip4 = "yes";
         do-ip6 = "no";
         do-udp = "yes";
         do-tcp = "yes";
 
-        # Security hardening (DNSSEC + privacy)
         hide-identity = "yes";
         hide-version = "yes";
 
@@ -108,55 +130,28 @@ in
         use-caps-for-id = "no";
         qname-minimisation = "yes";
 
-        # # DNSSEC validationval-clean-additional
-        # val-clean-additional = "yes";
-
-        # Logging
         verbosity = 1;
         log-queries = "yes";
         log-replies = "yes";
         statistics-interval = 0;
 
-        # Query padding for privacy (equivalent to your stubby padding)
         pad-queries = "yes";
         pad-queries-block-size = 128;
 
-
-
-        # DNSSEC trust anchor - REQUIRED for validation
         auto-trust-anchor-file = "/var/lib/unbound/root.key";
-
-        # Enable DNSSEC validation
         val-clean-additional = "yes";
 
-
-        infra-host-ttl = 60;       # How long bad host info is cached (default 900s)
+        infra-host-ttl = 60;
         infra-cache-numhosts = 10000;
-
       };
 
-      # Forward zones with DoT (replaces Stubby upstreams)
       forward-zone = [
         {
           name = ".";
-          forward-tls-upstream = true;
-
-          # Cloudflare DoT with SNI authentication
-          forward-addr = [
-            "1.1.1.1@853#cloudflare-dns.com"
-            "1.0.0.1@853#cloudflare-dns.com"
-            # "2606:4700:4700::1111@853#cloudflare-dns.com"
-            # "2606:4700:4700::1001@853#cloudflare-dns.com"
-
-            # Google DoT (backup)
-            "8.8.8.8@853#dns.google"
-            "8.8.4.4@853#dns.google"
-            # "2001:4860:4860::8888@853#dns.google"
-            # "2001:4860:4860::8844@853#dns.google"
-          ];
+          forward-tls-upstream = false;
+          forward-addr = [ "127.0.0.1@5300" ];
         }
       ];
     };
   };
-
 }

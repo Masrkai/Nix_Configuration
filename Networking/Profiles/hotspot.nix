@@ -7,7 +7,7 @@ lib.mkMerge [
                 connection = {
                   type = "wifi";
                   id   = "Nix_Hotspot";
-                  uuid = "f883c74a-39f0-402e-8596-dd636abc1445";
+                  uuid = "c6b98192-27c1-430b-b937-4adbb81ec2ee";
                   permissions = "";
                   autoconnect = false;
                 };
@@ -21,10 +21,10 @@ lib.mkMerge [
                 wifi-security = {
                   key-mgmt = "wpa-psk";
                   psk      = "\${Nix_Hotspot_psk}";
-                  # group    = "ccmp";
-                  # pairwise = "ccmp";
-                  # proto    = "rsn";
-                  # pmf      = 2;
+                  group    = "ccmp";
+                  pairwise = "ccmp";
+                  proto    = "rsn";
+                  psk-flags = 0;
                 };
                 ipv4 = {
                   # dns-data = "192.168.125.1";

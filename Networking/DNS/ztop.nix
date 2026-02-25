@@ -3,6 +3,10 @@
     # ./cache.nix
     # ./resolver.nix
 
-    ./test.nix
+    ./cache2.nix
+    ./resolver2.nix
+
+    # ./test.nix
+    # ./test2.nix
   ];
 }

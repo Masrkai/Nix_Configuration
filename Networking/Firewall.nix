@@ -7,7 +7,7 @@
       firewall = {
       enable = true;
       allowedTCPPorts = [
-                          # 53         #? DNS shouldn't be opened unless it's a DNS server for a router
+                          53         #? DNS shouldn't be opened unless it's a DNS server for a router
                           853          #? For stubby DNS over TLS
 
                           # 587        #? outlook.office365.com Mail server
@@ -15,16 +15,18 @@
                           1234         #? NTS Time server
                           # 6881       #? Qbittorrent
                           # 16509      #? libvirt
-                          # 5353
+                          5353
                           443          #? OpenVPN
                           8384 22000   #? Syncthing
                           8888 18081
                         ];
 
       allowedUDPPorts = [
+                          53
 
                           67 68 #? DHCP
                           1337  #? OpenVPN
+                          5353
                           6881  #? Qbittorrent
                           18081
                           21027 #? Syncthing
