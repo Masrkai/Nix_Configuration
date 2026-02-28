@@ -193,17 +193,58 @@ in
         in
           lib.foldr lib.mergeAttrs {} (activePlugins ++ inactivePlugins);
 
-        engines = [
-          { name = "bing";       engine = "bing";       disabled = false; timeout = 6.0; }
+        engines = let
+          mkEngine = idx: attrs: attrs // { shortcut = toString idx; }; 
+        in lib.imap1 mkEngine [
           { name = "google";     engine = "google";     disabled = false; timeout = 6.0; }
           { name = "duckduckgo"; engine = "duckduckgo"; disabled = false; timeout = 6.0; }
 
           { name = "wikipedia";  engine = "wikipedia";  disabled = false; timeout = 6.0; }
           { name = "wikidata";   engine = "wikidata";   disabled = false; timeout = 6.0; }
 
+          #=== Books & Literature
+          { name = "goodreads";    engine = "goodreads";     disabled = false; timeout = 6.0; }
+          { name = "openlibrary";  engine = "openlibrary";   disabled = false; timeout = 6.0; }
+          { name = "annasarchive"; engine = "annas_archive"; disabled = false; timeout = 10.0; }
+
+          #=== Software & Apps
+          { name = "fdroid";              engine = "fdroid";          disabled = false; timeout = 6.0; }
+          { name = "apkmirror";           engine = "apkmirror";       disabled = false; timeout = 6.0; }
+          { name = "voidlinux";           engine = "voidlinux";       disabled = false; timeout = 6.0; }
+          { name = "appleappstore";       engine = "apple_app_store"; disabled = false; timeout = 6.0; }
+          { name = "googleplayapps";      engine = "google_play";     disabled = false; timeout = 6.0; }
+          { name = "cachyospackages";     engine = "cachy_os";        disabled = false; timeout = 6.0; }
+          { name = "alpinelinuxpackages"; engine = "alpinelinux";     disabled = false; timeout = 6.0; }
+
+          #=== Torrents
+          { name = "bt4g";          engine = "bt4g";          disabled = false; timeout = 10.0; }
+          { name = "1337x";         engine = "1337x";         disabled = false; timeout = 10.0; }
+          { name = "btdigg";        engine = "btdigg";        disabled = false; timeout = 10.0; }
+          { name = "kickass";       engine = "kickass";       disabled = false; timeout = 10.0; }
+          { name = "piratebay";     engine = "piratebay";     disabled = false; timeout = 10.0; }
+          { name = "solidtorrents"; engine = "solidtorrents"; disabled = false; timeout = 10.0; }
+          { name = "tokyotoshokan"; engine = "tokyotoshokan"; disabled = false; timeout = 10.0; }
+
+          #=== Wikis & Knowledge
+          { name = "gentoo";                engine = "mediawiki";   disabled = false; timeout = 6.0; }
+          { name = "wikibooks";             engine = "mediawiki";   disabled = false; timeout = 6.0; }
+          { name = "wikiquote";             engine = "mediawiki";   disabled = false; timeout = 6.0; }
+          { name = "wikisource";            engine = "mediawiki";   disabled = false; timeout = 6.0; }
+          { name = "wikispecies";           engine = "mediawiki";   disabled = true;  timeout = 6.0; }
+          { name = "minecraftwiki";         engine = "mediawiki";   disabled = true;  timeout = 6.0; }
+          { name = "archlinuxwiki";         engine = "archlinux";   disabled = false; timeout = 6.0; }
+          { name = "wikicommons.audio";     engine = "wikicommons"; disabled = false; timeout = 6.0; }
+          { name = "wikicommons.files";     engine = "wikicommons"; disabled = false; timeout = 6.0; }
+          { name = "wikicommons.images";    engine = "wikicommons"; disabled = false; timeout = 6.0; }
+          { name = "wikicommons.videos";    engine = "wikicommons"; disabled = false; timeout = 6.0; }
+          { name = "freesoftwaredirectory"; engine = "mediawiki";   disabled = false; timeout = 6.0; }
+
           #! Disabled
-          { name = "brave";      engine = "brave";      disabled = true;  timeout = 10.0; }
+          { name = "bing";      engine = "bing";  disabled = true; timeout = 6.0; }
+          { name = "brave";     engine = "brave"; disabled = true; timeout = 10.0; }
+          { name = "openrepos"; engine = "xpath"; disabled = true; timeout = 6.0; }
         ];
+
         outgoing = {
           pool_maxsize = 20;       # Maximum concurrent connections
           request_timeout = 12.0;

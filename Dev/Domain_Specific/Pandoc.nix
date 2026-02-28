@@ -16,9 +16,6 @@ in{
       pandoc
       pandoc-include
       pandoc-ext-diagram
-        plantuml
-        mermaid-cli
-
     ];
 
 

@@ -10,7 +10,8 @@
     ./nix-ld.nix
     ./Langs/ztop.nix
 
-    # Environments
+    ./Domain_Specific/UML.nix
+    ./Domain_Specific/Docs.nix
     ./Domain_Specific/Pandoc.nix
 
     # Databases

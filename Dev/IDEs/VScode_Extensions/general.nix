@@ -19,6 +19,17 @@
 
 
       {
+        # https://marketplace.visualstudio.com/items?itemName=bpfdeploy.bpftrace
+        name = "bpftrace";
+        publisher = "bpfdeploy";
+        version = "0.2.1";
+        hash = "sha256-zXym/ogqdlG9AIiIv4nC/ZUMKd668ft5mWhwLXp7rvw=";
+        # hash = lib.fakeHash;
+      }
+
+
+
+      {
         # https://marketplace.visualstudio.com/items?itemName=aykutsarac.jsoncrack-vscode
         name = "jsoncrack-vscode";
         publisher = "aykutsarac";

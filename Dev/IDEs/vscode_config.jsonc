@@ -536,4 +536,14 @@
       "path": "/run/current-system/sw/bin/qtpaths"
     }
   ],
+  "plantuml.exportFormat": "svg",
+  "plantuml.java": "/run/current-system/sw/lib/plantuml.jar",
+  "plantuml.render": "Local",
+  "plantuml.urlFormat": "svg",
+  "yaml.schemas": {
+    "file:///nix/store/wrbkifhyyjqaadrdlhpa8bcaf6aksynm-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ]
+  },
+  "markdown-preview-enhanced.plantumlJarPath": "/run/current-system/sw/lib/plantuml.jar",
 }

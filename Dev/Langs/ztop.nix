@@ -1,12 +1,15 @@
 
 {
   imports = [
+    ./nix.nix
+
     ./cpp.nix
     ./dart.nix
-    ./nix.nix
-    ./python.nix
     ./rust.nix
+    # ./java.nix
+
     ./sql.nix
+    ./python.nix
   ];
 
 }
