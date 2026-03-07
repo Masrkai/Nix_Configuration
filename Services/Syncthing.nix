@@ -51,7 +51,7 @@
 
         "Forbidden_Knowledge" = {
           path = "~/Documents/Books/";
-          devices = [ "A71" "Tablet" ];
+          devices = [ "A71" "Tablet" "Mariam's Laptop G15" ];
           versioning = {
             type = "simple";
               params = {

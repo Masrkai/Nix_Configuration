@@ -42,6 +42,8 @@
     (lib.hiPrio pkgs.gdb)
 
 
+    bpftools
+    bpftrace
   ];
 
 }

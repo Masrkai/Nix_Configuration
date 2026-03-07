@@ -17,7 +17,6 @@
       }
 
 
-
       {
         # https://marketplace.visualstudio.com/items?itemName=bpfdeploy.bpftrace
         name = "bpftrace";

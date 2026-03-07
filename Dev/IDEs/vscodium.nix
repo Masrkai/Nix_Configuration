@@ -7,14 +7,16 @@
 let
   # unstable = import <unstable> {config.allowUnfree = true;};
 
-  sql      = import ./VScode_Extensions/sql.nix { inherit pkgs lib ; };
-  cpp      = import ./VScode_Extensions/cpp.nix { inherit pkgs lib ; };
-  nixX     = import ./VScode_Extensions/nix.nix { inherit pkgs lib ; };
-  umlx     = import ./VScode_Extensions/UML.nix { inherit pkgs lib ; };
-  rust     = import ./VScode_Extensions/rust.nix { inherit pkgs lib ; };
-  dartX    = import ./VScode_Extensions/dart.nix { inherit pkgs lib ; };
-  pythonX  = import ./VScode_Extensions/python.nix{ inherit pkgs lib ; };
-  generalX = import ./VScode_Extensions/general.nix{ inherit pkgs lib ; };
+  sql      = import ./VScode_Extensions/sql.nix     { inherit pkgs lib ; };
+  cpp      = import ./VScode_Extensions/cpp.nix     { inherit pkgs lib ; };
+  nixX     = import ./VScode_Extensions/nix.nix     { inherit pkgs lib ; };
+  umlx     = import ./VScode_Extensions/UML.nix     { inherit pkgs lib ; };
+  java     = import ./VScode_Extensions/java.nix    { inherit pkgs lib ; };
+  rust     = import ./VScode_Extensions/rust.nix    { inherit pkgs lib ; };
+  dartX    = import ./VScode_Extensions/dart.nix    { inherit pkgs lib ; };
+  golang   = import ./VScode_Extensions/go.nix      { inherit pkgs lib ; };
+  pythonX  = import ./VScode_Extensions/python.nix  { inherit pkgs lib ; };
+  generalX = import ./VScode_Extensions/general.nix { inherit pkgs lib ; };
 
 in{
   environment.systemPackages = with pkgs; [
@@ -67,10 +69,12 @@ in{
         ++ cpp.cpp-nixpkgs-extensions
         ++ umlx.UML-nixpkgs-extensions
         ++ nixX.nix-nixpkgs-extensions
+        ++ java.java-nixpkgs-extensions
         ++ rust.rust-nixpkgs-extensions
         ++ dartX.dart-nixpkgs-extensions
         ++ pythonX.python-nixpkgs-extensions
         ++ generalX.general-nixpkgs-extensions
+        ++ golang.golang-nixpkgs-extensions
 
 
         ++ vscode-utils.extensionsFromVscodeMarketplace (
@@ -82,6 +86,8 @@ in{
           ++ dartX.dart-marketplace-extensions
           ++ pythonX.python-marketplace-extensions
           ++ generalX.general-marketplace-extensions
+          ++ golang.golang-marketplace-extensions
+
         );
       })
   ];
