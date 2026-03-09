@@ -135,7 +135,7 @@ in
         forward-zone = [
           {
             name = ".";
-            forward-addr = "127.0.0.1@853";  # Match Stubby's port
+            forward-addr = "127.0.0.1@5354";  # Match Stubby's port
             forward-first = "yes";
             # forward-tls-upstream = "yes";
 
