@@ -3,8 +3,8 @@
     # ./cache.nix
     # ./resolver.nix
 
-    ./cache2.nix
-    ./resolver2.nix
+    ./cache.nix
+    ./resolver.nix
 
     # ./test.nix
     # ./test2.nix
