@@ -92,8 +92,8 @@
       python = {
         detect_extensions = ["py" "pyi"];
         detect_files = ["requirements.txt" "pyproject.toml" "Pipfile" "setup.py" "__init__.py" ];
-        detect_folders = [".venv" "venv" "env"];
-        symbol = "🐍 ";
+        # detect_folders = [".venv" "venv" "env"];
+        symbol = " ";
         style = "yellow";
         format = " via [$symbol$version]($style)";
       };
@@ -110,15 +110,15 @@
       rust = {
         detect_extensions = ["rs"];
         detect_files = ["Cargo.toml"];
-        symbol = " ";
-        style = "red";
+        symbol = "󱘗 ";
+        style = "brown";
         format = " via [$symbol$version]($style)";
       };
 
       java = {
         detect_extensions = ["java" "class" "jar"];
         detect_files = ["pom.xml" "build.gradle.kts" "build.sbt" ".java-version"];
-        symbol = " ";
+        symbol = " ";
         style = "red";
         format = " via [$symbol$version]($style)";
       };
@@ -126,7 +126,7 @@
       golang = {
         detect_extensions = ["go"];
         detect_files = ["go.mod" "go.sum"];
-        symbol = " ";
+        symbol = "󰟓 ";
         style = "cyan";
         format = " via [$symbol$version]($style)";
       };
