@@ -4,7 +4,7 @@
    environment.systemPackages = with pkgs; [
    hadoop
       pig
-      spark
+      (lib.lowPrio spark)
 
   ];
 }
