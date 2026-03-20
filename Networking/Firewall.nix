@@ -27,7 +27,7 @@
                           67 68 #? DHCP
                           1337  #? OpenVPN
                           5353
-                          6881  #? Qbittorrent
+                          # 6881  #? Qbittorrent
                           18081
                           21027 #? Syncthing
                           21116 #? RustDesk
