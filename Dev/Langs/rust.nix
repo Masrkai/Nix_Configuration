@@ -16,7 +16,10 @@
     rust-analyzer
 
     # Flame-graphing
-     cargo-flamegraph
+    cargo-flamegraph
+
+    # Test-Coverage
+    cargo-llvm-cov
 
     # # Toolchain manager
     # rustup      # Manages Rust versions and targets
