@@ -5,9 +5,6 @@
     # Compiler
     rustc
 
-    # Package manager
-    cargo
-
     # Development tools
     clippy      # Linter for catching common mistakes
     rustfmt     # Code formatter
@@ -15,14 +12,14 @@
     # Language Server Protocol (LSP)
     rust-analyzer
 
-    # Flame-graphing
-    cargo-flamegraph
+    # Package manager
+    cargo
+      # Flame-graphing
+      cargo-flamegraph
 
-    # Test-Coverage
-    cargo-llvm-cov
-
-    # # Toolchain manager
-    # rustup      # Manages Rust versions and targets
+      # Test-Coverage
+      cargo-nextest
+      cargo-llvm-cov
   ];
 
 }
