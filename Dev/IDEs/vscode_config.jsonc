@@ -537,11 +537,11 @@
     }
   ],
   "plantuml.exportFormat": "svg",
-  "plantuml.java": "/run/current-system/sw/lib/plantuml.jar",
+  "plantuml.java": "",
   "plantuml.render": "Local",
   "plantuml.urlFormat": "svg",
   "yaml.schemas": {
-    "file:///nix/store/63qj9s0fiwznxspa12vpzhjv0f8bnwiy-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
+    "file:///nix/store/gj5jqxw5fqvryw6hs7hpk2xsqsngz37s-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
       ".continue/**/*.yaml"
     ]
   },
@@ -549,4 +549,5 @@
   "[markdown]": {
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
+  "plantuml.jar": "/run/current-system/sw/lib/plantuml.jar",
 }
