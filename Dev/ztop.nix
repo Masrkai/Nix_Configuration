@@ -35,6 +35,8 @@
   environment.systemPackages = with pkgs; [
     gource
     glslang
+
+    zed-editor-fhs
   ];
 
 
