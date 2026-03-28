@@ -362,8 +362,9 @@ in
 
   #-> Productivity
   gimp
-  # kooha
+  inkscape-with-extensions
   affine
+  # kooha
   # blender
   # davinci-resolve
   thunderbird-bin
