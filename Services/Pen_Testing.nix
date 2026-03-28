@@ -100,7 +100,7 @@ in
         #> Exploitation
         # armitage
         exploitdb
-        metasploit
+        unstable.metasploit
         armitage
 
         #> SQL

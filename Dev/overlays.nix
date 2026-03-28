@@ -17,6 +17,10 @@ in
       (final: prev: {
           onnxruntime = final.python3Packages.callPackage ../Programs/python-libs/onnxruntime.nix{};
 
+          metasploit = unstable.metasploit;
+
+
+
           pythonPackagesExtensions = [
               (python-final: python-prev: {
                 trl = python-final.callPackage ../Programs/python-libs/trl.nix{ };

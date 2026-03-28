@@ -5,7 +5,7 @@ let
 
 in{
   services.postgresql = {
-    enable = false;
+    enable = true;
     enableTCPIP = true;
 
     authentication = pkgs.lib.mkOverride 10 ''
@@ -22,6 +22,19 @@ in{
 
     initialScript = pkgs.writeText "postgres-init-script" ''
       ALTER USER postgres PASSWORD '${secrets.postgres-secret-key}';
+
+      -- Metasploit / Armitage user
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'msf') THEN
+          CREATE USER msf WITH PASSWORD '${secrets.msf-secret-key}';
+        END IF;
+      END
+      $$;
+
+      CREATE DATABASE msf_database OWNER msf;
+      GRANT ALL PRIVILEGES ON DATABASE msf_database TO msf;
+
     '';
 
     settings = {
