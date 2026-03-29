@@ -21,6 +21,8 @@
 
     ./radicale.nix
 
+    ./SSI.nix
+
 
   ];
 }

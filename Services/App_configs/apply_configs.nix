@@ -5,10 +5,11 @@ let
 
   # Copy files into the Nix store instead of reading them
   configFiles = {
-    btop = /etc/nixos/Services/App_configs/btop.conf;
-    octave = /etc/nixos/Services/App_configs/octaverc;
-    kitty = /etc/nixos/Services/App_configs/kitty.conf;
-    ghostty = /etc/nixos/Services/App_configs/ghostty.conf;
+    btop      = ./btop.conf;
+    kitty     = ./kitty.conf;
+    ghostty   = ./ghostty.conf;
+    octave    = ./octaverc.conf;
+    kwalletrc = ./kwalletrc.conf;
   };
 
 in
@@ -33,6 +34,10 @@ in
         # ghostty
         mkdir -p ~/.config/ghostty/
         ${pkgs.coreutils}/bin/cp ${configFiles.ghostty} ~/.config/ghostty/config
+
+        # kwalletrc / kwallet
+        touch ~/.config/kwalletrc
+        ${pkgs.coreutils}/bin/cp ${configFiles.kwalletrc} ~/.config/kwalletrc
 
         # clangd
         mkdir -p ~/.config/clangd/
