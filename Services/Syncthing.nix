@@ -26,12 +26,13 @@
         "A71" = { id = "NINHMAQ-LAPJ3LN-OOGEWBE-TG3XIWL-LFI2TOT-BBLCPY3-ASLU3IE-AXGDHAE"; };
         "Tablet" = { id = "LFRE73C-E6RPZJG-MPBMNLA-422AN62-BSIJSLD-XJGZULE-B27ZY5W-L4O4WAY"; };
         "Mariam's Laptop G15" = { id ="XR63JZR-33WFJNB-PPHDMWF-XF3V5WX-34XHJAB-SIL2L7L-QGPZI2U-BKRIOQO";};
+        "Essa's Lenovo" = { id ="ODP4BN2-6DOME6B-LNFDM44-EXUB27S-ZJAGH32-BGURPBQ-XQE3R6X-RIP3DQO";};
         };
       folders = {
 
         "College_shit" = {
           path = "~/Documents/College/Current/";
-          devices = [ "A71" "Tablet" "Mariam's Laptop G15"  ];
+          devices = [ "A71" "Tablet" "Mariam's Laptop G15" "Essa's Lenovo"  ];
           versioning = {
             type = "simple";
               params = {
@@ -51,7 +52,7 @@
 
         "Forbidden_Knowledge" = {
           path = "~/Documents/Books/";
-          devices = [ "A71" "Tablet" "Mariam's Laptop G15" ];
+          devices = [ "A71" "Tablet" "Mariam's Laptop G15" "Essa's Lenovo" ];
           versioning = {
             type = "simple";
               params = {
