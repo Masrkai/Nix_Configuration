@@ -13,7 +13,9 @@
 
     ./Firewall.nix
     ./TimeSync.nix
+    ./claudflare-warp.nix
     ./Wireless_Regulation.nix
+
   ];
 
 

@@ -6,6 +6,7 @@
   networking = {
       firewall = {
       enable = true;
+      checkReversePath = "loose";  #? For warp
       allowedTCPPorts = [
                           53         #? DNS shouldn't be opened unless it's a DNS server for a router
                           853          #? For stubby DNS over TLS
