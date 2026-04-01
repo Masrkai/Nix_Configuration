@@ -1,17 +1,32 @@
 { pkgs, lib, ... }:
 
-
 {
-    # Make sure time synchronization is properly handled
-    services.timesyncd.enable = false;  # Disable systemd-timesyncd to avoid conflicts
-    time.hardwareClockInLocalTime = false;  # Use UTC for hardware clock
-    services.chrony = {
+  services.timesyncd.enable = false;
+  time.hardwareClockInLocalTime = false;
+
+  services.chrony = {
     enable = true;
     enableNTS = true;
-    enableMemoryLocking = true;
-    servers = [
-      "time.cloudflare.com"  # NTS port
-      ];
-    };
+    enableMemoryLocking = false;
 
+    servers = [];          # clear the default nixos pool servers
+    #! NOTE: `iburst nts` IS AN ENFORCEMENT FOR THE USE OF NTS PROTOCOL for things to not get lose!
+    extraConfig = ''
+      server time.cloudflare.com iburst nts
+      server ntppool1.time.nl iburst nts
+      server nts.netnod.se iburst nts
+      server ptbtime1.ptb.de iburst nts
+    '';
+  };
+
+  services.ntpd-rs = {
+    enable = false;
+    useNetworkingTimeServers = true;
+    settings.source = map (s: { mode = "nts"; address = s; }) [
+      "time.cloudflare.com"
+      "ntppool1.time.nl"
+      "nts.netnod.se"
+      "ptbtime1.ptb.de"
+    ];
+  };
 }
