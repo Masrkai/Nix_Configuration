@@ -30,13 +30,28 @@
         };
       folders = {
 
+
+        "Backup" = {
+          path = "~/Documents/Backup/";
+          devices = [ "A71" "Tablet" ];
+          versioning = {
+            type = "simple";
+              params = {
+              keep = "1";
+              };
+          };
+          type = "sendonly"; # Make folder send-only
+        };
+
+
+
         "College_shit" = {
           path = "~/Documents/College/Current/";
           devices = [ "A71" "Tablet" "Mariam's Laptop G15" "Essa's Lenovo"  ];
           versioning = {
             type = "simple";
               params = {
-              keep = "1"; # Keep 5 versions
+              keep = "1";
               };
           };
           type = "sendonly"; # Make folder send-only
@@ -56,7 +71,7 @@
           versioning = {
             type = "simple";
               params = {
-              keep = "5"; # Keep 5 versions
+              keep = "5";
               };
           };
           type = "sendonly"; # Make folder send-only
