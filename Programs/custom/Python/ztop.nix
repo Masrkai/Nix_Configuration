@@ -13,7 +13,7 @@ let
 in {
   ctj = mkPythonScript { name = "ctj"; deps = [ pkgs.python312Packages.pyvips ]; };
   mac-formatter = mkPythonScript { name = "mac-formatter"; };
-  MD-PDF = mkPythonScript { name = "MD-PDF";
-    deps = with pkgs.python312Packages; [ fire markdown2 weasyprint ];
-  };
+  # MD-PDF = mkPythonScript { name = "MD-PDF";
+  #   deps = with pkgs.python312Packages; [ fire markdown2 weasyprint ];
+  # };
 }

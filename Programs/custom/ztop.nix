@@ -8,7 +8,7 @@ in
   environment.systemPackages = with pkgs; [
 
     Pythonpkgs.ctj
-    Pythonpkgs.MD-PDF
+    # Pythonpkgs.MD-PDF
     Pythonpkgs.mac-formatter
   ];
 }
