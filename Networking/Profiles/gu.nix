@@ -23,6 +23,7 @@ lib.mkMerge [
               mode = "infrastructure";
               bssid = "A4:B2:39:9C:EC:C0";
               cloned-mac-address = "random";
+              generate-mac-address-mask = "FE:FF:FF:00:00:00 00:00:0C:00:00:00";
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
@@ -53,6 +54,7 @@ lib.mkMerge [
               ssid = "GU-Dorms";
               mode = "infrastructure";
               cloned-mac-address = "random";
+              generate-mac-address-mask = "FE:FF:FF:00:00:00 00:00:0C:00:00:00";
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
@@ -82,7 +84,8 @@ lib.mkMerge [
               hidden = false;
               ssid = "GU-WiFi";
               mode = "infrastructure";
-              cloned-mac-address = secrets.GU_Wifi_mac;
+              cloned-mac-address = "random";
+              generate-mac-address-mask = "FE:FF:FF:00:00:00 00:00:0C:00:00:00";
             };
             ipv4 = {
               method = "auto";
@@ -109,8 +112,8 @@ lib.mkMerge [
               hidden = false;
               ssid = "Gu_EMP";
               mode = "infrastructure";
-              #mac-address-randomization = 0;
-              cloned-mac-address= secrets.Gu_EMP_mac2 ;
+              cloned-mac-address = "random";
+              generate-mac-address-mask = "FE:FF:FF:00:00:00 00:00:0C:00:00:00";
             };
             wifi-security = {
               key-mgmt = "wpa-psk";
