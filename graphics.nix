@@ -95,9 +95,9 @@
 
   # Add CUDA toolkit to system packages
   environment ={
-      variables = {
-        __NV_DISABLE_EXPLICIT_SYNC="1";
-      };
+      # variables = {
+      #   __NV_DISABLE_EXPLICIT_SYNC="1"; #! DO NOT ENABLE THIS, THIS IS A BAD PRACTICE
+      # };
       systemPackages = with pkgs; [
 
           #? CUDA
