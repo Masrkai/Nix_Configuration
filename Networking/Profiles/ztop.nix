@@ -2,7 +2,7 @@
     imports = [
     ./gu.nix
     ./wired.nix
-    ./hotspot.nix
+    ./hosted.nix
     ./personal.nix
   ];
 }

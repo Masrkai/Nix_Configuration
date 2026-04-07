@@ -15,7 +15,7 @@ lib.mkMerge [
                   mode      = "ap";
                   band      = "bg";
                   ssid      = "Nix_Hotspot";
-                  hidden    = false;  # Changed to true for better security
+                  hidden    = false;
                   powersave = 0;
                 };
                 wifi-security = {
@@ -27,17 +27,8 @@ lib.mkMerge [
                   psk-flags = 0;
                 };
                 ipv4 = {
-                  # dns-data = "192.168.125.1";
-                  # dns-search = "";           # Disable DNS search
-                  # ignore-auto-dns = true;    # Ignore DNS from DHCP
-
-                  method   = "shared";         # Use shared mode for hotspot
-                  # gateway  = "192.168.125.1";
-                  # address1 = "192.168.125.1/24";
-                  # addresses = "192.0.2.1/24";
+                  method   = "shared";
                   address1 = "192.168.125.1/24,192.168.125.1";
-
-                  # dns      = "8.8.8.8;8.8.4.4";  # Google DNS servers
                 };
                 ipv6.method = "disabled";
               };
