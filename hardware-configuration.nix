@@ -262,17 +262,6 @@ fileSystems =
   services.acpid.enable= true;
 
 
-
-  # services.udev.extraRules = ''
-  # ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
-
-  # # Disable XHC USB controllers from waking up the system
-  # ACTION=="add", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/wakeup}="disabled"
-  # ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
-  # '';
-
-
-
   hardware.bluetooth = {
   enable = true; # enables support for Bluetooth
   powerOnBoot = false; # powers up the default Bluetooth controller on boot
