@@ -11,6 +11,7 @@
     ./Langs/ztop.nix
 
     ./Domain_Specific/UML.nix
+    ./Domain_Specific/KBS.nix
     ./Domain_Specific/Docs.nix
     ./Domain_Specific/Pandoc.nix
     ./Domain_Specific/Big_Data.nix
