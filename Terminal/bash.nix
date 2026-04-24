@@ -133,5 +133,7 @@ in
     eza
     ripgrep
     nix-output-monitor
+
+    termshot
   ];
 }

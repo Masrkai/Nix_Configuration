@@ -30,7 +30,6 @@ in
         #   duckduckgo-search
 
 
-        jax
 
         #-> Basics
         uv
@@ -91,11 +90,19 @@ in
             qrcode-terminal
 
             #-> cryptography & Databases
+            numpy
             pandas
+            polars
             sqlite
             pymysql
             portalocker
             cryptography
+
+            #-> AI/ML
+            jax
+            # torch-bin
+            # transformers
+
 
         ]
       )
