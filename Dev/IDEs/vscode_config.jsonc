@@ -541,7 +541,7 @@
   "plantuml.render": "Local",
   "plantuml.urlFormat": "svg",
   "yaml.schemas": {
-    "file:///nix/store/gj5jqxw5fqvryw6hs7hpk2xsqsngz37s-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
+    "file:///nix/store/ni2sg0f5f7s5sqfmg6cgy1pw2v4zxmis-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
       ".continue/**/*.yaml"
     ]
   },
@@ -550,4 +550,7 @@
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
   "plantuml.jar": "/run/current-system/sw/lib/plantuml.jar",
+  "zig.zls.enabled": "on",
+  "zig.buildOnSaveProvider": "off",
+  "zig.zls.path": "/run/current-system/sw/bin/zls",
 }

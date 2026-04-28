@@ -9,6 +9,7 @@ let
 
   sql      = import ./VScode_Extensions/sql.nix     { inherit pkgs lib ; };
   cpp      = import ./VScode_Extensions/cpp.nix     { inherit pkgs lib ; };
+  zig      = import ./VScode_Extensions/zig.nix     { inherit pkgs lib ; };
   nixX     = import ./VScode_Extensions/nix.nix     { inherit pkgs lib ; };
   umlx     = import ./VScode_Extensions/UML.nix     { inherit pkgs lib ; };
   java     = import ./VScode_Extensions/java.nix    { inherit pkgs lib ; };
@@ -67,6 +68,7 @@ in{
         ]
         ++ sql.sql-nixpkgs-extensions
         ++ cpp.cpp-nixpkgs-extensions
+        ++ zig.zig-nixpkgs-extensions
         ++ umlx.UML-nixpkgs-extensions
         ++ nixX.nix-nixpkgs-extensions
         ++ java.java-nixpkgs-extensions
