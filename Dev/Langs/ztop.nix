@@ -10,7 +10,7 @@
     ./rust.nix
     ./java.nix
 
-    ./sql.nix
+    ./db.nix
     ./python.nix
   ];
 
