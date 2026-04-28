@@ -1,6 +1,18 @@
 { pkgs, lib, config, ... }:
 
 {
+
+imports = [
+  ./arcadedbdeepserv.nix
+];
+
+
+
+  # services.arcadedb = {
+  #   enable = true;
+  #   # Optional: adjust user, group, dataDir, logDir if needed
+  # };
+
   services.neo4j = {
     enable = true;
 

@@ -117,6 +117,9 @@ in
 
         (lib.setPrio 1 bind)
 
+       #> Encryption
+       gnupg
+
     ];
 
 
