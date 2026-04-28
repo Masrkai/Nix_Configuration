@@ -52,6 +52,9 @@ in{
     };
   };
 
+  systemd.services.postgres.wantedBy = lib.mkForce [];  # removes from default target
+
+
   # Optional: Open firewall for PostgreSQL (if you need external access)
   # networking.firewall.allowedTCPPorts = [ 5432 ];
 }

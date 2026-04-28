@@ -3,15 +3,8 @@
 {
 
 imports = [
-  ./arcadedbdeepserv.nix
+  ./arcadedbserv.nix
 ];
-
-
-
-  # services.arcadedb = {
-  #   enable = true;
-  #   # Optional: adjust user, group, dataDir, logDir if needed
-  # };
 
   services.neo4j = {
     enable = true;
@@ -43,11 +36,12 @@ imports = [
       dbms.usage_report.enabled=false
       client.allow_telemetry=false
     '';
-      # browser.allow_outgoing_connections=false
 
     # Read-only mode
     readOnly = false;
   };
+
+  systemd.services.neo4j.wantedBy = lib.mkForce [];  # removes from default target
 
   environment.systemPackages = lib.mkIf config.services.neo4j.enable (with pkgs; [
     neo4j

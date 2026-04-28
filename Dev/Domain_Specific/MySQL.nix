@@ -80,4 +80,7 @@ in {
 
     };
   };
+
+    systemd.services.mysql.wantedBy = lib.mkForce [];  # removes from default target
+
 }
