@@ -68,22 +68,11 @@
 
     # when testing a new rule you can instead of rebooting or re-log in:
     # sudo udevadm control --reload-rules && sudo udevadm trigger
-      # SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-battery"
-      # SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-ac"
-
-      # SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="/bin/sh -c 'echo -1 > /sys/module/usbcore/parameters/autosuspend'"
-      # SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/bin/sh -c 'echo 2 > /sys/module/usbcore/parameters/autosuspend'"
-      # SUBSYSTEM=="power_supply", ATTR{name}=="ACAD", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-battery"
-      # SUBSYSTEM=="power_supply", ATTR{name}=="ACAD", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-ac"
-
-      # SUBSYSTEM=="power_supply", ATTR{name}=="ACAD", ATTR{online}=="1", RUN+="/bin/sh -c 'echo -1 > /sys/module/usbcore/parameters/autosuspend'"
-      # SUBSYSTEM=="power_supply", ATTR{name}=="ACAD", ATTR{online}=="0", RUN+="/bin/sh -c 'echo 2 > /sys/module/usbcore/parameters/autosuspend'"
     services.udev.extraRules = lib.mkIf config.hardware.isAsusTuf ''
+    SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-battery"
+    SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-ac"
 
-SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-battery"
-SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl --user --machine=masrkai@.host start refresh-rate-ac"
-
-SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="1", RUN+="/bin/sh -c 'echo -1 > /sys/module/usbcore/parameters/autosuspend'"
-SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="0", RUN+="/bin/sh -c 'echo 2 > /sys/module/usbcore/parameters/autosuspend'"
+    SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="1", RUN+="/bin/sh -c 'echo -1 > /sys/module/usbcore/parameters/autosuspend'"
+    SUBSYSTEM=="power_supply", DEVPATH=="*/power_supply/ACAD", ATTR{online}=="0", RUN+="/bin/sh -c 'echo 2 > /sys/module/usbcore/parameters/autosuspend'"
     '';
 }
