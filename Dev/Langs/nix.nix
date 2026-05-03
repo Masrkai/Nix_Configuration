@@ -13,6 +13,7 @@ in{
 
   environment.systemPackages = with pkgs; [
     nixd
+    nixfmt
     alejandra
 
     direnv
