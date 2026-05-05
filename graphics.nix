@@ -125,6 +125,16 @@
           #? videoAcceleration
           libva-vdpau-driver
           nv-codec-headers-12
+
+
+
+          # TESTING
+          xorg.libxcb
+          xorg.xcbutilwm
+          xorg.xcbutilimage
+          xorg.xcbutilkeysyms
+          xorg.xcbutilrenderutil
+          xcb-util-cursor
       ];
     };
 
