@@ -22,11 +22,10 @@
     efi.canTouchEfiVariables = true;
     };
 
-    # Set the hardened kernel as your base kernel
-    kernelPackages =
-      pkgs.linuxKernel.packages.linux_6_18           #! testing
-      # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
-      ;
+    # kernelPackages =
+    #   pkgs.linuxKernel.packages.linux_6_18           #! testing
+    #   # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
+    #   ;
 
         #! DIY approach - takes so much time it's impossible to wait!
         # kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
@@ -40,6 +39,10 @@
         #     };
         #   }
         # );
+
+    kernelPackages = lib.mkIf (lib.versionOlder pkgs.linux.version "6.18.22") (
+     lib.mkDefault pkgs.linuxKernel.packages.linux_7_0
+    );
 
     # Add the rtl8188eus-aircrack module to your kernel modules
     extraModulePackages = with config.boot.kernelPackages; [
