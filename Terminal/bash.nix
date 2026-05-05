@@ -135,5 +135,7 @@ in
     nix-output-monitor
 
     termshot
+
+    fzf
   ];
 }
