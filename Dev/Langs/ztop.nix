@@ -9,6 +9,7 @@
     ./dart.nix
     ./rust.nix
     ./java.nix
+    ./kotlin.nix
 
     ./db.nix
     ./python.nix
