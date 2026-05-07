@@ -1,3 +1,5 @@
+#NIXPKGS p7zip unzip gzip bzip2
+
 # Function to extract various archive formats
 # Usage: extract [-d <output_directory>] <archive_file1> [<archive_file2> ...]
 extract() {

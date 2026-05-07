@@ -1,3 +1,5 @@
+#NIXPKGS ani-cli
+
 # Anime Batch Downloader Function
 ani-cli-batch() {
     #############################################

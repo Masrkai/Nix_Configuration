@@ -52,9 +52,18 @@ export FZF_DEFAULT_OPTS='
 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
 
 
-export HISTCONTROL="erasedups:ignoreboth"
+# export HISTCONTROL="erasedups:ignoreboth"
+# export HISTFILE="$HOME/.bash_history"
+# export HISTORY_SIZE="1000000"
+
+
+export HISTSIZE=1000
+export HISTFILESIZE=1000
 export HISTFILE="$HOME/.bash_history"
-export HISTORY_SIZE="1000000"
+export HISTCONTROL="erasedups:ignorespace"
+
+# Append this session's history to the file on exit, instead of overwriting
+shopt -s histappend
 
 
 

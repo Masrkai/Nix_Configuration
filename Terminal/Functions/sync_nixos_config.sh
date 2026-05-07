@@ -4,7 +4,7 @@
 # Protects git metadata and respects permissions
 sync_nixos_config() {
     local source="/etc/nixos/"
-    local dest="$HOME/Programs/System/Nix_Configuration/"
+    local dest="$HOME/Programs/Nix_Configuration/"
     local exclude_dir="Sec"
 
     # Validate source exists

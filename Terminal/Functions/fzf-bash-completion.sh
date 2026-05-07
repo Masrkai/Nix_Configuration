@@ -1,9 +1,39 @@
+#NIXPKGS fzf ripgrep
+
 _FZF_COMPLETION_SEP=$'\x01'
 
 # shell parsing stuff
 _fzf_bash_completion_awk="$( builtin command -v gawk &>/dev/null && echo gawk || echo awk )"
 _fzf_bash_completion_sed="$( builtin command -v gsed &>/dev/null && echo gsed || echo sed )"
-_fzf_bash_completion_grep="$( builtin command -v ggrep &>/dev/null && echo ggrep || echo builtin command grep )"
+# _fzf_bash_completion_grep="$( builtin command -v ggrep &>/dev/null && echo ggrep || echo builtin command grep )"
+
+# Prefer ggrep (GNU grep on macOS) → rg → system grep
+if builtin command -v ggrep &>/dev/null; then
+    _fzf_bash_completion_grep="ggrep"
+elif builtin command -v rg &>/dev/null; then
+    _fzf_bash_completion_grep="_fzf_bash_completion_rg_grep"
+else
+    _fzf_bash_completion_grep="builtin command grep"
+fi
+
+_fzf_bash_completion_rg_grep() {
+    local args=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -E)
+                # rg uses ERE by default — drop this flag
+                ;;
+            *)
+                args+=("$1")
+                ;;
+        esac
+        shift
+    done
+    # --color=never : suppress ANSI codes rg emits in terminals
+    # --no-heading  : suppress the grouped filename header rg adds
+    rg --color=never --no-heading "${args[@]}"
+}
+
 
 _fzf_bash_completion_awk_escape() {
     "$_fzf_bash_completion_sed" 's/\\/\\\\\\\\/g; s/[[*^$.]/\\\\&/g' <<<"$1"

@@ -18,7 +18,7 @@ usb_power_map() {
             power=$(cat "$dev/power/control" 2>/dev/null)
             vid_pid="${vendor}:${product}"
             name="${device_names[$vid_pid]:-Unknown Device}"
-            
+
             printf "%-15s %s - power: %s\n" "$(basename $dev):" "$vid_pid $name" "$power"
         fi
     done | sort

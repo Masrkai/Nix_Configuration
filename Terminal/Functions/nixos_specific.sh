@@ -1,3 +1,5 @@
+#NIXPKGS nix-output-monitor
+
 garbage(){
     # Run operations sequentially with error handling
     echo "Collecting garbage..."

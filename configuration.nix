@@ -22,7 +22,8 @@ in
       ./graphics.nix
       ./security.nix
       ./Dev/ztop.nix
-      ./Terminal/bash.nix
+      # ./Terminal/bash.nix
+      ./Terminal/bashtest.nix
       # ./virtualisation.nix
       # ./dev-shells/collector.nix
       ./Networking/Networking.nix

@@ -137,5 +137,7 @@ in
     termshot
 
     fzf
+
+    fastfetch
   ];
 }

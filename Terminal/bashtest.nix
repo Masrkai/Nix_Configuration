@@ -1,0 +1,106 @@
+{ config, pkgs, lib, ... }:
+
+let
+  # Reads a .sh file and extracts package names from any line like:
+  #   #NIXPKGS ffmpeg unzip p7zip
+  extractPkgsFromScript = file:
+    let
+      lines    = lib.splitString "\n" (builtins.readFile file);
+      matched  = builtins.filter (l: builtins.match "^#NIXPKGS.*" l != null) lines;
+      names    = builtins.concatMap (l:
+                   let m = builtins.match "^#NIXPKGS +(.*)" l;
+                   in if m != null
+                      then builtins.filter (s: s != "")
+                             (lib.splitString " " (builtins.head m))
+                      else []
+                 ) matched;
+    in
+      map (name: pkgs.${name}) names;
+
+  scriptFiles = [
+    ./Functions/bash.sh
+    ./Functions/nixos_specific.sh
+    ./Functions/extract.sh
+    ./Functions/compress.sh
+    ./Functions/convert_to_mp4.sh
+    ./Functions/convert_ppts_to_pdf.sh
+    ./Functions/journalctl.sh
+    ./Functions/sector_copy.sh
+    ./Functions/yt_downlaoder.sh
+    ./Functions/fzf-bash-completion.sh
+    ./Functions/sudo.sh
+    ./Functions/listfonts.sh
+    ./Functions/ani-cli-batch.sh
+    ./Functions/sync_nixos_config.sh
+    ./Functions/pandocmarkdowntopdf.sh
+    ./Functions/usb_power_map.sh
+    ./Functions/clean_stale_mount.sh
+  ];
+
+  scriptPackages = builtins.concatMap extractPkgsFromScript scriptFiles;
+  scriptContent = lib.concatMapStrings (f: builtins.readFile f + "\n") scriptFiles;
+in
+{
+  imports = [ ./starship.nix ];
+
+  programs.bash = {
+    enableLsColors = lib.mkForce false;
+    completion.enable = true;
+    blesh.enable = false;
+
+    interactiveShellInit = ''
+      export ANI_CLI_PLAYER=haruna
+
+      ${scriptContent}
+
+      bind -x '"\t": fzf_bash_completion'
+      eval "$(${pkgs.starship}/bin/starship init bash)"
+    '';
+
+    shellAliases = {
+      cl = "printf '\\033c'";
+
+      sudo = "sudo ";
+      code = "codium";
+      ff = "fastfetch";
+      ip = "ip --color=auto";
+      anime = "ani-cli -q 720 --dub";
+      ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
+
+      # Verbose output when copying
+      cpv = "rsync -avh --info=progress2";
+
+      # Overwrite protection
+      cp = "cp -vi ";
+      mv = "mv -vi ";
+
+      # Replacing List command with eza (Read it's help before you edit)
+      l    = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
+      ls   = "eza --color=always --group-directories-first --long --git --icons=always --links";
+      lss  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links";
+
+      la   = "eza --color=always --group-directories-first --long --git --icons=always --links -A";
+      lsa  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links -A";
+      lsg  = "eza --color=always --group-directories-first --long --git --icons=always --links --group";
+
+
+      checkcpplibs = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 12 '#include <...> search starts here:'";
+
+     };
+  };
+
+
+  environment.systemPackages = with pkgs; [
+    viddy
+    hwatch
+
+    moreutils
+
+    eza
+    ripgrep
+
+    termshot
+
+    fastfetch
+  ] ++ scriptPackages;  #> auto-collected from #NIXPKGS comments
+}

@@ -1,3 +1,5 @@
+#NIXPKGS p7zip unzip gzip bzip2
+
 SAVEIFS=$IFS
 IFS="$(printf '\n\t')"
 
