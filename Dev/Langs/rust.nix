@@ -4,6 +4,7 @@
      environment.systemPackages = with pkgs; [
     # Compiler
     rustc
+    llvmPackages_21.llvm   # match the version rustc uses
 
     # Development tools
     clippy      # Linter for catching common mistakes
@@ -14,6 +15,8 @@
 
     # Package manager
     cargo
+      cargo-watch
+
       # Flame-graphing
       cargo-flamegraph
 
