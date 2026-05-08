@@ -13,9 +13,11 @@
     ./Virtualization/simulation.nix
     ./Virtualization/virtualisation.nix
 
+    ./OBS.nix
+    ./Journal.nix
+    ./Nextcloud.nix
 
     ./App_configs/apply_configs.nix
-
 
     ../ID/ID.nix
 

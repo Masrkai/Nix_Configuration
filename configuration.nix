@@ -38,7 +38,7 @@ in
     ];
 
 
-  time.timeZone = "Africa/Cairo";   #? Set your time zone.
+  time.timeZone = secrets.TZ;
   i18n={
     #? Select internationalisation properties.
     defaultLocale = "en_US.UTF-8";
@@ -100,20 +100,6 @@ in
       LESS = "-R --use-color -Dd+r$Du+b";
     };
   };
-
-    services.journald = {
-    # Controls repeated message filtering
-    rateLimitInterval = "30s";
-    rateLimitBurst =  10000;
-    extraConfig = ''
-      # Compress logs to save space
-      Compress=yes
-
-      # Optional: Set max log size and retention
-      SystemMaxUse=2G
-      MaxRetentionSec=1week
-    '';
-    };
 
 
   #! Diable flatpack
@@ -183,43 +169,45 @@ in
 
   nixpkgs = {
     overlays = [
-      (self: super: {
+      (final: prev: {
         # Rest of your existing configurations
-        filterOutX11 = super.lib.filterAttrs (name: pkg:
-          !(self.lib.strings.contains "libX11" (toString pkg) ||
-            self.lib.strings.contains "xset" (toString pkg) ||
-            self.lib.strings.contains "x11-utils" (toString pkg)))
-          super;
+        filterOutX11 = prev.lib.filterAttrs (name: pkg:
+          !(final.lib.strings.contains "libX11" (toString pkg) ||
+            final.lib.strings.contains "xset" (toString pkg) ||
+            final.lib.strings.contains "x11-utils" (toString pkg)))
+          prev;
 
-        jackett = super.jackett.overrideAttrs (oldAttrs: {
+        jackett = prev.jackett.overrideAttrs (oldAttrs: {
           doCheck = false;
         });
 
-        wine = super.wineWowPackages.stableFull.override {
+        wine = prev.wineWowPackages.stableFull.override {
           x11Support = false;
           cupsSupport = false;
           waylandSupport = true;
         };
 
-      ffmpeg-full = super.ffmpeg-full.override {
-        withWhisper = false;
-      };
-        # realtime-stt = super.pythonPackages.callPackage ./Programs/Packages/RealtimeSTT.nix {};
 
-        # whisper-cpp = super.callPackage ./Programs/Packages/whisper-cpp.nix { };
+        ffmpeg = prev.ffmpeg.override {
+          withWhisper   = false;
+          # withFrei0r    = false;
+          # ffmpegVariant = "full";  # triggers withFullDeps = true
+        };
+
+
+        ffmpeg-full = prev.ffmpeg-full.override {
+          withWhisper   = false;
+          # withFrei0r    = false;
+        };
 
       })
     ];
     #-------------------------------------------------------------------->
     config = {
       allowUnfree = true;
-      # allowBroken = true;
+      # allowBroken = true; #! don't enable in production no matter what
 
       permittedInsecurePackages = [
-        # "electron-27.3.11"
-        # "qbittorrent-4.6.4"
-        # "electron-35.7.5"
-        # "python3.12-ecdsa-0.19.1"
         "ciscoPacketTracer8-8.2.2"
 
       ];
@@ -239,7 +227,6 @@ in
 
   kitty
 
-
   nix-prefetch-git
   nixos-generators
 
@@ -252,9 +239,8 @@ in
   most
   sass
 
-
+  gnome-network-displays
   # pure-ftpd
-
 
   unzip
   pciutils
@@ -419,57 +405,6 @@ in
       # localuser = null;
       package   = pkgs.mlocate;
     };
-
-  #--> NextCloud
-  environment.etc."nextcloud-admin-pass".text = secrets.nextcloud-admin-pass;
-  services.nextcloud = {
-    enable = false;
-    package = pkgs.nextcloud30;
-
-    extraAppsEnable = true;
-      extraApps = {
-        inherit (config.services.nextcloud.package.packages.apps) news contacts calendar tasks;
-
-        # memories = pkgs.fetchNextcloudApp {
-        #     sha256 = "sha256-Xr1SRSmXo2r8yOGuoMyoXhD0oPVm/0/ISHlmNZpJYsg=";
-        #     url = "https://github.com/pulsejet/memories/releases/download/v6.2.2/memories.tar.gz";
-        #     license = "agpl3";
-        # };
-      };
-
-    hostName = "NixOS";
-    config.dbtype = "sqlite";
-    config.adminpassFile = "/etc/nextcloud-admin-pass";
-  };
-
-
-  # #---> Colord
-  # services.colord.enable = true;
-
-
-  programs.obs-studio = {
-    enable = true;
-    enableVirtualCamera = true;
-
-    # optional Nvidia hardware acceleration
-    package = (
-      pkgs.obs-studio.override {
-        cudaSupport = true;
-      }
-    );
-
-    plugins = with unstable.pkgs.obs-studio-plugins; [
-      wlrobs
-      input-overlay
-      obs-backgroundremoval
-      obs-pipewire-audio-capture
-
-      # obs-vaapi #optional AMD hardware acceleration
-      obs-gstreamer
-      obs-vkcapture
-    ];
-  };
-
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;
