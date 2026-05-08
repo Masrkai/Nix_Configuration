@@ -30,10 +30,8 @@ in
         #   duckduckgo-search
 
 
-
         #-> Basics
         uv
-        pip
 
         #-> Networks
         netutils
