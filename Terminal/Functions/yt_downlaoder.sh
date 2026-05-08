@@ -1,4 +1,4 @@
-#NIXPKGS yt-dlp ffmpeg
+#NIXPKGS yt-dlp ffmpeg-full
 
 #? Universal YouTube download function
 download-youtube() {

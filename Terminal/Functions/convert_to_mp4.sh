@@ -1,4 +1,4 @@
-#NIXPKGS ffmpeg
+#NIXPKGS ffmpeg-full
 
 # Function to convert video files to MP4 with baseline profile
 convert_to_mp4() {

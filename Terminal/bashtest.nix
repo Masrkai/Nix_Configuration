@@ -3,19 +3,18 @@
 let
   # Reads a .sh file and extracts package names from any line like:
   #   #NIXPKGS ffmpeg unzip p7zip
-  extractPkgsFromScript = file:
+  # Step 1: Extract package name strings from a single script file
+  extractPkgNames = file:
     let
-      lines    = lib.splitString "\n" (builtins.readFile file);
-      matched  = builtins.filter (l: builtins.match "^#NIXPKGS.*" l != null) lines;
-      names    = builtins.concatMap (l:
-                   let m = builtins.match "^#NIXPKGS +(.*)" l;
-                   in if m != null
-                      then builtins.filter (s: s != "")
-                             (lib.splitString " " (builtins.head m))
-                      else []
-                 ) matched;
+      lines   = lib.splitString "\n" (builtins.readFile file);
+      nixpkgs = builtins.filter (l: builtins.match "^#NIXPKGS.*" l != null) lines;
     in
-      map (name: pkgs.${name}) names;
+      builtins.concatMap (l:
+        let m = builtins.match "^#NIXPKGS +(.*)" l;
+        in if m != null
+           then builtins.filter (s: s != "") (lib.splitString " " (builtins.head m))
+           else []
+      ) nixpkgs;
 
   scriptFiles = [
     ./Functions/bash.sh
@@ -37,8 +36,14 @@ let
     ./Functions/clean_stale_mount.sh
   ];
 
-  scriptPackages = builtins.concatMap extractPkgsFromScript scriptFiles;
-  scriptContent = lib.concatMapStrings (f: builtins.readFile f + "\n") scriptFiles;
+  # Step 2: Collect all names across all files, dedupe, then resolve to packages
+  scriptPackages = map (name: pkgs.${name})
+                     (lib.unique
+                       (builtins.concatMap extractPkgNames scriptFiles));
+
+  scriptContent = lib.concatMapStrings (f:
+    "\n# --- ${builtins.toString f} ---\n" + builtins.readFile f + "\n"
+  ) scriptFiles;
 in
 {
   imports = [ ./starship.nix ];
