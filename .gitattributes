@@ -6,12 +6,12 @@
 *.yaml linguist-detectable=true
 
 # JSON
-*.json linguist-detectable=true
+# *.json linguist-detectable=true
 
 # Markdown Documentation
-*.md merge=union
-*.md linguist-detectable=true
-*.md linguist-documentation=false
+# *.md merge=union
+# *.md linguist-detectable=true
+# *.md linguist-documentation=false
 
 # Bash Scripts
 *.sh linguist-detectable=true
@@ -24,7 +24,7 @@
 *.hpp linguist-detectable=true
 
 # Python Scripts
-*.py linguist-detectable=true
+*.py linguist-detectable=false
 
 # CSV Data Files
 *.csv linguist-detectable=true
