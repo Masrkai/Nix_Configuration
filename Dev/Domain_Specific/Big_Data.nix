@@ -12,7 +12,7 @@
       namenode = {
         enable = true;
         openFirewall = true;
-        formatOnInit = true;   # ← auto-format on first start
+        formatOnInit = false;
       };
       datanode = {
         enable = true;
@@ -35,19 +35,52 @@
     hdfsSite = {
       "dfs.replication" = "1";
       "dfs.support.append" = "true";
-      "dfs.permissions.enabled" = "false";  # ← ADD THIS
+      "dfs.permissions.enabled" = "false";
       "dfs.namenode.name.dir" = "/var/lib/hadoop/hdfs/namenode";
       "dfs.datanode.data.dir" = "/var/lib/hadoop/hdfs/datanode";
     };
 
     mapredSite = {
       "mapreduce.framework.name" = "yarn";
+
+      # --- THREAD LIMITING ---
+      "mapreduce.jobtracker.handler.count" = "2";
+      "mapreduce.tasktracker.http.threads" = "2";
+      "mapreduce.shuffle.max.threads" = "4";
     };
 
     yarnSite = {
       "yarn.nodemanager.aux-services" = "mapreduce_shuffle";
       "yarn.resourcemanager.hostname" = "localhost";
+
+      # --- THREAD LIMITING ---
+      # ResourceManager thread pools
+      "yarn.resourcemanager.scheduler.client.thread-count" = "2";
+      "yarn.resourcemanager.client.thread-count" = "2";
+      "yarn.resourcemanager.admin.client.thread-count" = "2";
+      "yarn.resourcemanager.amlauncher.thread-count" = "2";
+      "yarn.resourcemanager.resource-tracker.client.thread-count" = "2";
+
+      # NodeManager thread pools
+      "yarn.nodemanager.container-manager.thread-count" = "2";
+      "yarn.nodemanager.localizer.client.thread-count" = "2";
+      "yarn.nodemanager.localizer.fetch.thread-count" = "2";
+      "yarn.nodemanager.webapp.httpserver.thread-count" = "2";
+
+      # Reduce default container thread overhead
+      "yarn.nodemanager.delete.thread-count" = "1";
+      "yarn.nodemanager.log-aggregation.roll-monitoring-interval-seconds" = "3600";
     };
+  };
+
+  # JVM options to limit threads at the JVM level
+  environment.variables = {
+    # These apply to Hadoop processes
+    HADOOP_NAMENODE_OPTS = "-XX:ParallelGCThreads=2 -XX:ConcGCThreads=1";
+    HADOOP_DATANODE_OPTS = "-XX:ParallelGCThreads=2 -XX:ConcGCThreads=1";
+    YARN_RESOURCEMANAGER_OPTS = "-XX:ParallelGCThreads=2 -XX:ConcGCThreads=1";
+    YARN_NODEMANAGER_OPTS = "-XX:ParallelGCThreads=2 -XX:ConcGCThreads=1";
+    MAPRED_HISTORYSERVER_OPTS = "-XX:ParallelGCThreads=2 -XX:ConcGCThreads=1";
   };
 
   systemd.tmpfiles.rules = [
