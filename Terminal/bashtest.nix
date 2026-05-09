@@ -17,23 +17,23 @@ let
       ) nixpkgs;
 
   scriptFiles = [
+    ./Functions/sudo.sh
     ./Functions/bash.sh
-    ./Functions/nixos_specific.sh
     ./Functions/extract.sh
     ./Functions/compress.sh
-    ./Functions/convert_to_mp4.sh
-    ./Functions/convert_ppts_to_pdf.sh
+    ./Functions/listfonts.sh
     ./Functions/journalctl.sh
     ./Functions/sector_copy.sh
     ./Functions/yt_downlaoder.sh
-    ./Functions/fzf-bash-completion.sh
-    ./Functions/sudo.sh
-    ./Functions/listfonts.sh
     ./Functions/ani-cli-batch.sh
-    ./Functions/sync_nixos_config.sh
-    ./Functions/pandocmarkdowntopdf.sh
     ./Functions/usb_power_map.sh
+    ./Functions/nixos_specific.sh
+    ./Functions/convert_to_mp4.sh
+    ./Functions/sync_nixos_config.sh
     ./Functions/clean_stale_mount.sh
+    ./Functions/convert_ppts_to_pdf.sh
+    ./Functions/fzf-bash-completion.sh
+    ./Functions/pandocmarkdowntopdf.sh
   ];
 
   # Step 2: Collect all names across all files, dedupe, then resolve to packages
@@ -95,7 +95,17 @@ in
   };
 
 
-  environment.systemPackages = with pkgs; [
+  environment = {
+
+  #? Set up environment variables for colored man pages
+  variables = {
+  MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
+  LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
+  LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
+  MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
+  };
+
+  systemPackages = with pkgs; [
     viddy
     hwatch
 
@@ -107,5 +117,21 @@ in
     termshot
 
     fastfetch
+
+    man
+    man-pages
+    linux-manual
+    man-pages-posix
+
+    bat
+    less
   ] ++ scriptPackages;  #> auto-collected from #NIXPKGS comments
+  };
+
+  programs.less = {
+    enable = true;
+    envVariables = {
+      LESS = "-R --use-color -Dd+r$Du+b";
+    };
+  };
 }

@@ -22,19 +22,14 @@ in
       ./graphics.nix
       ./security.nix
       ./Dev/ztop.nix
+      ./Services/ztop.nix
       # ./Terminal/bash.nix
       ./Terminal/bashtest.nix
       # ./virtualisation.nix
       # ./dev-shells/collector.nix
+      ./Programs/custom/ztop.nix
       ./Networking/Networking.nix
       ./hardware-configuration.nix
-
-
-      ./Programs/custom/ztop.nix
-
-
-      #* Services
-      ./Services/ztop.nix
     ];
 
 
@@ -83,23 +78,6 @@ in
                         "tty" "dialout"             #* Allow access to serial device (for Arduino dev)
                       ];
       };
-
-  environment={
-    #? Set up environment variables for colored man pages
-    variables = {
-    MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
-    LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
-    LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
-    MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
-    };
-  };
-
-  programs.less = {
-    enable = true;
-    envVariables = {
-      LESS = "-R --use-color -Dd+r$Du+b";
-    };
-  };
 
 
   #! Diable flatpack
@@ -370,11 +348,6 @@ in
   aspellDicts.en
   aspellDicts.en-science
   aspellDicts.en-computers
-
-  #Documentation
-  man-pages
-  linux-manual
-  man-pages-posix
 
 
   btrfs-progs
