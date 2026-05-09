@@ -23,8 +23,8 @@ in
       ./security.nix
       ./Dev/ztop.nix
       ./Services/ztop.nix
-      # ./Terminal/bash.nix
-      ./Terminal/bashtest.nix
+      ./Terminal/bash.nix
+      # ./Terminal/bashtest.nix
       # ./virtualisation.nix
       # ./dev-shells/collector.nix
       ./Programs/custom/ztop.nix

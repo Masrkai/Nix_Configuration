@@ -1,93 +1,68 @@
 { config, pkgs, lib, ... }:
 
 let
-  systemFunctions = builtins.readFile ./Functions/bash.sh;
+  # Reads a .sh file and extracts package names from any line like:
+  #   #NIXPKGS ffmpeg unzip p7zip
+  # Step 1: Extract package name strings from a single script file
+  extractPkgNames = file:
+    let
+      lines   = lib.splitString "\n" (builtins.readFile file);
+      nixpkgs = builtins.filter (l: builtins.match "^#NIXPKGS.*" l != null) lines;
+    in
+      builtins.concatMap (l:
+        let m = builtins.match "^#NIXPKGS +(.*)" l;
+        in if m != null
+           then builtins.filter (s: s != "") (lib.splitString " " (builtins.head m))
+           else []
+      ) nixpkgs;
 
-  nixos_specific  = builtins.readFile ./Functions/nixos_specific.sh;
-
-  # Import shell script functions
-  extract = builtins.readFile ./Functions/extract.sh;
-  compress = builtins.readFile ./Functions/compress.sh;
-
-
-  convert_to_mp4 = builtins.readFile ./Functions/convert_to_mp4.sh;
-  convert_ppts_to_pdf = builtins.readFile ./Functions/convert_ppts_to_pdf.sh;
-
-  journalctl = builtins.readFile ./Functions/journalctl.sh;
-  sector_copy = builtins.readFile ./Functions/sector_copy.sh;
-  yt_downloader = builtins.readFile ./Functions/yt_downlaoder.sh;
-  fzf_bash_completion = builtins.readFile ./Functions/fzf-bash-completion.sh;
-  sudo = builtins.readFile ./Functions/sudo.sh;
-
-  listfonts = builtins.readFile ./Functions/listfonts.sh;
-  ani_cli_batch = builtins.readFile ./Functions/ani-cli-batch.sh;
-  sync_nixos_config = builtins.readFile ./Functions/sync_nixos_config.sh;
-  pandocmarkdowntopdf = builtins.readFile ./Functions/pandocmarkdowntopdf.sh;
-
-  usb_power_map = builtins.readFile ./Functions/usb_power_map.sh;
-  clean_stale_mount = builtins.readFile ./Functions/clean_stale_mount.sh;
-
-
-in
-
-{
-  imports = [
-    ./starship.nix
+  scriptFiles = [
+    ./Functions/sudo.sh
+    ./Functions/bash.sh
+    ./Functions/extract.sh
+    ./Functions/compress.sh
+    ./Functions/listfonts.sh
+    ./Functions/journalctl.sh
+    ./Functions/sector_copy.sh
+    ./Functions/yt_downlaoder.sh
+    ./Functions/ani-cli-batch.sh
+    ./Functions/usb_power_map.sh
+    ./Functions/nixos_specific.sh
+    ./Functions/convert_to_mp4.sh
+    ./Functions/sync_nixos_config.sh
+    ./Functions/clean_stale_mount.sh
+    ./Functions/convert_ppts_to_pdf.sh
+    ./Functions/fzf-bash-completion.sh
+    ./Functions/pandocmarkdowntopdf.sh
   ];
 
+  # Step 2: Collect all names across all files, dedupe, then resolve to packages
+  scriptPackages = map (name: pkgs.${name})
+                     (lib.unique
+                       (builtins.concatMap extractPkgNames scriptFiles));
 
-  # Bash configuration
+  scriptContent = lib.concatMapStrings (f:
+    "\n# --- ${builtins.toString f} ---\n" + builtins.readFile f + "\n"
+  ) scriptFiles;
+in
+{
+  imports = [ ./starship.nix ];
+
   programs.bash = {
     enableLsColors = lib.mkForce false;
     completion.enable = true;
     blesh.enable = false;
 
-    # Remove custom PS1 since Starship handles it
     interactiveShellInit = ''
-      # if [ -f /etc/profile ]; then
-      #   . /etc/profile
-      # fi
-
-      # if [ -f ~/.bashrc ]; then
-      #   . ~/.bashrc
-      # fi
-
-
       export ANI_CLI_PLAYER=haruna
 
-      ${nixos_specific}
+      ${scriptContent}
 
-      ${systemFunctions}
-
-      # Import shell script functions
-      ${compress}
-      ${extract}
-      ${convert_ppts_to_pdf}
-      ${convert_to_mp4}
-      ${journalctl}
-      ${sector_copy}
-      ${yt_downloader}
-      ${sudo}
-      ${sync_nixos_config}
-      ${ani_cli_batch}
-      ${listfonts}
-      ${pandocmarkdowntopdf}
-      ${usb_power_map}
-      ${clean_stale_mount}
-
-
-      # Source fzf-bash-completion
-      ${fzf_bash_completion}
       bind -x '"\t": fzf_bash_completion'
-
-      # Initialize Starship
       eval "$(${pkgs.starship}/bin/starship init bash)"
-
-
     '';
 
     shellAliases = {
-      # cl = "printf '\033c'";
       cl = "printf '\\033c'";
 
       sudo = "sudo ";
@@ -96,7 +71,6 @@ in
       ip = "ip --color=auto";
       anime = "ani-cli -q 720 --dub";
       ascr = "scrcpy --no-audio -Sw --no-downsize-on-error";
-      fixnet = "sudo systemctl restart NetworkManager nftables stubby";
 
       # Verbose output when copying
       cpv = "rsync -avh --info=progress2";
@@ -105,39 +79,59 @@ in
       cp = "cp -vi ";
       mv = "mv -vi ";
 
-      grep = "rg";
-      # grep = "grep --color=auto";
-
-
-      # Replacing List command with eza
-      lss  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links";
-      lsg  = "eza --color=always --group-directories-first --long --git --icons=always --links --group";
+      # Replacing List command with eza (Read it's help before you edit)
+      l    = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
       ls   = "eza --color=always --group-directories-first --long --git --icons=always --links";
+      lss  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links";
+
       la   = "eza --color=always --group-directories-first --long --git --icons=always --links -A";
       lsa  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links -A";
-      las  = "eza --color=always --group-directories-first --long --git --icons=always --total-size --links -A";
+      lsg  = "eza --color=always --group-directories-first --long --git --icons=always --links --group";
 
-      l    = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
 
-      checkcpplib = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 12 '#include <...> search starts here:'";
-    };
+      checkcpplibs = "g++ -v -E -x c++ - </dev/null 2>&1 | grep -A 12 '#include <...> search starts here:'";
+
+     };
   };
 
-  environment.systemPackages = with pkgs; [
+
+  environment = {
+
+  #? Set up environment variables for colored man pages
+  variables = {
+  MANPAGER = lib.mkForce "sh -c 'col -bx | bat -l man -p'";           #* Use bat as the pager for man with syntax highlighting
+  LESSOPEN = lib.mkForce "| ${pkgs.lesspipe}/bin/lesspipe.sh %s";     #* Set LESSOPEN to use lesspipe
+  LESS = lib.mkForce "-R";                                            #* Ensure LESS is configured to interpret ANSI color codes correctly
+  MANROFFOPT = "-c";                                                  #* Enable colorized output for man pages
+  };
+
+  systemPackages = with pkgs; [
     viddy
     hwatch
-
 
     moreutils
 
     eza
     ripgrep
-    nix-output-monitor
 
     termshot
 
-    fzf
-
     fastfetch
-  ];
+
+    man
+    man-pages
+    linux-manual
+    man-pages-posix
+
+    bat
+    less
+  ] ++ scriptPackages;  #> auto-collected from #NIXPKGS comments
+  };
+
+  programs.less = {
+    enable = true;
+    envVariables = {
+      LESS = "-R --use-color -Dd+r$Du+b";
+    };
+  };
 }
