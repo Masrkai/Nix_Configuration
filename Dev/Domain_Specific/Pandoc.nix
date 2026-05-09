@@ -16,6 +16,8 @@ in{
       pandoc
       pandoc-include
       pandoc-ext-diagram
+
+      librsvg
     ];
 
 
