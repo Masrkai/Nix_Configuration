@@ -120,6 +120,9 @@ in
        #> Encryption
        gnupg
 
+
+       bloodhound
+
     ];
 
 
