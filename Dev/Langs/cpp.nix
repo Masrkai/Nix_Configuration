@@ -11,18 +11,18 @@
     #* Static Analysis
     cppcheck
 
-    #* UI Toolkits
-    gtk3
-    gtk4
-    kdePackages.qtbase # Qt runtime
-    kdePackages.qttools # Qt development tools (qmake, designer)
-
     #* IDE Support (Consider these optional based on your IDE)
     qtcreator
 
     #* Libraries
     eigen
     nlohmann_json
+
+      #* UI Toolkits
+      gtk3
+      gtk4
+      kdePackages.qtbase # Qt runtime
+      kdePackages.qttools # Qt development tools (qmake, designer)
 
     #* GCC Toolchain (with higher priority to avoid collisions)
     (lib.hiPrio gcc14)
@@ -41,9 +41,11 @@
     #* debuggers
     (lib.hiPrio pkgs.gdb)
 
-
     bpftools
     bpftrace
+
+    #* Modification
+    patchelf
   ];
 
 }
