@@ -36,6 +36,10 @@ in
         #-> Networks
         netutils
 
+        #-> Platforms
+        huggingface-hub
+
+
         pylint
         # pylance
 
