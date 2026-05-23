@@ -14,7 +14,7 @@
     ./Domain_Specific/KBS.nix
     ./Domain_Specific/Docs.nix
     ./Domain_Specific/Pandoc.nix
-    ./Domain_Specific/Big_Data.nix
+    # ./Domain_Specific/Big_Data.nix
 
     # Databases
     ./Domain_Specific/MySQL.nix

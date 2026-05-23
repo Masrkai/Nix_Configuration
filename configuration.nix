@@ -187,6 +187,7 @@ in
 
       permittedInsecurePackages = [
         "ciscoPacketTracer8-8.2.2"
+        # "qtwebengine-5.15.19"
 
       ];
     };
@@ -283,6 +284,7 @@ in
 
 
   brave
+  # mellowplayer
   keepassxc
   fastfetch
   authenticator

@@ -7,11 +7,13 @@
     ./Syncthing.nix
     ./Pen_Testing.nix
     ./PowerManagment.nix
+    ./METASearchEngine.nix
 
     #Virtualization
     ./Virtualization/GNS.nix
     ./Virtualization/simulation.nix
     ./Virtualization/virtualisation.nix
+
 
     ./OBS.nix
     ./Journal.nix
