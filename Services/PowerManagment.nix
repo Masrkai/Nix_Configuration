@@ -24,7 +24,7 @@
 
     services.asusd = lib.mkIf config.hardware.isAsusTuf {
       enable = true;
-      enableUserService = true;
+      # enableUserService = true;
     };
 
     systemd.services.asusd = lib.mkIf config.services.asusd.enable {

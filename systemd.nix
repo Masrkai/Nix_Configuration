@@ -38,12 +38,12 @@ services.logind.settings.Login.HandleLidSwitch = "ignore";
 
 
     # Main systemd sleep configuration
-    sleep.extraConfig = ''
-      [Sleep]
-      AllowSuspend=yes
-      SuspendMode=suspend
-      SuspendState=mem
-    '';
+    # sleep.extraConfig = ''
+    #   [Sleep]
+    #   AllowSuspend=yes
+    #   SuspendMode=suspend
+    #   SuspendState=mem
+    # '';
   };
 
 

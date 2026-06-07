@@ -44,13 +44,16 @@ buildPythonPackage rec {
   format = "wheel";
 
   src = fetchurl {
+    #! old
 
     # url = "https://files.pythonhosted.org/packages/31/25/32c5e2c919da4faaea9ef5088437ab6e01738c49402e4ec8a6c7b49e30ef/jax-0.6.0-py3-none-any.whl";
-
-    url = "https://files.pythonhosted.org/packages/f9/e7/19b8cfc8963b2e10a01a4db7bb27ec5fa39ecd024bc62f8e2d1de5625a9d/jax-0.8.1-py3-none-any.whl" ;
-
     # hash = "sha256-IrIYJ1l8bWtG6IVDtPw3L83fHMEkdmBFLeAgzEvaGvw=";
-    hash = "sha256-TL3FVI8wlc3WnTjkM3lQsvwfJQp0CgI00ZDkoxkHdWQ=";
+
+    # url = "https://files.pythonhosted.org/packages/f9/e7/19b8cfc8963b2e10a01a4db7bb27ec5fa39ecd024bc62f8e2d1de5625a9d/jax-0.8.1-py3-none-any.whl" ;
+    # hash = "sha256-TL3FVI8wlc3WnTjkM3lQsvwfJQp0CgI00ZDkoxkHdWQ=";
+
+    url = "https://files.pythonhosted.org/packages/70/aa/dfac6d72cc35bc07e7587115b6946e333ef4ccb2e6cd26ecf639438c5d26/jax-0.10.0-py3-none-any.whl";
+    hash = "sha256-dsQroWPI2z3C5EniJbiIwO37Yj3tMe/cltheD9odJug=";
     # hash = lib.fakeHash;  # You'll need to update this hash
   };
 

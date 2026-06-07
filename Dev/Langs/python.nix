@@ -22,7 +22,7 @@ in
     honcho
     chromedriver
     geckodriver
-    (lib.lowPrio (python312.withPackages (ps: with ps; [
+    (lib.lowPrio (python313.withPackages (ps: with ps; [
 
         # # unsloth
         # # unsloth-zoo
@@ -54,11 +54,11 @@ in
             pycuda
 
             #-> GUI
-            pyqt6
-            pyside6
-            pyqt6-sip
-            pyqt6-charts
-            pyqt6-webengine
+            # pyqt6
+            # pyside6
+            # pyqt6-sip
+            # pyqt6-charts
+            # pyqt6-webengine
 
             screeninfo
             raylib-python-cffi
@@ -86,7 +86,7 @@ in
 
             pillow
             piexif
-            onnxruntime
+            # onnxruntime
 
             qrcode
             qrcode-terminal

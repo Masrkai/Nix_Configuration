@@ -2,12 +2,8 @@
 
 {
 
-imports = [
-  ./arcadedbserv.nix
-];
-
   services.neo4j = {
-    enable = true;
+    enable = false;
 
     # Network
     defaultListenAddress = "127.0.0.1";

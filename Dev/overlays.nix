@@ -15,60 +15,51 @@ in
     overlays = [
 
       (final: prev: {
-          onnxruntime = final.python3Packages.callPackage ../Programs/python-libs/onnxruntime.nix{};
-
-          metasploit = unstable.metasploit;
-
-
+          # onnxruntime = final.python3Packages.callPackage ../Programs/python-libs/onnxruntime.nix{};
 
           pythonPackagesExtensions = [
-              (python-final: python-prev: {
-                trl = python-final.callPackage ../Programs/python-libs/trl.nix{ };
-                tyro = python-final.callPackage ../Programs/python-libs/tyro.nix{ };
-                datasets = python-final.callPackage ../Programs/python-libs/datasets.nix{ };
-                smolagents = python-final.callPackage ../Programs/python-libs/smolagents.nix{};
-                onnxruntime = python-final.callPackage ../Programs/python-libs/onnxruntime.nix{};
+              (py-final: py-prev: {
+                trl = py-final.callPackage ../Programs/python-libs/trl.nix{ };
+                tyro = py-final.callPackage ../Programs/python-libs/tyro.nix{ };
+                datasets = py-final.callPackage ../Programs/python-libs/datasets.nix{ };
+                smolagents = py-final.callPackage ../Programs/python-libs/smolagents.nix{};
+                onnxruntime = py-final.callPackage ../Programs/python-libs/onnxruntime.nix{};
 
-                hf-xet = python-final.callPackage ../Programs/python-libs/hf-xet.nix{};
-                huggingface-hub = python-final.callPackage ../Programs/python-libs/huggingface-hub.nix{};
+                # hf-xet = py-final.callPackage ../Programs/python-libs/hf-xet.nix{};
+                # huggingface-hub = py-final.callPackage ../Programs/python-libs/huggingface-hub.nix{};
 
-                # llama-cpp-python =  python-final.callPackage ../Programs/python-libs/llama-cpp-python.nix{ };
-                cut-cross-entropy = python-final.callPackage ../Programs/python-libs/cut-cross-entropy.nix{ };
+                # llama-cpp-python =  py-final.callPackage ../Programs/python-libs/llama-cpp-python.nix{ };
+                cut-cross-entropy = py-final.callPackage ../Programs/python-libs/cut-cross-entropy.nix{ };
 
-                vllm = python-final.callPackage ../Programs/python-libs/vllm.nix{ };
-                keras = python-final.callPackage ../Programs/python-libs/keras.nix{ };
-                # xformers = python-final.callPackage ../Programs/python-libs/xformers.nix{ };
-                flash-attn = python-final.callPackage ../Programs/python-libs/flash-attn.nix{ };
+                vllm = py-final.callPackage ../Programs/python-libs/vllm.nix{ };
+                keras = py-final.callPackage ../Programs/python-libs/keras.nix{ };
+                # xformers = py-final.callPackage ../Programs/python-libs/xformers.nix{ };
+                flash-attn = py-final.callPackage ../Programs/python-libs/flash-attn.nix{ };
 
-                unsloth = python-final.callPackage ../Programs/python-libs/unsloth/unsloth.nix{ };
-                unsloth-zoo = python-final.callPackage ../Programs/python-libs/unsloth/unsloth-zoo.nix{ };
+                unsloth = py-final.callPackage ../Programs/python-libs/unsloth/unsloth.nix{ };
+                unsloth-zoo = py-final.callPackage ../Programs/python-libs/unsloth/unsloth-zoo.nix{ };
 
-                fairseq2 = python-final.callPackage ../Programs/python-libs/fairseq2.nix{ };
+                fairseq2 = py-final.callPackage ../Programs/python-libs/fairseq2.nix{ };
 
-                jax = python-final.callPackage ../Programs/python-libs/jax.nix{ };
-              })
 
-            (py-final: py-prev: {
+                # Jax is a complicated situation, in case of the basic setup fron nixpkgs
+                # it will fail tests so it will maybe brick installs so at the very least
+                # overlay "doCheck = false;" to skip tests
+
+                # jax = py-prev.jax.overrideAttrs (oldAttrs: {
+                #   doCheck = false;
+                # });
+
+                # otherwise my informed choice of using a wheel here saves me so much building time and compute
+                jax = py-final.callPackage ../Programs/python-libs/jax.nix{ };
                 jaxlib = py-prev.jaxlib-bin;
 
                 #> torch to torch-bin
                 torch = py-prev.torch-bin;
-                
-                # .overrideAttrs (oldAttrs: {
-                #             passthru = (oldAttrs.passthru or {}) // {
-                #               # Add the missing attributes that torch-dependent packages expect
-                #               cudaPackages     = final.cudaPackages;
-                #               cudaSupport      = final.config.cudaSupport or false;
-                #               cudaCapabilities = final.config.cudaCapabilities or [];
-
-                #               # Preserve any existing passthru attributes from torch-bin
-                #             } // (oldAttrs.passthru or {});
-                #           });
-
-
                 torchaudio = py-final.torchaudio-bin;
                 torchvision = py-final.torchvision-bin;
-            })
+              })
+
           ];
 
         }

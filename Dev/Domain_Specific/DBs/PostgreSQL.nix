@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  secrets = import ../../Sec/secrets.nix;
+  secrets = import ../../../Sec/secrets.nix;
 
 in{
   services.postgresql = {

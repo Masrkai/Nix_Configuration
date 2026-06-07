@@ -8,8 +8,7 @@ in
 {
   services.ollama = {
     enable = true;
-    package = unstable.ollama;
-    acceleration = "cuda";
+    package = unstable.ollama-cuda;
 
     port = 11434;
     host = "127.0.0.1";

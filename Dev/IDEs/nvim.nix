@@ -212,6 +212,11 @@ in {
     plugins.diffview.enable = true;
 
     # ============================================================================
+    # Multi-line editing
+    # ============================================================================
+    plugins.visual-multi.enable = true;
+
+    # ============================================================================
     # LSP
     # Mirrors your VSCode language servers exactly
     # ============================================================================
@@ -490,6 +495,47 @@ in {
         action = ":Telescope live_grep<CR>";
         options.silent = true;
       }
+{
+  mode = "n";
+  key = "<C-f>";
+  action = "/";
+  options.silent = true;
+}
+
+
+
+# Shift+Up to select upward
+{
+  mode = "n";
+  key = "<S-Up>";
+  action = "<S-v><Up>";
+  options.silent = true;
+}
+
+# Shift+Down to select downward
+{
+  mode = "n";
+  key = "<S-Down>";
+  action = "<S-v><Down>";
+  options.silent = true;
+}
+
+# Keep extending selection while holding shift
+{
+  mode = "v";
+  key = "<S-Up>";
+  action = "<Up>";
+  options.silent = true;
+}
+{
+  mode = "v";
+  key = "<S-Down>";
+  action = "<Down>";
+  options.silent = true;
+}
+
+
+
 
       # Buffer tabs (like VSCode Ctrl+Tab / Ctrl+W)
       {
@@ -681,9 +727,9 @@ in {
       shfmt
 
       # Web / misc
-      nodePackages.yaml-language-server
-      nodePackages.vscode-json-languageserver
-      nodePackages.markdownlint-cli
+      # nodePackages.yaml-language-server
+      # nodePackages.vscode-json-languageserver
+      # nodePackages.markdownlint-cli
       cmake-language-server
 
       # Formatters

@@ -22,41 +22,37 @@
     efi.canTouchEfiVariables = true;
     };
 
-    # kernelPackages =
-    #   pkgs.linuxKernel.packages.linux_6_18           #! testing
-    #   # pkgs.linuxPackages_latest                    #* FOR LATEST pkgs.linuxPackages_latest
-    #   ;
+    kernelPackages =
+    #   pkgs.linuxKernel.packages.linux_6_18;
+    #   pkgs.linuxPackages_latest;                    # the latest kernel aliased in the nixpkgs
 
-        #! DIY approach - takes so much time it's impossible to wait!
-        # kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
-        #   argsOverride = rec {
-        #     version = "6.12.8";
-        #     modDirVersion = "6.12.8";
-        #       src = pkgs.fetchurl {
-        #                   url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
-        #                   sha256 = "sha256-IpHaBlygS3Fcie5QNirsPwIadBS8lj8bVnNmgsgSKXk=";
-        #       };
-        #     };
-        #   }
-        # );
+    #! DIY approach - this takes indeed so much time (I am praying for kernel maintainers since I tried this lol)
+    #  pkgs.linuxPackagesFor (pkgs.linux_6_12.override {
+    #   argsOverride = rec {
+    #     version = "6.12.8";
+    #     modDirVersion = "6.12.8";
+    #       src = pkgs.fetchurl {
+    #                   url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
+    #                   sha256 = "sha256-IpHaBlygS3Fcie5QNirsPwIadBS8lj8bVnNmgsgSKXk=";
+    #       };
+    #     };
+    #   }
+    # );
 
-    kernelPackages = lib.mkIf (lib.versionOlder pkgs.linux.version "6.18.22") (
-     lib.mkDefault pkgs.linuxKernel.packages.linux_7_0
-    );
+    # Why make an if condition here you may ask, here is my explination to whover reading this in the future
+    # in NixOS 25.11 release in 2026 there was a major vulnerability called Copy Fail
+    # it was so big it had it's very own website: https://copy.fail/
+    # there was a discussion on : https://discourse.nixos.org/t/is-nixos-affected-by-copy-fail-edit-yes-it-is/77317/11
+    # that suggested this approach as a temporary fix for the people who were relying on the default kernel of that release of NixOS (25.11)
+    #
+    #? History
+    #  6.18.8: CVE-2026-31431 / Copy Fail | metigated by updating to 6.18.22 or later
+     lib.mkIf (lib.versionOlder pkgs.linux.version "6.18.22") (
+          lib.mkDefault pkgs.linuxKernel.packages.linux_7_0);
 
-    # Add the rtl8188eus-aircrack module to your kernel modules
     extraModulePackages = with config.boot.kernelPackages; [
-      # rtl8188eus-aircrack
-      # rtl8812au
       # rtl88xxau-aircrack    # see https://discourse.nixos.org/t/solved-how-to-correctly-add-kernel-module/24974/2
-
-      # rtw88
-
     ];
-
-
-
-
 
     # Configure initial ramdisk modules
     initrd = {

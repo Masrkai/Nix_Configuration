@@ -86,14 +86,14 @@ in
   fonts = {
     packages = with pkgs; [
 
+      #* Terminal Icons
+      nerd-fonts.symbols-only  # all nerd font icons, no patched base font
+
       #* First Class
       amiri
       iosevka-bin
       cm_unicode
       newcomputermodern
-      nerd-fonts.iosevka
-      nerd-fonts.iosevka-term
-      material-design-icons
 
       #> Second Class
       dejavu_fonts
@@ -167,14 +167,27 @@ in
 
 
         ffmpeg = prev.ffmpeg.override {
-          withWhisper   = false;
+          withWhisper    = false;
+          withSvtav1     = true;
+          withAom        =true;
+          withTensorflow = false;
+
+          withMetal = false; # Use Metal API on Mac. Unfree and requires manual downloading of files
+          withMfx = false; # Hardware acceleration via the deprecated intel-media-sdk/libmfx. Use oneVPL instead (enabled by default) from Intel's oneAPI.
+
           # withFrei0r    = false;
-          # ffmpegVariant = "full";  # triggers withFullDeps = true
         };
 
 
         ffmpeg-full = prev.ffmpeg-full.override {
-          withWhisper   = false;
+          withWhisper    = false;
+          withSvtav1     = true;
+          withAom        =true;
+          withTensorflow = false;
+
+          withMetal = false; # Use Metal API on Mac. Unfree and requires manual downloading of files
+          withMfx = false; # Hardware acceleration via the deprecated intel-media-sdk/libmfx. Use oneVPL instead (enabled by default) from Intel's oneAPI.
+
           # withFrei0r    = false;
         };
 
@@ -187,6 +200,7 @@ in
 
       permittedInsecurePackages = [
         "ciscoPacketTracer8-8.2.2"
+        "minio-2025-10-15T17-29-55Z"
         # "qtwebengine-5.15.19"
 
       ];
@@ -199,6 +213,8 @@ in
   #*############
   #*Development:
   #*############
+
+ffmpeg-full
 
   #-> Custom
   unstable.grayjay

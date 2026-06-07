@@ -51,15 +51,29 @@
     ];
   };
 
+
+  #? History lesson
+  # There were two separate migration hops that happened for the cuda cache
+  #
+  # 1st The nixpkgs-cuda-ci project (which powered cuda-maintainers.cachix.org) was discontinued
+  # in favour of the CUDA-enabled nixpkgs release built on the "community Hydra"
+  # and cached at nix-community.cachix.org .
+  #
+  # 2nd The cache moved from cuda-maintainers.cachix.org to
+  # cache.nixos-cuda.org in November 2025, So (nix-community.cachix.org) was a transitional step.
+  #
+  # Conclusion is, don't use (cuda-maintainers.cachix.org) as it's discontinued
   nix.settings = lib.mkMerge [
     {
       substituters = [
         # "https://cuda-maintainers.cachix.org"
         "https://nix-community.cachix.org"
+        "https://cache.nixos-cuda.org"
       ];
       trusted-public-keys = [
         # "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
       ];
     }
   ];
@@ -95,47 +109,72 @@
 
   # Add CUDA toolkit to system packages
   environment ={
-      # variables = {
-      #   __NV_DISABLE_EXPLICIT_SYNC="1"; #! DO NOT ENABLE THIS, THIS IS A BAD PRACTICE
-      # };
+
       systemPackages = with pkgs; [
 
+        #? Diagnostics
+        clinfo     # OpenCL information
+        mesa-demos    # GLX diagnostics (renamed from glxinfo)
+        libva-utils  # VA-API diagnostics
+        vulkan-tools  # Vulkan utilities
+
           #? CUDA
-          # magma
+            #? videoAcceleration
+            libva-vdpau-driver
+            nv-codec-headers-12
 
-          cudatoolkit
+            #> Un-needed (Arguably but this is a single GPU platform)
 
-          cudaPackages.nccl
-          cudaPackages.cuda_nvcc
+            # cudatoolkit is officially deprecated and discouraged
+            # in modern nixpkgs this is just a compatibility shim
+            # cudatoolkit
 
-          # cudaPackages.cudnn
-          cudaPackages.libnpp
-          cudaPackages.cuda_cccl
-          cudaPackages.cuda_nvcc
-          cudaPackages.cuda_cudart
+            # the CUDA compiler. Only needed if you're actually
+            # compiling CUDA code on this machine. If you're just
+            # running pre-built apps (PyTorch, Blender, etc.)
+            # you don't need it globally
+            # cudaPackages.cuda_nvcc
 
-          # cudaPackages.cuda_opencl
+            # CUDA C++ Core Libraries (headers/abstractions used
+            # when writing CUDA kernels). Pure build-time dev dependency.
+            # cudaPackages.cuda_cccl
 
-          #? Diagnostics
-          clinfo     # OpenCL information
-          mesa-demos    # GLX diagnostics (renamed from glxinfo)
-          libva-utils  # VA-API diagnostics
-          vulkan-tools  # Vulkan utilities
+            # the CUDA runtime. This sounds essential but NixOS actually
+            # injects this through the driver infrastructure
+            # at /run/opengl-driver. Apps that need it get it through their
+            # own closure, not from your system packages.
+            # cudaPackages.cuda_cudart
 
-          #? videoAcceleration
-          libva-vdpau-driver
-          nv-codec-headers-12
+            # NVIDIA's multi-GPU collective communications library.
+            # Only relevant if you're doing distributed ML training
+            # across multiple GPUs. On a single-GPU desktop it does nothing.
+            # cudaPackages.nccl
+
+            # NVIDIA's deep learning primitives library (convolutions, activations, etc.).
+            # Only needed if you're training or running neural networks with frameworks
+            # like PyTorch/TensorFlow that explicitly link against it. Those frameworks
+            # bring their own cudnn in their closure anyway when installed with CUDA support,
+            # so having it globally is redundant unless you're doing custom development against it directly.
+            # cudaPackages.cudnn
 
 
+            # NVIDIA Performance Primitives, basically
+            # CUDA-accelerated image/signal processing routines.
+            # Very niche. Only needed if you're doing direct
+            # NPP API calls in your own code.
+            # No typical end-user app needs this from system packages.
+            # cudaPackages.libnpp
 
-          # TESTING
-          xorg.libxcb
-          xorg.xcbutilwm
-          xorg.xcbutilimage
-          xorg.xcbutilkeysyms
-          xorg.xcbutilrenderutil
-          xcb-util-cursor
       ];
+
+
+      #! DO NOT ENABLE THIS, THIS IS A BAD PRACTICE
+      # Wayland bringed explicit sync and this should
+      # have been the way it worked from the start
+      # I DO NOT ENCOURAGE NOR RECOMMEND DISABLING IT
+      # variables = {
+      #   __NV_DISABLE_EXPLICIT_SYNC="1";
+      # };
     };
 
 }
