@@ -85,7 +85,7 @@
         unknown_msg = "[unknown shell](bold yellow)";
         format = " via [$state( \($name\))]($style)";
         style = "bold blue";
-        symbol = "❄️ ";
+        symbol = " ";
       };
 
       # Python - only show in Python projects
