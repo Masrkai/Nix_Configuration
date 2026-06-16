@@ -36,7 +36,7 @@
   // ============================================================================
   "editor.fontSize": 14,
   "editor.fontLigatures": true,
-  "editor.fontFamily": "'Iosevka Fixed Hv Ex Obl','Iosevka Nerd Font','Iosevka Nerd Font Mono',monospace",
+  "editor.fontFamily": "'Iosevka Fixed Hv Ex Obl','Symbols Nerd Font',monospace",
 
   // ============================================================================
   // WORKBENCH - APPEARANCE
@@ -542,6 +542,9 @@
   "plantuml.urlFormat": "svg",
   "yaml.schemas": {
     "file:///nix/store/ni2sg0f5f7s5sqfmg6cgy1pw2v4zxmis-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///nix/store/gkaz3vjn2yjvf3had4a3dn9lrjbcwg7n-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
       ".continue/**/*.yaml"
     ]
   },

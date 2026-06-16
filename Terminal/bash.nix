@@ -125,7 +125,17 @@ in
 
     bat
     less
+
+    toolong
   ] ++ scriptPackages;  #> auto-collected from #NIXPKGS comments
+  };
+
+
+  #--> mlocate // "updatedb & locate"
+  services.locate = {
+    enable    = true;
+    package   = pkgs.mlocate;
+    # localuser = null;
   };
 
   programs.less = {

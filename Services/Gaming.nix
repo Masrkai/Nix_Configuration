@@ -49,7 +49,7 @@ environment.etc."skel/.local/share/bottles/runners/ge-proton10-17".source =
     extest.enable = true;
     protontricks.enable = true;
     gamescopeSession.enable = true;
-    extraCompatPackages = with pkgs; [ customPackages.proton-ge-bin ];
+    extraCompatPackages = with pkgs; [ customPackages.proton-ge-bin dwproton-bin ];
 
     remotePlay.openFirewall = false;                # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = false;           # Open ports in the firewall for Source Dedicated Server

@@ -9,6 +9,7 @@ let
     lm-studio = pkgs.callPackage ./Programs/Packages/lm-studio.nix {};
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
+    rharbor = pkgs.callPackage ./Programs/Packages/harbor.nix {};
 
     #>! Binary / FHSenv
     # proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
@@ -17,6 +18,9 @@ let
 in
 {
     imports = [
+      ./control-hardware.nix
+
+
       ./desktop.nix
       ./systemd.nix
       ./graphics.nix
@@ -24,12 +28,8 @@ in
       ./Dev/ztop.nix
       ./Services/ztop.nix
       ./Terminal/bash.nix
-      # ./Terminal/bashtest.nix
-      # ./virtualisation.nix
-      # ./dev-shells/collector.nix
       ./Programs/custom/ztop.nix
       ./Networking/Networking.nix
-      ./hardware-configuration.nix
     ];
 
 
@@ -369,6 +369,7 @@ ffmpeg-full
 
 
   btrfs-progs
+  customPackages.rharbor
 
 ];
 
@@ -390,12 +391,6 @@ ffmpeg-full
       package =  pkgs.kdePackages.kdeconnect-kde;
     };
 
-  #--> mlocate // "updatedb & locate"
-    services.locate = {
-      enable    = true;
-      # localuser = null;
-      package   = pkgs.mlocate;
-    };
 
   #---> Enable CUPS to print documents.
   services.printing.enable = false;

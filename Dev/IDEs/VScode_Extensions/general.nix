@@ -18,6 +18,15 @@
 
 
       {
+        #https://marketplace.visualstudio.com/items?itemName=Slint.slint
+        name = "slint";
+        publisher = "Slint";
+        version = "1.16.1";
+        hash = "sha256-whai8bvL+IJdeKe4/AFFQJ3bXrLvg7Ui8CGWpIbZpf8=";
+      }
+
+
+      {
         # https://marketplace.visualstudio.com/items?itemName=bpfdeploy.bpftrace
         name = "bpftrace";
         publisher = "bpfdeploy";

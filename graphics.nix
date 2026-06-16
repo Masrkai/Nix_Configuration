@@ -27,8 +27,8 @@
       "nvidia.NVreg_TemporaryFilePath=/var/tmp"
 
       # Additional parameters for better performance and stability
+      # "nvidia.NVreg_EnableResizableBAR=1"
       "nvidia.NVreg_UsePageAttributeTable=1"
-      "nvidia.NVreg_EnableResizableBAR=1"
       "nvidia.NVreg_EnableGpuFirmware=0"
 
       ];

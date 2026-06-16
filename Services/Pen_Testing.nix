@@ -25,6 +25,13 @@ in
       package = pkgs.wireshark;
     };
 
+    #-> Ghidra
+    programs.ghidra = {
+      enable = true;
+      gdb = true;
+
+    };
+
     environment.systemPackages = with pkgs;
     [
 
@@ -35,10 +42,8 @@ in
         xterm
 
         #> Excution
-        ghidra
         strace
         ltrace
-
 
         #> Password cracking
         crunch

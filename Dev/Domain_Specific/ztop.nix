@@ -10,6 +10,8 @@
     # SWE Toolkits
     ./UML.nix
     ./Docs.nix
+    ./GUIs.nix
+    ./embedded.nix
 
     # Databases / Storage Buckets / Data Queries
     ./DBs/query.nix

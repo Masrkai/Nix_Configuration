@@ -147,7 +147,7 @@
         disabled = true;
       };
 
-      # # Docker module
+      # Docker module
       # docker = {
       #   symbol = " ";
       #   style = "blue";
