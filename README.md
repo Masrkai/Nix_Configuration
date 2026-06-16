@@ -2,9 +2,18 @@
 
 ![NixOS](https://img.shields.io/badge/-NixOS-5277C3?style=flat-square&logo=nixos&logoColor=black) ![Nix](https://img.shields.io/badge/-Nix-7EBAFF?style=flat-square&logo=nixos&logoColor=black)
 
-A personal NixOS system configuration built over several years, targeting a daily-driver laptop environment with a heavy emphasis on network privacy, development tooling, AI/ML workflows, and penetration testing. The configuration is declarative throughout — everything from Wi-Fi credentials to kernel parameters is expressed in Nix, with secrets kept in an excluded `Sec/` directory.
+A personal NixOS system configuration built over time, targeting a daily-driver laptops environment with a heavy emphasis on:
 
-> **Last reviewed:** 18/3/2026 (DD/MM/YYYY)
+- security
+- network privacy
+- development tooling
+- penetration testing
+- AI/ML workflows (exists but often proven unrealistic sorry if you had rainbow dreams because of what the hardware companies gives as a sorry excuse of a vram *coughs~ Nvidia* while spitting on us for most consumer hardware at best, that's your sign that you know a human was behind this code)
+
+The configuration is declarative throughout, everything is expressed in Nix, with secrets kept in an excluded `Sec/` directory.
+
+> **Started**: 10/11/2023
+> **Last reviewed:** 16/06/2026 (DD/MM/YYYY)
 
 ---
 
@@ -12,89 +21,53 @@ A personal NixOS system configuration built over several years, targeting a dail
 
 The repository lives at `/etc/nixos/` and is structured so that each concern owns its own directory. The root `configuration.nix` is the single entry point that imports everything else.
 
-```
-/etc/nixos/
-├── configuration.nix          # System entry point
-├── hardware-configuration.nix # Auto-generated + hardware-specific overrides
-├── desktop.nix                # KDE Plasma 6 / Wayland / SDDM
-├── graphics.nix               # NVIDIA driver + CUDA
-├── security.nix               # Kernel hardening, blacklisted modules
-├── systemd.nix                # systemd-oomd, sleep config, logind
-│
-├── ID/                        # Runtime hardware detection
-├── Sec/                       # Secrets (gitignored)
-│
-├── Dev/                       # Development environment
-│   ├── Langs/                 # Per-language toolchains
-│   ├── IDEs/                  # VSCodium + extensions
-│   └── Domain_Specific/       # Databases, UML, big data, Pandoc
-│
-├── Networking/                # Full networking stack
-│   ├── DNS/                   # Unbound + dnscrypt-proxy
-│   ├── Profiles/              # Per-network NetworkManager profiles
-│   ├── Protocols/             # SSH, OpenVPN, WireGuard
-│   └── hardening/             # Kernel network parameters
-│
-├── Services/                  # System services
-│   ├── App_configs/           # Dotfiles applied at activation time
-│   ├── Virtualization/        # QEMU/libvirt, GNS3, containers
-│   └── ...                    # AI, gaming, pen-testing, audio, etc.
-│
-├── Programs/                  # Custom package derivations
-│   ├── Packages/              # Third-party binaries and custom builds
-│   ├── python-libs/           # ML/AI Python package overrides
-│   └── custom/                # Small in-house scripts packaged as Nix programs
-│
-├── Terminal/                  # Shell environment
-│   ├── bash.nix               # Bash + aliases + function imports
-│   ├── starship.nix           # Starship prompt configuration
-│   ├── Functions/             # Shell function library (sourced at login)
-│   └── starship_custom/       # Custom Starship modules
-│
-├── Nix-Shells/                # Project-scoped development shells
-├── VMISO/                     # NixOS ISO / VM configuration
-└── Docs/                      # Internal notes
-```
-
 The `ztop.nix` convention is used throughout: every directory that groups multiple files provides a `ztop.nix` that imports all siblings, so the parent only needs to import that single file.
+
+> Note: the file `control-hardware.nix` is for overriding logic that is in `hardware-configuration.nix` per the instructions provided in
 
 ---
 
 ## Hardware Detection
 
-Because the same repository is shared between two machines — an **ASUS TUF Gaming A15** and a **Dell G15** — hardware branching is needed in several places (filesystem UUIDs, git identity, power management, etc.).
+Because the same repository is shared between two machines
 
-Rather than maintaining two separate `configuration.nix` files, an activation-time shell script (`ID/detect-hardware.sh`) reads `/sys/class/dmi/id/product_name`, matches it against known patterns, and writes a small Nix file to `Sec/hardware-detected.nix`. That generated file sets four boolean options (`hardware.isAsusTuf`, `hardware.isDellG15`, `hardware.isThinkPad`, `hardware.isIdeaPad5`) which are declared in `ID/ID.nix` and consumed wherever hardware-specific behavior is required.
+- **ASUS TUF Gaming A15**
+- **Dell G15**
+- **IdeaPad 5**
+- (Extensibility is available to other hardware/server cases)
 
-`hardware-configuration.nix` imports this generated file and uses it to select the correct filesystem UUIDs. `Services/PowerManagment.nix` uses it to enable `asusd` and `power-profiles-daemon` only on the ASUS machine, and `Dev/git.nix` uses it to pick the right git user identity.
+> Note: hardware branching is needed in several places (git identity, power management, etc.).
 
+Rather than maintaining separate `configuration.nix` files, an activation-time shell script (`ID/detect-hardware.sh`) reads `/sys/class/dmi/id/product_name`, matches it against known patterns, and writes a small Nix file to `Sec/hardware-detected.nix`. That generated file sets four boolean options (`hardware.isAsusTuf`, `hardware.isDellG15`, `hardware.isThinkPad`, `hardware.isIdeaPad5`) which are declared in `ID/ID.nix` and consumed wherever hardware-specific behavior is required.
+
+> Note: I don't own a thinkpad it's just a so much of a legendary / based hardware that i thought of it before the hardware i have access to (yes i know it's stupid to leave it but i will leave it as a pure template)
 ---
 
 ## Boot and Kernel
 
-The system uses **systemd-boot** with EFI. The kernel is tracked at `linux_6_18` (testing branch), with the option to switch to `linuxPackages_latest`.
+The system uses **systemd-boot** with EFI. Several categories of kernel parameters are set explicitly. (BE AWARE!)
 
-Several categories of kernel parameters are set explicitly.
+View them in
 
-Security-focused parameters include `slab_nomerge`, `vsyscall=none`, `slub_debug=FZP`, `init_on_alloc=1`, `init_on_free=1`, `page_alloc.shuffle=1`, `pti=on`, and `randomize_kstack_offset=on`. These harden memory allocator behavior and reduce information leakage without requiring a hardened kernel patch set.
+- [security.nix](security.nix)
+- [control-hardware.nix](control-hardware.nix)
+- [Network_Kernel_Parameters.nix](Networking/hardening/Network_Kernel_Parameters.nix)
 
-Performance parameters include `amd_pstate=guided` to enable the AMD P-State driver, `scsi_mod.use_blk_mq=1` for multi-queue I/O, and transparent hugepages set to `madvise` mode so applications opt in explicitly.
-
-`nouveau` is blacklisted to prevent conflicts with the proprietary NVIDIA driver. A handful of legacy or obscure filesystems and network protocols are also blacklisted in `security.nix` to reduce the attack surface.
-
-The `initrd` loads the standard NVMe, AHCI, and USB modules. ASUS-specific modules (`asus_wmi`, `asus-armoury`) are loaded as kernel modules. USB4/Thunderbolt and USB-C alternate mode modules are also enabled.
+I have the use-case and sometimes the absolute need for these parameters to be set, these aren't written by AI, I formatted these files that way so I can actually go back and understand what is going on or if something in my system messes up that these aren't the suspect.
 
 ---
 
 ## Graphics
 
-The system runs a single NVIDIA GPU (the ASUS TUF contains an AMD iGPU which is explicitly blacklisted via `amdgpu` and `radeon` kernel module blacklisting, leaving the NVIDIA card as the sole display output).
+The systems runs NVIDIA GPUs in [graphics.nix](graphics.nix)
+
+- ASUS TUF contains a single dedicated GPU No Integrated.
+- Dell G15 contains both a dedicated and an integrated.
+- Lenovo IdeaPad 5 also contains both a dedicated and an integrated.
 
 `hardware.nvidia` is configured with the latest proprietary driver, modesetting enabled, `powerManagement.enable = true`, and `dynamicBoost.enable = true`. `forceFullCompositionPipeline` is left off deliberately; tear-free is instead handled at the X server screen-section level for compatibility.
 
-`nixpkgs.config.cudaSupport = true` is set globally, which means any package that optionally supports CUDA will be built with it. The nix-community binary cache is configured as a substituter so CUDA-enabled packages are pulled from cache rather than compiled locally.
-
-The CUDA toolkit, `nccl`, `libcufile`, and `nv-codec-headers` are installed system-wide so CUDA-dependent programs can find them at runtime regardless of their Nix packaging.
+`nixpkgs.config.cudaSupport = true` is set globally, which means any package that optionally supports CUDA will be built with it. The binary cache is configured as a substituter so CUDA-enabled packages are pulled from cache rather than compiled locally.
 
 ---
 
@@ -177,6 +150,8 @@ TCP congestion control is set to **BBR** with the `fq` qdisc, which provides bet
 
 Each language has its own file under `Dev/Langs/` and is imported by `Dev/Langs/ztop.nix`.
 
+> Note: You may need shells with every project while working with NixOS please be mindful that this is done to cache as much in nix-store due to the limited bandwidth and expensive internet environment that is forcedly conditioned in my very situation
+
 **C++** (`Dev/Langs/cpp.nix`) installs GCC 14 at high priority alongside LLVM/Clang 20, CMake, Ninja, pkg-config, GTest, GTK3/4, Qt base and tools, Eigen, nlohmann_json, and BPF tooling. The high-priority markers avoid library path collisions between GCC and Clang toolchains. A separate `Dev/cpp_env.nix` exists (currently commented out in `Dev/ztop.nix`) that sets `CC`/`CXX`/`CPLUS_INCLUDE_PATH`/`LIBRARY_PATH` environment variables for projects that rely on those rather than CMake's detection logic.
 
 **Python** (`Dev/Langs/python.nix`) provides a system-wide `python312` environment with an extensive package set covering GUI (PyQt6, PySide6, raylib), data (pandas, OpenCV, JAX, ONNX), networking (netutils, Selenium), databases (SQLite, pymysql), packaging (PyInstaller), and Jupyter/IPython infrastructure. The package set is installed with `lib.lowPrio` so it does not conflict with project-specific virtual environments. `ruff` and `ffmpeg-full` (with Whisper support disabled to reduce closure size) are installed at normal priority.
@@ -213,11 +188,7 @@ Each language has its own file under `Dev/Langs/` and is imported by `Dev/Langs/
 
 Extensions are split across per-language files under `Dev/IDEs/VScode_Extensions/` to keep the main configuration manageable. Each file exports two lists — `*-nixpkgs-extensions` and `*-marketplace-extensions` — which are concatenated in `vscodium.nix`.
 
-Extensions covered: Nix (nixd LSP, direnv, nix-env-selector), C++ (clangd, cmake-tools, LLDB, cmake-format, cmake-intellisense), Rust (rust-analyzer, even-better-toml, dependi), Python (ms-python, debugpy, ruff, full Jupyter stack), Go (official Go extension, proto3, go-outliner), Java (Red Hat Java, vscode-java-test, debug, dependency), SQL (PlantUML, database client, sqlite3-editor), Dart (official Dart + Flutter), UML (Draw.io, Mermaid graphical editor, Mermaid markdown syntax highlighting), and a large general set (Continue AI assistant, MarkdownLint, error lens, git history, rainbow CSV, code runner, trailing spaces, better comments, spell checker, Qt extensions, GLSL lint, x86-64 assembly, screendown, JSON Crack, bpftrace, and others).
-
 The settings file (`Dev/IDEs/vscode_config.jsonc`) is copied into `~/.config/VSCodium/User/settings.json` via a `system.userActivationScripts` entry, so the editor configuration is managed declaratively without home-manager.
-
-Notable settings: telemetry is fully disabled for VSCodium itself and for every extension that has a telemetry option (RedHat, AWS, Continue). Auto-update is disabled. The Iosevka font family is used in both the editor and integrated terminal. The Lukin Theme color scheme is applied. The Nix LSP is configured to use `alejandra` for formatting. All Qt extension paths point at the system Qt installation.
 
 ---
 
@@ -245,9 +216,11 @@ Overridden packages include: `torch` → `torch-bin`, `torchaudio` → `torchaud
 
 `Services/Ai.nix` configures **Ollama** (from the unstable channel, with CUDA acceleration) on port 11434, binding to localhost. Models are stored in `~/AI` rather than the default location. Open-WebUI is defined but set to `enable = false`.
 
-**SearXNG** is enabled as a local metasearch engine on port 8880. It is configured with a curated engine list: Google, DuckDuckGo, Wikipedia, Wikidata, books (Goodreads, OpenLibrary, Anna's Archive), software (F-Droid, APKMirror, Void Linux, Apple App Store, CachyOS, Alpine packages), torrents (seven sources), wikis (multiple MediaWiki instances, Arch Linux wiki, Wikimedia Commons), and a handful of explicitly disabled engines (Bing, Brave). Engines are assigned shortcut numbers sequentially. The favicon and thumbnail proxy resolvers are enabled. NNSFW, OpenAI API, and evaluation arena features are disabled.
-
 Apache Tika OCR is defined but disabled. Podman is defined but disabled.
+
+### Custom search engine
+
+**SearXNG** is enabled as a local metasearch engine on port 8880. It is configured with a curated engine list: Google, DuckDuckGo, Wikipedia, Wikidata, books (Goodreads, OpenLibrary, Anna's Archive), software (F-Droid, APKMirror, Void Linux, Apple App Store, CachyOS, Alpine packages), torrents (seven sources), wikis (multiple MediaWiki instances, Arch Linux wiki, Wikimedia Commons), and a handful of explicitly disabled engines (Bing, Brave). Engines are assigned shortcut numbers sequentially. The favicon and thumbnail proxy resolvers are enabled. NNSFW, OpenAI API, and evaluation arena features are disabled.
 
 ### Gaming
 
@@ -259,31 +232,13 @@ Additional packages: Heroic (Epic/GOG launcher), DXVK, MangoHud, Winetricks, and
 
 `Services/Pen_Testing.nix` installs a comprehensive set of tools grouped by purpose.
 
-Network fundamentals: `iw`, `nmap`, `rustscan`, `tcpdump`, `ettercap`, `bettercap`, `arp-scan`, `traceroute`, `ligolo-ng`.
-
-Password cracking: `crunch`, `hashcat`, `hcxtools`, `hcxdumptool`, `zip2hashcat`, `hashcat-utils`.
-
-Wireless: `mdk4`, `airgorah`, `aircrack-ng`, `linux-wifi-hotspot`, plus WPS tools (`bully`, `pixiewps`, `reaverwps-t6x`).
-
-MITM: `wifi-honey` (custom derivation), `evillimiter` (custom Python derivation that uses ARP spoofing and traffic shaping via `iproute2` and `nftables`).
-
-Exploitation: `metasploit`, `armitage`, `exploitdb`.
-
-SQL injection: `sqlmap`, `jsql-injection` (custom derivation, a Java JAR wrapped with a desktop entry).
-
-Reverse engineering: `ghidra`, `strace`, `ltrace`, `pince`.
-
-Evil twin: `hostapd-wpe` (custom derivation, a manually patched build of `hostapd` with WPE — Wireless Pwnage Edition — functionality), `dnsmasq`, `dhcpcd`.
-
-Wireshark is enabled via `programs.wireshark` with the GUI package.
-
 ### Audio
 
 `Services/PipeWire.nix` runs PipeWire with ALSA, JACK, and PulseAudio compatibility layers. Buffer sizes are set conservatively large (2048 frames quantum, 1024 minimum) for stability rather than minimum latency. The PulseAudio compatibility layer is configured with matching buffer sizes. `security.rtkit` is enabled so the PipeWire daemon can request real-time scheduling.
 
 ### Power Management
 
-`Services/PowerManagment.nix` branches on detected hardware. On the ASUS TUF, `asusd` (the ASUS Linux daemon), `power-profiles-daemon`, and `system76-scheduler` are enabled. On the Dell G15, `tlp` is enabled with performance governor on AC and powersave on battery. `services.supergfxd` is disabled (it was used for hybrid GPU switching on ASUS but caused issues).
+`Services/PowerManagment.nix` branches on detected hardware. On the ASUS TUF, `asusd` (the ASUS Linux daemon), while all commenly use `power-profiles-daemon`, and `system76-scheduler` .
 
 ### Syncthing
 
