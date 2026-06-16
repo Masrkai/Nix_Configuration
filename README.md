@@ -372,3 +372,9 @@ switch    # equivalent to: sudo nixos-rebuild switch --show-trace 2>&1 | nom
 update    # nix-channel --update followed by switch --upgrade
 garbage   # nix-collect-garbage -d && nix-store --optimise
 ```
+
+in case you saved configurations in `hardware-configuration.nix`, the following command will regenerate it, just avoid using that file entirely and use a layer like `control-hardware.nix` (just another file) to define your configuration
+
+```
+sudo nixos-generate-config --show-hardware-config > /etc/nixos/hardware-configuration.nix
+```
