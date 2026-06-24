@@ -8,7 +8,7 @@
   "aws.telemetry": false,
   "amazonQ.telemetry": false,
   "amazonQ.suppressPrompts": {
-    "amazonQChatDisclaimer": true
+    "amazonQChatDisclaimer": true,
   },
 
   // ============================================================================
@@ -49,7 +49,7 @@
   "workbench.sideBar.location": "right",
   "workbench.colorCustomizations": {},
   "workbench.editorAssociations": {
-    "{git,gitlens}:/**/*.{md,csv,svg}": "default"
+    "{git,gitlens}:/**/*.{md,csv,svg}": "default",
   },
 
   // ============================================================================
@@ -84,7 +84,7 @@
   // FILES & EXPLORER
   // ============================================================================
   "files.exclude": {
-    "**/.git": false
+    "**/.git": false,
   },
 
   "explorer.confirmDelete": false,
@@ -102,7 +102,7 @@
     "*.sqlite3": "${capture}.${extname}-*",
     "*.db3": "${capture}.${extname}-*",
     "*.sdb": "${capture}.${extname}-*",
-    "*.s3db": "${capture}.${extname}-*"
+    "*.s3db": "${capture}.${extname}-*",
   },
 
   // ============================================================================
@@ -122,35 +122,70 @@
   "nix.serverSettings": {
     "nixd": {
       "formatting": {
-        "command": ["alejandra"]
+        "command": ["alejandra"],
       },
       "options": {
         "enable": true,
         "target": {
-          "args": []
-        }
-      }
-    }
+          "args": [],
+        },
+      },
+    },
   },
 
   // ============================================================================
   // LANGUAGE: PYTHON
   // ============================================================================
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": false,
+  },
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.ruff": "explicit",
+    "source.organizeImports.ruff": "explicit",
+  },
+
   "ruff.nativeServer": "on",
-  "ruff.trace.server": "messages",
+  "ruff.trace.server": "off",
+  "ruff.path": ["/run/current-system/sw/bin/ruff"],
+
+  "basedpyright.analysis.autoSearchPaths": true,
+  "basedpyright.analysis.useLibraryCodeForTypes": true,
+  "basedpyright.disableLanguageServices": false,
+  "basedpyright.disableOrganizeImports": true,
+
   "python.terminal.focusAfterLaunch": true,
   "python.terminal.launchArgs": [],
   "python.terminal.activateEnvironment": false,
   "python.createEnvironment.contentButton": "show",
+
+  "python.languageServer": "None",
+  "python.defaultInterpreterPath": "/run/current-system/sw/bin/python",
+
+  // TELEMTRY
   "python.experiments.enabled": false,
   "python.diagnostics.sourceMapsEnabled": true,
 
   // ============================================================================
+  // LANGUAGE: Zig
+  // ============================================================================
+  "[zig]": {
+    "editor.defaultFormatter": "ziglang.vscode-zig",
+    "editor.formatOnSave": false,
+  },
+
+  "zig.path": "/run/current-system/sw/bin/zig",
+
+  "zig.zls.enabled": "on",
+  "zig.zls.path": "/run/current-system/sw/bin/zls",
+  "zig.buildOnSaveProvider": "off",
+
+  // ============================================================================
   // LANGUAGE: C/C++
   // ============================================================================
-  "clangd.arguments": [
-    "--compile-commands-dir=${workspaceFolder}"
-  ],
+  "clangd.arguments": ["--compile-commands-dir=${workspaceFolder}"],
 
   // ============================================================================
   // LANGUAGE: RUST
@@ -164,6 +199,17 @@
   "dart.enableServerSnippets": false,
 
   // ============================================================================
+  // LANGUAGE: Slint
+  // ============================================================================
+  "[slint]": {
+    "editor.defaultFormatter": "Slint.slint",
+    "editor.formatOnSave": false,
+  },
+
+  "slint.lspBinaryPath": "/run/current-system/sw/bin/slint-lsp",
+  "slint.preview.style": "native",
+
+  // ============================================================================
   // LANGUAGE: JSON
   // ============================================================================
   "json.schemaDownload.enable": false,
@@ -174,63 +220,63 @@
   "code-runner.runInTerminal": true,
   "code-runner.enableAppInsights": false,
   "code-runner.executorMap": {
-    "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "cpp": "cd $dir && clear && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "javascript": "node",
-    "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
-    "zig": "zig run",
     "php": "php",
-    "python": "python -u",
+    "lua": "lua",
+    "v": "v run",
     "perl": "perl",
-    "perl6": "perl6",
     "ruby": "ruby",
     "go": "go run",
-    "lua": "lua",
-    "groovy": "groovy",
-    "powershell": "powershell -ExecutionPolicy ByPass -File",
+    "r": "Rscript",
+    "dart": "dart",
     "bat": "cmd /c",
-    "shellscript": "bash",
     "fsharp": "fsi",
-    "csharp": "scriptcs",
-    "vbscript": "cscript //Nologo",
-    "typescript": "ts-node",
-    "coffeescript": "coffee",
+    "zig": "zig run",
+    "perl6": "perl6",
     "scala": "scala",
     "swift": "swift",
     "julia": "julia",
-    "crystal": "crystal",
     "ocaml": "ocaml",
-    "r": "Rscript",
-    "applescript": "osascript",
-    "clojure": "lein exec",
-    "haxe": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
-    "rust": "cd $dir && rustc $fileName && $dir$fileNameWithoutExt",
+    "groovy": "groovy",
     "racket": "racket",
-    "scheme": "csi -script",
+    "mojo": "mojo run",
     "ahk": "autohotkey",
     "autoit": "autoit3",
-    "dart": "dart",
-    "pascal": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
-    "d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
     "haskell": "runghc",
-    "nim": "nim compile --verbosity:0 --hints:off --run",
-    "lisp": "sbcl --script",
     "kit": "kitc --run",
-    "v": "v run",
+    "erlang": "escript",
+    "javascript": "node",
+    "csharp": "scriptcs",
+    "crystal": "crystal",
+    "spwn": "spwn build",
+    "python": "python -u",
+    "shellscript": "bash",
+    "clojure": "lein exec",
+    "typescript": "ts-node",
+    "scheme": "csi -script",
+    "lisp": "sbcl --script",
+    "coffeescript": "coffee",
+    "applescript": "osascript",
+    "vbscript": "cscript //Nologo",
     "sass": "sass --style expanded",
     "scss": "scss --style expanded",
-    "less": "cd $dir && lessc $fileName $fileNameWithoutExt.css",
-    "FortranFreeForm": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "fortran-modern": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "fortran_fixed-form": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-    "fortran": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
     "sml": "cd $dir && sml $fileName",
-    "mojo": "mojo run",
-    "erlang": "escript",
-    "spwn": "spwn build",
+    "gleam": "gleam run -m $fileNameWithoutExt",
+    "nim": "nim compile --verbosity:0 --hints:off --run",
+    "powershell": "powershell -ExecutionPolicy ByPass -File",
+    "d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
+    "less": "cd $dir && lessc $fileName $fileNameWithoutExt.css",
+    "rust": "cd $dir && rustc $fileName && $dir$fileNameWithoutExt",
+    "pascal": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+    "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
+    "haxe": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
     "pkl": "cd $dir && pkl eval -f yaml $fileName -o $fileNameWithoutExt.yaml",
-    "gleam": "gleam run -m $fileNameWithoutExt"
+    "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "cpp": "cd $dir && clear && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "fortran": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "fortran-modern": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "FortranFreeForm": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "fortran_fixed-form": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
   },
 
   // ============================================================================
@@ -244,7 +290,7 @@
       "underline": false,
       "backgroundColor": "transparent",
       "bold": false,
-      "italic": false
+      "italic": false,
     },
     {
       "tag": "?",
@@ -253,7 +299,7 @@
       "underline": false,
       "backgroundColor": "transparent",
       "bold": false,
-      "italic": false
+      "italic": false,
     },
     {
       "tag": "todo",
@@ -262,7 +308,7 @@
       "underline": false,
       "backgroundColor": "transparent",
       "bold": false,
-      "italic": false
+      "italic": false,
     },
     {
       "tag": "*",
@@ -271,7 +317,7 @@
       "underline": false,
       "backgroundColor": "transparent",
       "bold": false,
-      "italic": false
+      "italic": false,
     },
     {
       "tag": ">",
@@ -280,7 +326,7 @@
       "underline": false,
       "backgroundColor": "transparent",
       "bold": false,
-      "italic": false
+      "italic": false,
     },
     {
       "tag": "-",
@@ -289,8 +335,8 @@
       "underline": false,
       "backgroundColor": "transparent",
       "bold": false,
-      "italic": false
-    }
+      "italic": false,
+    },
   ],
 
   // ============================================================================
@@ -303,7 +349,7 @@
   // ============================================================================
   "notebook.cellToolbarLocation": {
     "default": "right",
-    "jupyter-notebook": "left"
+    "jupyter-notebook": "left",
   },
   "notebook.output.wordWrap": true,
   "notebook.output.textLineLimit": 600,
@@ -319,7 +365,6 @@
   // EXTENSION: BASH IDE
   // ============================================================================
   "bashIde.explainshellEndpoint": "http://localhost:5000",
-
 
   // ============================================================================
   // EXTENSION: Cmake Tools
@@ -368,7 +413,7 @@
   // ============================================================================
   "launch": {
     "configurations": [],
-    "compounds": []
+    "compounds": [],
   },
 
   // ============================================================================
@@ -376,165 +421,165 @@
   // ============================================================================
   "cSpell.language": "en,en-GB,en-US,lorem",
   "cSpell.userWords": [
-    "acpid",
-    "acpilight",
-    "acpitz",
     "adfs",
     "affs",
-    "aircrack",
-    "Allam",
-    "alllows",
-    "AMDGPU",
-    "applescript",
-    "apportunity",
     "aspm",
-    "autodefrag",
-    "autofetch",
-    "autohotkey",
-    "autoit",
-    "autosuspend",
     "befs",
-    "blueman",
-    "Blueman",
-    "bluez",
     "bmof",
-    "btrfs",
-    "centisecs",
-    "clangd",
-    "codealpha",
-    "colourspace",
-    "coretemp",
-    "CPLUS",
-    "cpufreq",
-    "cpuid",
-    "cramfs",
-    "cscript",
-    "cstate",
-    "ctest",
     "curr",
     "DIMM",
-    "dotenv",
-    "drivetemp",
     "ehci",
-    "erofs",
-    "escript",
-    "evillimiter",
-    "exofs",
-    "explainshell",
-    "Fintek",
-    "flakeref",
-    "flamegraphs",
-    "freevxfs",
-    "ftrace",
-    "gfortran",
-    "gmbus",
-    "habibi",
-    "hasalpha",
     "haxe",
     "hpfs",
-    "hwmon",
-    "Hygon",
     "hyst",
-    "iommu",
-    "IOMMU",
-    "Iosevka",
-    "iwlmvm",
-    "iwlwifi",
     "iwyu",
-    "javac",
-    "jpegsave",
-    "Karim",
-    "keepalive",
-    "keymap",
     "kitc",
     "kmod",
     "lein",
-    "lessc",
-    "LNXSYBUS",
-    "LNXSYSTM",
-    "lockb",
-    "lrwxrwxrwx",
-    "Lukin",
-    "Mariam",
-    "MASRKAI",
-    "mdmath",
-    "mindshield",
-    "mptcp",
-    "netrom",
-    "networkmanager",
-    "nilfs2",
     "nixd",
-    "nixfmt",
-    "nixos",
-    "nixpkgs",
-    "noatime",
-    "nodiratime",
-    "Nologo",
-    "nomerge",
-    "nopti",
-    "nospectre",
-    "nowatchdog",
-    "Nuvoton",
     "omfs",
     "oomd",
-    "OPENAI",
-    "Origa",
-    "osascript",
     "pkgs",
-    "powersaving",
-    "psmouse",
-    "pstate",
-    "pyvips",
-    "qdisc",
-    "redzoning",
-    "regdb",
-    "revealjs",
-    "rfkill",
     "rmem",
     "rmem",
-    "Rscript",
-    "runghc",
-    "rustc",
     "sbcl",
-    "scriptcs",
-    "scrollback",
-    "setupcpp",
-    "Setupcpp",
-    "smbus",
     "SMSC",
-    "spindown",
     "spwn",
     "srgb",
-    "streamlit",
-    "subvol",
-    "synack",
-    "syncookies",
-    "sysconfig",
     "sysv",
-    "tabnine",
-    "threadirqs",
     "Udio",
-    "uinput",
-    "usbcore",
-    "vboxnetadp",
-    "vboxnetflt",
-    "vbscript",
     "vfat",
     "vfio",
     "vsix",
-    "vsyscall",
-    "Winbond",
     "wmem",
-    "writeback",
     "xhci",
     "zram",
     "zstd",
+    "acpid",
+    "Allam",
+    "bluez",
+    "btrfs",
+    "CPLUS",
+    "cpuid",
+    "ctest",
+    "erofs",
+    "exofs",
+    "gmbus",
+    "hwmon",
+    "Hygon",
+    "iommu",
+    "IOMMU",
+    "javac",
+    "Karim",
+    "lessc",
+    "lockb",
+    "Lukin",
+    "mptcp",
+    "nixos",
+    "nopti",
+    "Origa",
+    "qdisc",
+    "regdb",
+    "rustc",
+    "smbus",
+    "acpitz",
+    "AMDGPU",
+    "autoit",
+    "clangd",
+    "cramfs",
+    "cstate",
+    "dotenv",
+    "Fintek",
+    "ftrace",
+    "habibi",
+    "iwlmvm",
+    "keymap",
+    "Mariam",
+    "mdmath",
+    "netrom",
+    "nilfs2",
+    "nixfmt",
+    "Nologo",
+    "OPENAI",
+    "pstate",
+    "pyvips",
+    "rfkill",
+    "runghc",
+    "subvol",
+    "synack",
+    "uinput",
+    "alllows",
+    "blueman",
+    "Blueman",
+    "cpufreq",
+    "cscript",
+    "escript",
+    "Iosevka",
+    "iwlwifi",
+    "MASRKAI",
+    "nixpkgs",
+    "noatime",
+    "nomerge",
+    "Nuvoton",
+    "psmouse",
+    "Rscript",
+    "tabnine",
+    "usbcore",
+    "Winbond",
+    "aircrack",
+    "coretemp",
+    "flakeref",
+    "freevxfs",
+    "gfortran",
+    "hasalpha",
+    "jpegsave",
+    "LNXSYBUS",
+    "LNXSYSTM",
+    "revealjs",
+    "scriptcs",
+    "setupcpp",
+    "Setupcpp",
+    "spindown",
+    "vbscript",
+    "vsyscall",
+    "acpilight",
+    "autofetch",
+    "centisecs",
+    "codealpha",
+    "drivetemp",
+    "keepalive",
+    "nospectre",
+    "osascript",
+    "redzoning",
+    "streamlit",
+    "sysconfig",
+    "writeback",
+    "autodefrag",
+    "autohotkey",
+    "lrwxrwxrwx",
+    "mindshield",
+    "nodiratime",
+    "nowatchdog",
+    "scrollback",
+    "syncookies",
+    "threadirqs",
+    "vboxnetadp",
+    "vboxnetflt",
+    "applescript",
+    "apportunity",
+    "autosuspend",
+    "colourspace",
+    "evillimiter",
+    "flamegraphs",
+    "powersaving",
+    "explainshell",
+    "networkmanager",
   ],
   "qt-core.additionalQtPaths": [
     {
       "name": "Qt-6.10.1-linux-g++_from_PATH",
-      "path": "/run/current-system/sw/bin/qtpaths"
-    }
+      "path": "/run/current-system/sw/bin/qtpaths",
+    },
   ],
   "plantuml.exportFormat": "svg",
   "plantuml.java": "",
@@ -542,18 +587,18 @@
   "plantuml.urlFormat": "svg",
   "yaml.schemas": {
     "file:///nix/store/ni2sg0f5f7s5sqfmg6cgy1pw2v4zxmis-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
-      ".continue/**/*.yaml"
+      ".continue/**/*.yaml",
     ],
     "file:///nix/store/gkaz3vjn2yjvf3had4a3dn9lrjbcwg7n-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
-      ".continue/**/*.yaml"
-    ]
+      ".continue/**/*.yaml",
+    ],
+    "file:///nix/store/3hv4svj1agahfmhzkmsgr8ppc60sjjdp-vscode-extensions/share/vscode/extensions/Continue.continue/config-yaml-schema.json": [
+      ".continue/**/*.yaml",
+    ],
   },
   "markdown-preview-enhanced.plantumlJarPath": "/run/current-system/sw/lib/plantuml.jar",
   "[markdown]": {
-    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
   },
   "plantuml.jar": "/run/current-system/sw/lib/plantuml.jar",
-  "zig.zls.enabled": "on",
-  "zig.buildOnSaveProvider": "off",
-  "zig.zls.path": "/run/current-system/sw/bin/zls",
 }

@@ -13,7 +13,7 @@ let
 
     #>! Binary / FHSenv
     # proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
-    grayjay-bin = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay-bin2.nix {};
+    # grayjay-bin = pkgs.callPackage ./Programs/Packages/grayjay-desktop/grayjay-bin2.nix {};
   };
 in
 {
@@ -63,25 +63,6 @@ in
     LC_IDENTIFICATION = "en_US.UTF-8";
   }; };
 
-    users.users.masrkai = {
-        isNormalUser = true;
-        description = "Masrkai";
-        extraGroups = [
-                        "wheel"
-                        "networkmanager" "bluetooth"
-                        "wireshark"
-                        "qbittorrent" "jackett"
-                        "video" "audio" "power"
-                        "ollama"
-                        # "libvirtd" "kvm" "ubridge"  #* Virtualization
-
-                        "tty" "dialout"             #* Allow access to serial device (for Arduino dev)
-                      ];
-      };
-
-
-  #! Diable flatpack
-  services.flatpak.enable = lib.mkForce false;
 
   fonts = {
     packages = with pkgs; [
@@ -111,13 +92,35 @@ in
       fontconfig = {
         enable = true;
         defaultFonts = {
-          monospace = [ "Iosevka Nerd Font" "Iosevka" ];
-          sansSerif = [ "DejaVu Sans" ];
-          serif = [ "DejaVu Serif" ];
-          emoji = [ "Noto Color Emoji" ];
+          monospace = [ "Iosevka Fixed Hv Ex Obl" "Iosevka" "Nerd Fonts Symbols Only" ];
+          sansSerif   = [ "Iosevka Fixed Hv Ex Obl" "Iosevka" "DejaVu Sans" ];
+          serif       = [ "Iosevka Fixed Hv Ex Obl" "Iosevka" "DejaVu Serif" ];
+
+          # Always keep Emoji separate, otherwise you get boxes for emojis
+          emoji       = [ "Noto Color Emoji" ];
         };
       };
   };
+
+    users.users.masrkai = {
+        isNormalUser = true;
+        description = "Masrkai";
+        extraGroups = [
+                        "wheel"
+                        "networkmanager" "bluetooth"
+                        "wireshark"
+                        "qbittorrent" "jackett"
+                        "video" "audio" "power"
+                        "ollama"
+                        # "libvirtd" "kvm" "ubridge"  #* Virtualization
+
+                        "tty" "dialout"             #* Allow access to serial device (for Arduino dev)
+                      ];
+      };
+
+
+  #! Diable flatpack
+  services.flatpak.enable = lib.mkForce false;
 
   nix = {
   settings = {

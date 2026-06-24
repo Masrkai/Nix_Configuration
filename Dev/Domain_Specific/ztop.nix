@@ -12,6 +12,7 @@
     ./Docs.nix
     ./GUIs.nix
     ./embedded.nix
+    ./image_processing.nix
 
     # Databases / Storage Buckets / Data Queries
     ./DBs/query.nix

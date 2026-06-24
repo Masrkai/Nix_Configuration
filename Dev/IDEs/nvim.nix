@@ -420,285 +420,283 @@ in {
     # ============================================================================
     # KEYMAPS
     # ============================================================================
-    keymaps = [
-      # Do / UnDO
-      {
-        mode = "n";
-        key = "<C-z>";
-        action = "u";
-      }
-      {
-        mode = "i";
-        key = "<C-z>";
-        action = "<Esc>u";
-      }
+#     keymaps = [
+#       # Do / UnDO
+#       {
+#         mode = "n";
+#         key = "<C-z>";
+#         action = "u";
+#       }
+#       {
+#         mode = "i";
+#         key = "<C-z>";
+#         action = "<Esc>u";
+#       }
 
-      {
-        mode = "n";
-        key = "<C-y>";
-        action = "<C-r>";
-      }
-      {
-        mode = "i";
-        key = "<C-y>";
-        action = "<Esc><C-r>";
-      }
+#       {
+#         mode = "n";
+#         key = "<C-y>";
+#         action = "<C-r>";
+#       }
+#       {
+#         mode = "i";
+#         key = "<C-y>";
+#         action = "<Esc><C-r>";
+#       }
 
-      {
-        mode = "n";
-        key = "<C-a>";
-        action = "gg<S-v>G";
-        options.silent = true;
-      }
-
-
-{
-  mode = "v";
-  key = "<C-c>";
-  action = ''"*y'';
-  options.silent = true;
-}
+#       {
+#         mode = "n";
+#         key = "<C-a>";
+#         action = "gg<S-v>G";
+#         options.silent = true;
+#       }
+#     {
+#       mode = "v";
+#       key = "<C-c>";
+#       action = ''"*y'';
+#       options.silent = true;
+#     }
 
 
-# Paste in insert mode (while typing)
-{
-  mode = "i";
-  key = "<C-v>";
-  action = ''<Esc>"*pa'';
-  options.silent = true;
-}
+# # Paste in insert mode (while typing)
+# {
+#   mode = "i";
+#   key = "<C-v>";
+#   action = ''<Esc>"*pa'';
+#   options.silent = true;
+# }
 
-      # File explorer toggle (like VSCode Ctrl+B)
-      {
-        mode = "n";
-        key = "<C-b>";
-        action = ":Neotree toggle<CR>";
-        options.silent = true;
-      }
+#       # File explorer toggle (like VSCode Ctrl+B)
+#       {
+#         mode = "n";
+#         key = "<C-b>";
+#         action = ":Neotree toggle<CR>";
+#         options.silent = true;
+#       }
 
-      # Telescope (like VSCode Ctrl+P / Ctrl+Shift+P / Ctrl+Shift+F)
-      {
-        mode = "n";
-        key = "<C-p>";
-        action = ":Telescope find_files<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<C-S-p>";
-        action = ":Telescope commands<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<C-S-f>";
-        action = ":Telescope live_grep<CR>";
-        options.silent = true;
-      }
-{
-  mode = "n";
-  key = "<C-f>";
-  action = "/";
-  options.silent = true;
-}
+#       # Telescope (like VSCode Ctrl+P / Ctrl+Shift+P / Ctrl+Shift+F)
+#       {
+#         mode = "n";
+#         key = "<C-p>";
+#         action = ":Telescope find_files<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<C-S-p>";
+#         action = ":Telescope commands<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<C-S-f>";
+#         action = ":Telescope live_grep<CR>";
+#         options.silent = true;
+#       }
+# {
+#   mode = "n";
+#   key = "<C-f>";
+#   action = "/";
+#   options.silent = true;
+# }
 
 
 
-# Shift+Up to select upward
-{
-  mode = "n";
-  key = "<S-Up>";
-  action = "<S-v><Up>";
-  options.silent = true;
-}
+# # Shift+Up to select upward
+# {
+#   mode = "n";
+#   key = "<S-Up>";
+#   action = "<S-v><Up>";
+#   options.silent = true;
+# }
 
-# Shift+Down to select downward
-{
-  mode = "n";
-  key = "<S-Down>";
-  action = "<S-v><Down>";
-  options.silent = true;
-}
+# # Shift+Down to select downward
+# {
+#   mode = "n";
+#   key = "<S-Down>";
+#   action = "<S-v><Down>";
+#   options.silent = true;
+# }
 
-# Keep extending selection while holding shift
-{
-  mode = "v";
-  key = "<S-Up>";
-  action = "<Up>";
-  options.silent = true;
-}
-{
-  mode = "v";
-  key = "<S-Down>";
-  action = "<Down>";
-  options.silent = true;
-}
+# # Keep extending selection while holding shift
+# {
+#   mode = "v";
+#   key = "<S-Up>";
+#   action = "<Up>";
+#   options.silent = true;
+# }
+# {
+#   mode = "v";
+#   key = "<S-Down>";
+#   action = "<Down>";
+#   options.silent = true;
+# }
 
 
 
 
-      # Buffer tabs (like VSCode Ctrl+Tab / Ctrl+W)
-      {
-        mode = "n";
-        key = "<Tab>";
-        action = ":BufferLineCycleNext<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<S-Tab>";
-        action = ":BufferLineCyclePrev<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<C-w>";
-        action = ":bdelete<CR>";
-        options.silent = true;
-      }
+#       # Buffer tabs (like VSCode Ctrl+Tab / Ctrl+W)
+#       {
+#         mode = "n";
+#         key = "<Tab>";
+#         action = ":BufferLineCycleNext<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<S-Tab>";
+#         action = ":BufferLineCyclePrev<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<C-w>";
+#         action = ":bdelete<CR>";
+#         options.silent = true;
+#       }
 
-      # LSP actions (like VSCode F12 / Shift+F12 / F2)
-      {
-        mode = "n";
-        key = "gd";
-        action = ":lua vim.lsp.buf.definition()<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "gr";
-        action = ":lua vim.lsp.buf.references()<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<F2>";
-        action = ":lua vim.lsp.buf.rename()<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>ca";
-        action = ":lua vim.lsp.buf.code_action()<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "K";
-        action = ":lua vim.lsp.buf.hover()<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>f";
-        action = ":lua vim.lsp.buf.format()<CR>";
-        options.silent = true;
-      }
+#       # LSP actions (like VSCode F12 / Shift+F12 / F2)
+#       {
+#         mode = "n";
+#         key = "gd";
+#         action = ":lua vim.lsp.buf.definition()<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "gr";
+#         action = ":lua vim.lsp.buf.references()<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<F2>";
+#         action = ":lua vim.lsp.buf.rename()<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>ca";
+#         action = ":lua vim.lsp.buf.code_action()<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "K";
+#         action = ":lua vim.lsp.buf.hover()<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>f";
+#         action = ":lua vim.lsp.buf.format()<CR>";
+#         options.silent = true;
+#       }
 
-      # Diagnostics (like VSCode Problems panel)
-      {
-        mode = "n";
-        key = "<leader>d";
-        action = ":Telescope diagnostics<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "[d";
-        action = ":lua vim.diagnostic.goto_prev()<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "]d";
-        action = ":lua vim.diagnostic.goto_next()<CR>";
-        options.silent = true;
-      }
+#       # Diagnostics (like VSCode Problems panel)
+#       {
+#         mode = "n";
+#         key = "<leader>d";
+#         action = ":Telescope diagnostics<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "[d";
+#         action = ":lua vim.diagnostic.goto_prev()<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "]d";
+#         action = ":lua vim.diagnostic.goto_next()<CR>";
+#         options.silent = true;
+#       }
 
-      # Git (like GitLens)
-      # {
-      #   mode = "n";
-      #   key = "<leader>gb";
-      #   action = ":Gitsigns blame_line<CR>";
-      #   options.silent = true;
-      # }
-      {
-        mode = "n";
-        key = "<leader>gd";
-        action = ":Gitsigns diffthis<CR>";
-        options.silent = true;
-      }
+#       # Git (like GitLens)
+#       # {
+#       #   mode = "n";
+#       #   key = "<leader>gb";
+#       #   action = ":Gitsigns blame_line<CR>";
+#       #   options.silent = true;
+#       # }
+#       {
+#         mode = "n";
+#         key = "<leader>gd";
+#         action = ":Gitsigns diffthis<CR>";
+#         options.silent = true;
+#       }
 
-      {
-        mode = "n";
-        key = "<leader>gs";
-        action = ":Telescope git_status<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>gb";
-        action = ":Telescope git_branches<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>gc";
-        action = ":Telescope git_commits<CR>";
-        options.silent = true;
-      }
+#       {
+#         mode = "n";
+#         key = "<leader>gs";
+#         action = ":Telescope git_status<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>gb";
+#         action = ":Telescope git_branches<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>gc";
+#         action = ":Telescope git_commits<CR>";
+#         options.silent = true;
+#       }
 
-      {
-        mode = "n";
-        key = "<leader>gg";
-        action = ":Neogit<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>gc";
-        action = ":Neogit commit<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>gl";
-        action = ":Neogit log<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>gh";
-        action = ":DiffviewFileHistory %<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>go";
-        action = ":DiffviewOpen<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "n";
-        key = "<leader>gq";
-        action = ":DiffviewClose<CR>";
-        options.silent = true;
-      }
+#       {
+#         mode = "n";
+#         key = "<leader>gg";
+#         action = ":Neogit<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>gc";
+#         action = ":Neogit commit<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>gl";
+#         action = ":Neogit log<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>gh";
+#         action = ":DiffviewFileHistory %<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>go";
+#         action = ":DiffviewOpen<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "n";
+#         key = "<leader>gq";
+#         action = ":DiffviewClose<CR>";
+#         options.silent = true;
+#       }
 
-      # Save (like VSCode Ctrl+S)
-      {
-        mode = "n";
-        key = "<C-s>";
-        action = ":w<CR>";
-        options.silent = true;
-      }
-      {
-        mode = "i";
-        key = "<C-s>";
-        action = "<Esc>:w<CR>";
-        options.silent = true;
-      }
-    ];
+#       # Save (like VSCode Ctrl+S)
+#       {
+#         mode = "n";
+#         key = "<C-s>";
+#         action = ":w<CR>";
+#         options.silent = true;
+#       }
+#       {
+#         mode = "i";
+#         key = "<C-s>";
+#         action = "<Esc>:w<CR>";
+#         options.silent = true;
+#       }
+    # ];
 
     # ============================================================================
     # EXTRA PACKAGES (tools the LSPs/formatters call out to)

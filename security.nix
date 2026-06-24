@@ -59,6 +59,12 @@ with lib;
     };
   };
 
+  # Disable the automatic fwupd refresh service and timer
+  # to avoid "Failed to obtain auth" errors when polkit is unavailable
+  # see https://github.com/nixos/nixpkgs/issues/530906
+  systemd.services.fwupd-refresh.enable = false;
+  systemd.timers.fwupd-refresh.enable = false;
+
   # Disable KWallet PAM integration
   security.pam.services.sddm.kwallet.enable = false;
 

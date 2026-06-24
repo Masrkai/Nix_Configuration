@@ -52,7 +52,7 @@
     #
     #? History
     #  6.18.8: CVE-2026-31431 / Copy Fail | metigated by updating to 6.18.22 or later
-     lib.mkIf (lib.versionOlder pkgs.linux.version "6.18.22") (
+     lib.mkIf (lib.versionOlder pkgs.linux.version "7.0.0") (
           lib.mkDefault pkgs.linuxKernel.packages.linux_7_0);
 
     extraModulePackages = with config.boot.kernelPackages; [
@@ -121,9 +121,9 @@
       "nowatchdog"
       "intel_pstate=disable"
 
-      # "preempt=full"           # Better for desktop/low-latency in
+      # "preempt=full"           # Better for desktop/low-latency
       # "mce=ignore_ce"          # Ignore non-fatal Correctable Errors (reduces log noise)
-      "scsi_mod.use_blk_mq=1"  # Use multi-queue for faster I/O
+      "scsi_mod.use_blk_mq=1"    # Use multi-queue for faster I/O
 
       # Memory security parameters
       "slab_nomerge"            # Disables merging of slabs of similar sizes

@@ -15,6 +15,7 @@
 
     # Package manager
     cargo
+      cargo-edit
       cargo-watch
 
       # Flame-graphing

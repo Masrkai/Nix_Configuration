@@ -127,6 +127,8 @@ in
     less
 
     toolong
+
+    nix-search
   ] ++ scriptPackages;  #> auto-collected from #NIXPKGS comments
   };
 

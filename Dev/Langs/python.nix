@@ -17,95 +17,99 @@ in
     opencv
     # llama-cpp
     ffmpeg-full
-    unstable.ruff
 
     honcho
+
     chromedriver
     geckodriver
+
     (lib.lowPrio (python313.withPackages (ps: with ps; [
 
-        # # unsloth
-        # # unsloth-zoo
-        # smolagents
-        #   duckduckgo-search
+        #-> Basics for IDEs
+        ruff          # linter and code formatter
+        debugpy       # Debugger
+        basedpyright  # LSP server
 
+        #-> Basics for package installation / bundeling
+        uv                       # Package Manager & virtual environment manager (replaces pip while being better at everything)
+        setuptools               # Utilities to facilitate the installation of Python packages
+        python-dotenv            # Add .env support to your apps
+        pyinstaller              # Tool to bundle a python application with dependencies into a single package
+        pyinstaller-versionfile  # Create a windows version-file from a simple YAML file that can be used by PyInstaller
 
-        #-> Basics
-        uv
+        #-> testing
+        pytest
+        pytest-cov
+        pytest-aio
+        selenium
 
-        #-> Networks
+        #-> Performance Analysis
+        memray
+
+        #-> Network libs
+        aiohttp
         netutils
+        requests
+
+        #-> DBs / cryptography
+        sqlite
+        pymysql
+        portalocker
+        cryptography
+
+        #-> General libs
+        geopy
+        pathlib2
+        screeninfo
+        qrcode
+        qrcode-terminal
+
+        #-> General Math/Statistics libs
+        numpy
+        pandas
+        polars
+
+        #-> Visuals libs
+        seaborn
+        matplotx
+        matplotlib
+
+        #-> AI/ML - NLP
+        jax
+        # torch
+
+        #-> Image processing
+        pillow
+
+        #-> GUIs
+
+        # pyqt6
+        # pyside6
+        # pyqt6-sip
+        # pyqt6-charts
+        # pyqt6-webengine
+        # raylib-python-cffi
+
+        #-> CLI/TUI
+        terminaltables
 
         #-> Platforms
         huggingface-hub
 
+        #-> Notebooks
+        marimo        # Jupyter Notebook killer (Thankfully this was a rough time using jupyter notebooks.. shesh)
 
-        pylint
-        # pylance
+          # #-> Juniper/jupter
+          # notebook
+          # nbformat
+          # ipynbname
+          # ipywidgets
 
-        pathlib2
-        setuptools
-        python-dotenv
-        terminaltables
-
-            #-> Nvidia Cuda
-            pynvml
-            numba
-            pycuda
-
-            #-> GUI
-            # pyqt6
-            # pyside6
-            # pyqt6-sip
-            # pyqt6-charts
-            # pyqt6-webengine
-
-            screeninfo
-            raylib-python-cffi
-
-
-            #-> Juniper/jupter
-            notebook
-            nbformat
-            ipynbname
-            ipywidgets
-
-            #-> IpyKernal
-            ipython
-            ipykernel
-            ipython-sql
-            ipython-genutils
-
-            #> Packaging \ Compiling
-            pyinstaller
-            pyinstaller-versionfile
-
-            #-> Misc
-            geopy
-            selenium
-
-            pillow
-            piexif
-            # onnxruntime
-
-            qrcode
-            qrcode-terminal
-
-            #-> cryptography & Databases
-            numpy
-            pandas
-            polars
-            sqlite
-            pymysql
-            portalocker
-            cryptography
-
-            #-> AI/ML
-            jax
-            # torch-bin
-            # transformers
-
-
+          # #-> IpyKernal
+          # ipython
+          # ipykernel
+          # ipython-sql
+          # ipython-genutils
         ]
       )
     )
