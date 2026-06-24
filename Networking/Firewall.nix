@@ -31,12 +31,11 @@
                           # 6881  #? Qbittorrent
                           18081
                           21027 #? Syncthing
-                          21116 #? RustDesk
+                          21119 57190 #? RustDesk
                         ];
       #--> Ranges
       allowedTCPPortRanges = [
                               { from = 1714; to = 1764; }    #? KDEconnect
-                              { from = 21114; to = 21119; }  #? RustDesk
                              ];
       allowedUDPPortRanges = [
                             { from = 1714; to = 1764; }  #? KDEconnect
