@@ -74,12 +74,15 @@ in
         matplotx
         matplotlib
 
-        #-> AI/ML - NLP
-        jax
-        # torch
-
         #-> Image processing
         pillow
+
+        #-> AI/ML - NLP
+        jax
+        ollama
+        litellm
+
+        # torch
 
         #-> GUIs
 

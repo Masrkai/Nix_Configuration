@@ -2,12 +2,12 @@
 
 {
    environment.systemPackages = with pkgs; [
-    go
+    go              # Go compiler/toolchain
+    delve           # Debugger
+    gofumpt         # Formatter
+    gopls           # Language Server (LSP)
 
-    gopls
-
-    libcap
-
-    go-outline
+    # golangci-lint
+    # go-outline
    ];
 }
