@@ -76,8 +76,8 @@ in
       cpv = "rsync -avh --info=progress2";
 
       # Overwrite protection
-      cp = "cp -vi ";
-      mv = "mv -vi ";
+      cp = "cp -v ";
+      mv = "mv -v ";
 
       # Replacing List command with eza (Read it's help before you edit)
       l    = "eza --color=always --group-directories-first --long --icons=always --links -a --tree";
