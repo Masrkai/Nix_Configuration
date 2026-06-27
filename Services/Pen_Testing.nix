@@ -7,9 +7,6 @@ let
     #? Java
     jsql        = pkgs.callPackage ../Programs/Packages/jsql.nix {};
 
-    #? Python
-    evillimiter = pkgs.callPackage ../Programs/Packages/evillimiter.nix {};
-
     #! Unknown (Need Looking)
     wifi-honey  = pkgs.callPackage ../Programs/Packages/wifi-honey.nix {};
     hostapd-wpe = pkgs.callPackage ../Programs/Packages/hostapd-wpe.nix {};
@@ -91,8 +88,6 @@ in
         #> MITM
         # customPackages.beef
         customPackages.wifi-honey
-        customPackages.evillimiter
-
 
         #> Utilities
         tmux
