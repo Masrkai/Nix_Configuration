@@ -18,6 +18,14 @@
   imports =
     [
       ./hardware-configuration.nix
+
+
+
+      ./ID/ID.nix
+      # Auto-import the generated hardware config (will be created after first boot)
+      (if builtins.pathExists /etc/nixos/Sec/hardware-detected.nix
+      then /etc/nixos/Sec/hardware-detected.nix
+      else {})
     ];
 
   boot = {
@@ -195,10 +203,10 @@
   };
 
   zramSwap = {
-    enable = false;
+    enable = config.hardware.isDellG15;
     algorithm = "zstd";
     priority = 10;
-    memoryPercent = 50;  # Use up to 10% of RAM for zram swap
+    memoryPercent = 100;
   };
 
   services.acpid.enable= true;
