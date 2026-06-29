@@ -1,15 +1,26 @@
 
 sectorcopy() {
-    local extension="$1"
-    local directory="${2:-.}"  # Default to current directory if not specified
+    local extension=""
+    local directory="."
+    local maxdepth=1
 
+    while getopts "d:m:h" opt; do
+        case $opt in
+            d) directory="$OPTARG" ;;
+            m) maxdepth="$OPTARG" ;;
+            h) echo "Usage: sectorcopy [-d directory] [-m maxdepth] <extension>"; return 0 ;;
+            *) return 1 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    extension="$1"
     if [[ -z "$extension" ]]; then
-        echo "Usage: sectorcopy <extension> [directory]" >&2
+        echo "Usage: sectorcopy [-d directory] [-m maxdepth] <extension>" >&2
         return 1
     fi
 
-    # Find files with the specified extension and process them
-    find "$directory" -maxdepth 1 -type f -name "*$extension" -print0 | \
+    find "$directory" -maxdepth "$maxdepth" -type f -name "*$extension" -print0 | \
     sort -z | \
     while IFS= read -r -d '' file; do
         echo "$(basename "$file"):"
