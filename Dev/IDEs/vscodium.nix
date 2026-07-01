@@ -16,7 +16,8 @@ let
   rust     = import ./VScode_Extensions/rust.nix    { inherit pkgs lib ; };
   dartX    = import ./VScode_Extensions/dart.nix    { inherit pkgs lib ; };
   golang   = import ./VScode_Extensions/go.nix      { inherit pkgs lib ; };
-  kotlinX   = import ./VScode_Extensions/kotlin.nix  { inherit pkgs lib ; };
+  prolog   = import ./VScode_Extensions/prolog.nix  { inherit pkgs lib ; };
+  kotlinX  = import ./VScode_Extensions/kotlin.nix  { inherit pkgs lib ; };
   pythonX  = import ./VScode_Extensions/python.nix  { inherit pkgs lib ; };
   generalX = import ./VScode_Extensions/general.nix { inherit pkgs lib ; };
 
@@ -78,6 +79,7 @@ in{
         ++ pythonX.python-nixpkgs-extensions
         ++ generalX.general-nixpkgs-extensions
         ++ golang.golang-nixpkgs-extensions
+        ++ prolog.prolog-nixpkgs-extensions
 
 
         ++ vscode-utils.extensionsFromVscodeMarketplace (
@@ -91,6 +93,7 @@ in{
           ++ kotlinX.kotlin-marketplace-extensions
           ++ pythonX.python-marketplace-extensions
           ++ generalX.general-marketplace-extensions
+          ++ prolog.prolog-marketplace-extensions
 
         );
       })
