@@ -1,8 +1,14 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 
 let
   secrets = import ../Sec/secrets.nix;
-  unstable = import <unstable> {config.allowUnfree = true;};
+  unstable = import <unstable> { config.allowUnfree = true; };
 
 in
 {
@@ -16,21 +22,19 @@ in
     user = "ollama";
     group = "ollama";
 
-
     environmentVariables = {
-            OLLAMA_MODELS="/home/masrkai/AI";
-      };
+      OLLAMA_MODELS = "/home/masrkai/AI";
+    };
   };
 
   services.open-webui = {
     enable = false;
     # stateDir = "/var/lib/open-webui";
 
-    package=
-         #pkgs.open-webui;
-         #unstable.open-webui;
-         pkgs.callPackage ../Programs/python-libs/open-webui.nix {};
-
+    package =
+      #pkgs.open-webui;
+      #unstable.open-webui;
+      pkgs.callPackage ../Programs/python-libs/open-webui.nix { };
 
     port = 8080;
     host = "127.0.0.1";
@@ -38,16 +42,15 @@ in
     environment = {
       TZ = secrets.TZ;
       WEBUI_AUTH = "False";
-      DATA_DIR = "/var/lib/open-webui/data";  # Explicitly set data directory
-      OLLAMA_BASE_URL = "http://127.0.0.1:11434";  # Redundant but sometimes helps
+      DATA_DIR = "/var/lib/open-webui/data"; # Explicitly set data directory
+      OLLAMA_BASE_URL = "http://127.0.0.1:11434"; # Redundant but sometimes helps
       OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
 
       DO_NOT_TRACK = "True";
-        SCARF_NO_ANALYTICS = "True";
-        ANONYMIZED_TELEMETRY = "False";
-        WEBUI_SESSION_COOKIE_SECURE = "True";
-        WEBUI_SESSION_COOKIE_SAME_SITE = "strict";
-
+      SCARF_NO_ANALYTICS = "True";
+      ANONYMIZED_TELEMETRY = "False";
+      WEBUI_SESSION_COOKIE_SECURE = "True";
+      WEBUI_SESSION_COOKIE_SAME_SITE = "strict";
 
       #! NONSENSE IN MY HUMBLE OPINION
       ENABLE_OPENAI_API = "False";
@@ -57,7 +60,6 @@ in
     };
 
   };
-
 
   services.tika = {
     enable = false;
@@ -84,4 +86,9 @@ in
       # };
     }
   ];
+
+  # environment.systemPackages = with pkgs; [
+  #   opencode
+  # ];
+
 }
