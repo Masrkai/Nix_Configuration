@@ -10,6 +10,7 @@ let
     logisim-evolution = pkgs.callPackage ./Programs/Packages/logisim-evolution.nix {};
     super-productivity = pkgs.callPackage ./Programs/Packages/super-productivity.nix {};
     rharbor = pkgs.callPackage ./Programs/Packages/harbor.nix {};
+    vera = pkgs.callPackage Programs/masrkai-built/vera.nix {};
 
     #>! Binary / FHSenv
     # proton-ge-bin = pkgs.callPackage ./Programs/Packages/proton-ge-bin.nix {};
@@ -373,6 +374,7 @@ ffmpeg-full
 
   btrfs-progs
   customPackages.rharbor
+  customPackages.vera
 
 ];
 
